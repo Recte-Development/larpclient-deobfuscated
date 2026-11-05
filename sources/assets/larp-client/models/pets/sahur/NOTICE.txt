@@ -1,0 +1,27 @@
+Tung tung tung sahur - Brainrot italian
+Model and texture by Foorleague2City
+Creator: https://sketchfab.com/Foorleague2City
+Original: https://sketchfab.com/3d-models/tung-tung-tung-sahur-brainrot-italian-e73bef48b374447b8a282f06d69b00df
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+Legal terms: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Public GLB mirror, with the above attribution embedded in asset.extras:
+https://github.com/9hsbshfy4y/glb-player-model-replacer-fabric/blob/master/src/main/resources/assets/modelreplacer/models/sahur.glb
+
+Changes for Larp Client: UV-preserving simplification from 203,834 to 1,800
+triangles, fixed standing pose, centered 0.6-block height, face aligned to +Z,
+512x512 albedo and soft vertex lighting. Normal and metallic maps were removed.
+Only this attributed model asset is reused. No code from the mirror is included.
+The asset's CC BY 4.0 terms remain separate from the client code's terms.
+Keep this attribution and the license link when redistributing the asset.
+
+KillFX Tung Tung modification, 2026-10-15: runtime rigid holding-arm/bat
+articulation, textured seam closures, 3.6-block scaling and original strike
+choreography. The shared mesh.bin and albedo.png remain unchanged.
+
+KillFX Tung Tung Floss modification, 2026-10-17: private runtime free-hand
+articulation, bat omission below the fused grip, textured seam closures,
+blended arm/leg/head/body posing and 3.6-block scaling. Jump, landing and Floss
+choreography are authored for Larp Client; no Fortnite assets or music are
+included. The shared mesh.bin and albedo.png remain unchanged.

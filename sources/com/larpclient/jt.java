@@ -1,0 +1,186 @@
+package com.larpclient;
+
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.MipmapStrategy;
+import net.minecraft.client.renderer.texture.ReloadableTexture;
+import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.metadata.texture.TextureMetadataSection;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
+
+public final class jt {
+   private static final jt.w Y = new jt.w("live");
+   private static final jt.w h = new jt.w("preview");
+
+   private jt() {
+   }
+
+   private static jt.m B(jt.w var0, o0.p var1) {
+      TextureManager var2 = Minecraft.getInstance().getTextureManager();
+      if (var0.l != var2) {
+         var0.J = null;
+         var0.U = null;
+         var0.l = var2;
+      }
+
+      if (var1.equals(var0.U)) {
+         return null;
+      }
+
+      if (var0.J == null || !var0.J.g.equals(var1)) {
+         jt.m var3 = null;
+
+         try {
+            var3 = new jt.m(var0.d, var1);
+            var2.registerAndLoad(var0.d, var3);
+         } catch (RuntimeException var5) {
+            if (var3 != null) {
+               var3.close();
+            }
+
+            var0.U = var1;
+            r4.T("Crosshair", "Mask upload failed; using simple cross until settings change", var5);
+            return null;
+         }
+
+         var0.J = var3;
+         var0.U = null;
+         r4.g("Crosshair", "Prepared {} mask at {} pixels per GUI unit", var1.style(), var1.scale());
+      }
+
+      return var0.J;
+   }
+
+   public static void f(
+      GuiGraphicsExtractor var0, int var1, int var2, String var3, int var4, int var5, _n var6, int var7, boolean var8, double var9, boolean var11
+   ) {
+      if (var7 >>> 24 != 0) {
+         jt.w var12 = var11 ? h : Y;
+         double var13 = Minecraft.getInstance().getWindow().getGuiScale();
+         double var15 = o0.U(Math.hypot(var0.pose().m00(), var0.pose().m01()) * var13);
+         o0.p var17 = new o0.p(var3, var4, var5, var8, var15, var6);
+         jt.m var18 = B(var12, var17);
+         if (var18 == null) {
+            int var28 = Math.min(var4, var5 + 1);
+            fr.k(var0, var1 - var28, var2, 2 * var28 + 1, 1, var7);
+            fr.k(var0, var1, var2 - var28, 1, 2 * var28 + 1, var7);
+         } else {
+            var0.pose().pushMatrix();
+
+            try {
+               var0.pose().translate(var1, var2);
+               double var19 = var18.n % 2 == 0 ? 0.0 : 0.5;
+               double var21 = var0.pose().m20() * var13;
+               double var23 = var0.pose().m21() * var13;
+               var0.pose()
+                  .translateLocal((float)((Math.round(var21 - var19) + var19 - var21) / var13), (float)((Math.round(var23 - var19) + var19 - var23) / var13));
+               if (var9 != 0.0) {
+                  var0.pose().rotate((float)var9);
+               }
+
+               var0.pose().scale((float)(1.0 / var15));
+               var0.pose().translate(-var18.n / 2.0F, -var18.l / 2.0F);
+               p(var0, var12.d, var18, var7, var8);
+            } finally {
+               var0.pose().popMatrix();
+            }
+         }
+      }
+   }
+
+   public static void v(GuiGraphicsExtractor var0, int var1, int var2, fz.j var3, int var4, int var5, double var6) {
+      if (var5 >>> 24 != 0) {
+         double var8 = 2.0 * var4 / Math.max(var3.width(), var3.height());
+         float var10 = (float)(var3.width() * var8);
+         float var11 = (float)(var3.height() * var8);
+         var0.pose().pushMatrix();
+
+         try {
+            var0.pose().translate(var1, var2);
+            if (var6 != 0.0) {
+               var0.pose().rotate((float)var6);
+            }
+
+            var0.pose().scale(var10 / 64.0F, var11 / 64.0F);
+            var0.blit(
+               RenderPipelines.GUI_TEXTURED,
+               var3.id(),
+               -32,
+               -32,
+               0.0F,
+               0.0F,
+               64,
+               64,
+               var3.width(),
+               var3.height(),
+               var3.width(),
+               var3.height(),
+               r.D(var5 | 16777215)
+            );
+         } finally {
+            var0.pose().popMatrix();
+         }
+      }
+   }
+
+   public static int D(fz.j var0, int var1, boolean var2) {
+      double var3 = 2.0 * var1 / Math.max(var0.width(), var0.height());
+      double var5 = var2 ? Math.hypot(var0.width(), var0.height()) * var3 / 2.0 : var1;
+      return (int)Math.ceil(var5 + 1.0);
+   }
+
+   private static void p(GuiGraphicsExtractor var0, Identifier var1, jt.m var2, int var3, boolean var4) {
+      if (var4) {
+         var0.blit(RenderPipelines.GUI_TEXTURED, var1, 0, 0, 0.0F, var2.l, var2.n, var2.l, var2.n, var2.l, var2.n, var2.l * 2, r.D(var3 & 0xFF000000));
+      }
+
+      var0.blit(RenderPipelines.GUI_TEXTURED, var1, 0, 0, 0.0F, 0.0F, var2.n, var2.l, var2.n, var2.l, var2.n, var2.l * 2, r.D(var3));
+   }
+
+   private static final class m extends ReloadableTexture {
+      final o0.p g;
+      final int n;
+      final int l;
+      final o0.n r;
+
+      m(Identifier var1, o0.p var2) {
+         super(var1);
+         this.g = var2;
+         this.r = new o0(var2).v();
+         this.n = this.r.width();
+         this.l = this.r.height();
+      }
+
+      public TextureContents loadContents(ResourceManager var1) {
+         NativeImage var2 = new NativeImage(this.n, this.l * 2, false);
+
+         try {
+            for (int var3 = 0; var3 < this.l * 2; var3++) {
+               for (int var4 = 0; var4 < this.n; var4++) {
+                  var2.setPixel(var4, var3, this.r.pixels()[var3 * this.n + var4]);
+               }
+            }
+
+            return new TextureContents(var2, new TextureMetadataSection(true, true, MipmapStrategy.MEAN, 0.0F));
+         } catch (RuntimeException var5) {
+            var2.close();
+            throw var5;
+         }
+      }
+   }
+
+   private static final class w {
+      final Identifier d;
+      jt.m J;
+      TextureManager l;
+      o0.p U;
+
+      w(String var1) {
+         this.d = Identifier.fromNamespaceAndPath("larp-client", "crosshair/" + var1);
+      }
+   }
+}

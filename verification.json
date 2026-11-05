@@ -1,0 +1,31 @@
+{
+  "profile": "larp-26.3-2.2.7",
+  "input_sha256": "9db9d3ed890d4cc432dc5603cb2ff7d95d87370cf3df5fd7b7bd207b60ec9e31",
+  "output_sha256": "8cd75c2d4d10202ad7e09a031b94768ab18063f9a45c5fae059dbd6cfaaab59b",
+  "statistics": {
+    "implementation_blocks": 2857,
+    "server_delivered_blocks": 357,
+    "native_constant_blocks": 89488,
+    "native_operations": 230
+  },
+  "bytecode_verification": "PASS: structural and typed-stack checks for 1630 classes and 16370 concrete methods; no native methods, dynamic constants, or removed licensing dependencies remain.",
+  "resources": {
+    "unchanged_resources": 311,
+    "removed_resources": [
+      "assets/larp-client/auth/trust.json",
+      "larp/bodies.bin",
+      "larp/native/linux-x64.so",
+      "larp/native/windows-x64.dll",
+      "larp/integrity.bin"
+    ],
+    "changed_metadata": [
+      "larp-version.properties",
+      "larpclient.mixins.json"
+    ]
+  },
+  "java_source_files": 933,
+  "decompiler_errors": 0,
+  "decompiler_warnings": 3,
+  "installed_mod_modified": false,
+  "full_game_launch_tested": false
+}

@@ -1,0 +1,12 @@
+Jack-o-lantern model and textures by Ulf
+https://opengameart.org/content/jack-o-lantern
+
+Public source license: Creative Commons Attribution 3.0 Unported (CC BY 3.0).
+https://creativecommons.org/licenses/by/3.0/
+The client owner also reports direct unrestricted author permission, 2026-10-20.
+Original texture badges and the author credit are retained.
+
+Client adaptation: all 3,388 source triangles retained, unit-width Y-up conversion,
+bottom pivot, twelve static mesh groups and soft vertex shading. Original diffuse and
+glow textures retained unchanged. Normal/specular maps are not used. Animation and
+render integration by Larp Client. This notice does not restrict the source asset.

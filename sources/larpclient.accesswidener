@@ -1,0 +1,50 @@
+accessWidener	v2	official
+# Main-menu Microsoft account replacement, prepared off-thread and applied together on the client thread.
+accessible field net/minecraft/client/Minecraft user Lnet/minecraft/client/User;
+mutable field net/minecraft/client/Minecraft user Lnet/minecraft/client/User;
+accessible field net/minecraft/client/Minecraft profileFuture Ljava/util/concurrent/CompletableFuture;
+mutable field net/minecraft/client/Minecraft profileFuture Ljava/util/concurrent/CompletableFuture;
+accessible field net/minecraft/client/Minecraft userApiService Lcom/mojang/authlib/minecraft/UserApiService;
+mutable field net/minecraft/client/Minecraft userApiService Lcom/mojang/authlib/minecraft/UserApiService;
+accessible field net/minecraft/client/Minecraft userPropertiesFuture Ljava/util/concurrent/CompletableFuture;
+mutable field net/minecraft/client/Minecraft userPropertiesFuture Ljava/util/concurrent/CompletableFuture;
+accessible field net/minecraft/client/Minecraft playerSocialManager Lnet/minecraft/client/gui/screens/social/PlayerSocialManager;
+mutable field net/minecraft/client/Minecraft playerSocialManager Lnet/minecraft/client/gui/screens/social/PlayerSocialManager;
+accessible field net/minecraft/client/Minecraft remoteFriendListUpdateHandler Lnet/minecraft/client/gui/screens/social/RemoteFriendListUpdateHandler;
+mutable field net/minecraft/client/Minecraft remoteFriendListUpdateHandler Lnet/minecraft/client/gui/screens/social/RemoteFriendListUpdateHandler;
+accessible field net/minecraft/client/Minecraft telemetryManager Lnet/minecraft/client/telemetry/ClientTelemetryManager;
+mutable field net/minecraft/client/Minecraft telemetryManager Lnet/minecraft/client/telemetry/ClientTelemetryManager;
+accessible field net/minecraft/client/Minecraft profileKeyPairManager Lnet/minecraft/client/multiplayer/ProfileKeyPairManager;
+mutable field net/minecraft/client/Minecraft profileKeyPairManager Lnet/minecraft/client/multiplayer/ProfileKeyPairManager;
+accessible field net/minecraft/client/Minecraft reportingContext Lnet/minecraft/client/multiplayer/chat/report/ReportingContext;
+accessible field net/minecraft/client/Minecraft services Lnet/minecraft/server/Services;
+mutable field net/minecraft/client/Minecraft services Lnet/minecraft/server/Services;
+accessible field net/minecraft/client/Minecraft realmsDataFetcher Lcom/mojang/realmsclient/gui/RealmsDataFetcher;
+mutable field net/minecraft/client/Minecraft realmsDataFetcher Lcom/mojang/realmsclient/gui/RealmsDataFetcher;
+accessible method com/mojang/realmsclient/client/RealmsClient <init> (Ljava/lang/String;Ljava/lang/String;Lnet/minecraft/client/Minecraft;)V
+accessible field com/mojang/realmsclient/client/RealmsClient realmsClientInstance Lcom/mojang/realmsclient/client/RealmsClient;
+accessible field com/mojang/realmsclient/RealmsAvailability future Ljava/util/concurrent/CompletableFuture;
+
+# Preserve the native creative-inventory wrapper around mapped player slots.
+accessible class net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper
+accessible method net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper <init> (Lnet/minecraft/world/inventory/Slot;III)V
+accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper target Lnet/minecraft/world/inventory/Slot;
+accessible	field	net/minecraft/client/OptionInstance	value	Ljava/lang/Object;
+mutable	field	net/minecraft/client/OptionInstance	value	Ljava/lang/Object;
+accessible	field	net/minecraft/world/entity/player/Abilities	flyingSpeed	F
+mutable	field	net/minecraft/world/entity/player/Abilities	flyingSpeed	F
+accessible	field	net/minecraft/world/entity/player/Inventory	selected	I
+mutable	field	net/minecraft/world/entity/player/Inventory	selected	I
+accessible	method	net/minecraft/client/Minecraft	startAttack	()Z
+accessible	method	net/minecraft/client/Minecraft	startUseItem	()V
+accessible field net/minecraft/client/renderer/rendertype/RenderType state Lnet/minecraft/client/renderer/rendertype/RenderSetup;
+accessible field net/minecraft/client/renderer/rendertype/RenderSetup textures Ljava/util/Map;
+accessible class net/minecraft/client/renderer/rendertype/RenderSetup$TextureBinding
+accessible method net/minecraft/client/renderer/rendertype/RenderSetup$TextureBinding location ()Lnet/minecraft/resources/Identifier;
+# Native suggestion hit rectangle, used read-only to keep chat above HUD controls.
+accessible class net/minecraft/client/gui/components/CommandSuggestions$SuggestionsList
+accessible field net/minecraft/client/gui/components/CommandSuggestions suggestions Lnet/minecraft/client/gui/components/CommandSuggestions$SuggestionsList;
+accessible field net/minecraft/client/gui/components/CommandSuggestions$SuggestionsList rect Lnet/minecraft/client/renderer/Rect2i;
+# Post-poll combat input shaping keeps processed keys and the native movement vector in agreement.
+accessible field net/minecraft/client/player/ClientInput moveVector Lnet/minecraft/world/phys/Vec2;
+mutable field net/minecraft/client/player/ClientInput moveVector Lnet/minecraft/world/phys/Vec2;

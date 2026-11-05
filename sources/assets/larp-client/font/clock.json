@@ -1,0 +1,18 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "larp-client:semibold.ttf",
+      "size": 11,
+      "oversample": 12,
+      "shift": [
+        0,
+        1
+      ]
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:default"
+    }
+  ]
+}
