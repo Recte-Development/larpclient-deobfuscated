@@ -1,4 +1,4 @@
-# Recovered LarpClient 2.2.8
+# Recovered LarpClient 2.2.8 | brought to you by [Recte](https://discord.gg/recte)
 
 The recovered JAR contains ordinary Java implementations with client licensing, native protection, and signed-inventory bootstrap removed.
 
