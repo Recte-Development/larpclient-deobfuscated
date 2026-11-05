@@ -1,215 +1,117 @@
 package com.larpclient;
 
-import com.larpclient.module.Module;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Consumer;
-import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.state.level.LevelRenderState;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
+import com.mojang.blaze3d.platform.InputConstants;
+import java.util.HashMap;
+import java.util.Map;
+import org.lwjgl.sdl.SDLInit;
+import org.lwjgl.sdl.SDLMouse;
+import org.lwjgl.sdl.SDLVideo;
 
 public final class hy {
-   private static final d4 x = d4.build(Shapes.block());
-   private final Module X;
-   private final com.larpclient.module.ln R = new com.larpclient.module.ln("Highlight", "Show the next placement with a soft block outline", true);
-   private final com.larpclient.module.lp N = new com.larpclient.module.lp(
-      "Highlight Color Mode", "Follow your theme or choose a custom color", "Theme", "Theme", "Custom"
-   );
-   private final com.larpclient.module.lv K = new com.larpclient.module.lv("Highlight Color", "Custom placement highlight color", rv.e);
-   private final com.larpclient.module.lc z = s("Highlight Opacity", "Outline visibility", 0.85, 0.1, 1.0, 0.05);
-   private final com.larpclient.module.lc c = new com.larpclient.module.lc("Highlight Thickness", "Outline width in blocks", 0.015, 0.005, 0.04, 0.005) {
-      @Override
-      public String getValueAsString() {
-         return String.format(Locale.ROOT, "%.3f", this.getValue());
-      }
-   };
-   private final com.larpclient.module.ln G = new com.larpclient.module.ln("Highlight Fill", "Subtle tint inside the placement box", true);
-   private final com.larpclient.module.lc u = s("Highlight Fill Opacity", "Keep the scene visible through the fill", 0.08, 0.01, 0.3, 0.01);
-   private final com.larpclient.module.lc S = s("Highlight Glow", "Soft edge halo and shared quality-controlled bloom", 0.65, 0.0, 1.5, 0.05);
-   private final com.larpclient.module.lc J;
-   private final com.larpclient.module.lc b;
-   private final List<com.larpclient.module.l6<?>> q;
-   private final d7 n = new d7();
-   private final RenderStateDataKey<hy.e> U;
-   private BlockPos T;
-   private Object l;
-   private Object M;
-   private Object o;
-   private Object I;
-   private int Y;
-   private int D = -1;
-   private Vec3 h;
+   public static final int V = 0;
+   public static final int z = 1;
+   public static final int N = 0;
+   public static final int y = 1;
+   public static final int m = 2;
+   public static final int C = -1;
+   public static final int T = 32;
+   public static final int j = 66;
+   public static final int A = 67;
+   public static final int E = 71;
+   public static final int k = 256;
+   public static final int l = 257;
+   public static final int I = 266;
+   public static final int i = 267;
+   public static final int Q = 335;
+   public static final int q = 341;
+   public static final int S = 344;
+   public static final int r = 345;
+   public static final int H = 348;
+   public static final int a = 0;
+   public static final int e = 1;
+   public static final int K = 135173;
+   public static final int O = 131076;
+   public static final int c = 139266;
+   public static final int R = 139267;
+   public static final int o = 139272;
+   public static final int D = 204801;
+   private static final Map<Integer, Integer> L = new HashMap<>();
+   private static final Map<Long, Long> b = new HashMap<>();
 
-   public hy(Module var1, Consumer<com.larpclient.module.l6<?>> var2) {
-      this(var1, var2, -1.0, -1.0);
+   public static int z(long var0, int var2) {
+      int var3 = mo.f(var2);
+      return var3 > 0 && InputConstants.isKeyDown(var3) ? 1 : 0;
    }
 
-   public hy(Module var1, Consumer<com.larpclient.module.l6<?>> var2, double var3, double var5) {
-      this.X = var1;
-      this.J = var3 < 0.0 ? null : C("Highlight Hold", "Seconds to retain the previous placement box", var3, 0.0, 3.0);
-      this.b = var5 < 0.0 ? null : C("Highlight Fade", "Seconds for the previous box to fade out", var5, 0.1, 2.0);
-      ArrayList var7 = new ArrayList<>(List.of(this.R, this.N, this.K, this.z, this.c, this.G, this.u, this.S));
-      if (this.J != null) {
-         var7.add(this.J);
-         var7.add(this.b);
-      }
-
-      this.q = List.copyOf(var7);
-      this.U = RenderStateDataKey.create(() -> var1.getName() + " placement highlight");
-      this.q.forEach(var2);
-
-      for (com.larpclient.module.l6 var9 : this.q) {
-         if (var9 != this.R) {
-            var9.x(this.R::getValue);
-         }
-      }
-
-      this.K.x(() -> this.R.getValue() && this.N.i("Custom"));
-      this.u.x(() -> this.R.getValue() && this.G.getValue());
-      this.R.W(var1x -> this.C());
-   }
-
-   public boolean z() {
-      return this.R.getValue();
-   }
-
-   public String C() {
-      return this.X.getName() + " highlight";
-   }
-
-   public List<com.larpclient.module.l6<?>> c() {
-      return this.q;
-   }
-
-   public void i(BlockPos var1) {
-      Minecraft var2 = Minecraft.getInstance();
-      this.T = this.R.getValue() && var1 != null ? var1.immutable() : null;
-      this.l = var2.level;
-      this.M = var2.player;
-      this.Y = var2.player == null ? 0 : var2.player.tickCount;
-   }
-
-   public void C() {
-      this.T = null;
-      this.l = this.M = this.o = this.I = null;
-      this.h = null;
-      this.n.n();
-   }
-
-   public void S() {
-      this.C();
-      r4.V(
-         this.X.getName(),
-         "Placement highlight {}; theme/custom color, world-fixed fades, shared depth-tested glow",
-         this.R.getValue() ? "enabled" : "disabled"
-      );
-   }
-
-   public void k(LevelExtractionContext var1) {
-      LevelRenderState var2 = var1.levelState();
-      var2.setData(this.U, null);
-      Minecraft var3 = Minecraft.getInstance();
-      if (this.X.isRuntimeActive()
-         && this.R.getValue()
-         && var3.player != null
-         && var3.player.isAlive()
-         && var3.gui.screen() == null
-         && !var3.gameRenderer.gameRenderState().guiRenderState.isHudHidden
-         && var3.isWindowActive()) {
-         Vec3 var4 = var1.camera().position();
-         int var5 = this.h != null && this.h.distanceTo(var4) > 8.0 ? 1 : 0;
-         if (this.o != var1.level() || this.I != var3.player || this.D != jk.v || var5 != 0) {
-            this.n.n();
-            if (var5 != 0) {
-               this.T = null;
-            }
-
-            this.o = var1.level();
-            this.I = var3.player;
-            this.D = jk.v;
-         }
-
-         this.h = var4;
-         BlockPos var6 = m.X(this.l, var3.level, this.M, var3.player, this.Y, var3.player.tickCount) ? this.T : null;
-         List var7 = this.n.P(var6, ea.y(), this.J == null ? 0.06 : this.J.getValue(), this.b == null ? 0.18 : this.b.getValue());
-         if (!var7.isEmpty()) {
-            var2.setData(
-               this.U,
-               new hy.e(
-                  var7,
-                  this.N.i("Theme") ? rv.e : this.K.getValue(),
-                  this.z.getValue(),
-                  this.c.getValue(),
-                  this.G.getValue() ? this.u.getValue() : 0.0,
-                  this.S.getValue()
-               )
-            );
-         }
+   public static int Y(long var0, int var2) {
+      int var3 = mo.A(var2);
+      if (var3 >= 1 && var3 <= 32) {
+         int var4 = SDLMouse.SDL_GetMouseState(null, null);
+         return (var4 & 1 << var3 - 1) != 0 ? 1 : 0;
       } else {
-         this.C();
+         return 0;
       }
    }
 
-   private hy.e s(LevelRenderState var1) {
-      return (hy.e)var1.getData(this.U);
+   public static boolean k() {
+      return SDLInit.SDL_Init(32);
    }
 
-   public boolean u(LevelRenderState var1) {
-      hy.e var2 = this.s(var1);
-      return this.X.isRuntimeActive() && this.R.getValue() && var2 != null && var2.glow > 0.0;
+   public static void X(int var0, int var1) {
+      L.put(var0, var1);
    }
 
-   public void H(r6 var1, boolean var2, LevelRenderState var3) {
-      hy.e var4 = this.s(var3);
-      if (this.X.isRuntimeActive() && this.R.getValue() && var4 != null && (!var2 || !(var4.glow <= 0.0))) {
-         long var5 = h_.U();
+   public static long r(int var0, int var1, CharSequence var2, long var3, long var5) {
+      SDLVideo.SDL_GL_SetAttribute(17, L.getOrDefault(139266, 3));
+      SDLVideo.SDL_GL_SetAttribute(18, L.getOrDefault(139267, 3));
+      if (L.getOrDefault(139272, 0) == 204801) {
+         SDLVideo.SDL_GL_SetAttribute(20, 1);
+      }
 
-         for (d7.r var8 : var4.boxes) {
-            md.C(var1, var2, x, new AABB(var8.pos()).inflate(0.002), var8.alpha(), var4.color, var4.opacity, var4.width, var4.fillOpacity, var4.glow);
+      if (L.containsKey(135173)) {
+         SDLVideo.SDL_GL_SetAttribute(6, L.get(135173));
+      }
+
+      long var7 = 2L | (L.getOrDefault(131076, 1) == 0 ? 8L : 0L);
+      long var9 = SDLVideo.SDL_CreateWindow(var2, var0, var1, var7);
+      if (var9 == 0L) {
+         return 0L;
+      } else {
+         long var11 = SDLVideo.SDL_GL_CreateContext(var9);
+         if (var11 == 0L) {
+            SDLVideo.SDL_DestroyWindow(var9);
+            return 0L;
+         } else {
+            b.put(var9, var11);
+            return var9;
          }
-
-         h_.n(this.X.getName() + (var2 ? " highlight glow" : " highlight base"), var5);
       }
    }
 
-   private static com.larpclient.module.lc C(String var0, String var1, double var2, double var4, double var6) {
-      return new com.larpclient.module.lc(var0, var1, var2, var4, var6, 0.05) {
-         @Override
-         public String getValueAsString() {
-            return this.getEditValueAsString() + " s";
-         }
-      };
+   public static void Q(long var0) {
+      SDLVideo.SDL_GL_MakeCurrent(var0, var0 == 0L ? 0L : b.getOrDefault(var0, 0L));
    }
 
-   private static com.larpclient.module.lc s(String var0, String var1, double var2, double var4, double var6, double var8) {
-      return new com.larpclient.module.lc(var0, var1, var2, var4, var6, var8) {
-         @Override
-         public String getValueAsString() {
-            return this.getEditValueAsString() + "%";
-         }
+   public static void w(long var0) {
+      Long var2 = b.remove(var0);
+      if (var2 != null) {
+         SDLVideo.SDL_GL_DestroyContext(var2);
+      }
 
-         @Override
-         public String getEditValueAsString() {
-            return Long.toString(Math.round(this.getValue() * 100.0));
-         }
-
-         @Override
-         public void setFromEditString(String var1) {
-            this.C(Double.parseDouble(var1) / 100.0);
-         }
-      };
+      if (var0 != 0L) {
+         SDLVideo.SDL_DestroyWindow(var0);
+      }
    }
 
-   public interface c {
-      hy placementHighlight();
+   public static void E() {
+      L.clear();
+      SDLInit.SDL_QuitSubSystem(32);
    }
 
-   private record e(List<d7.r> boxes, int color, double opacity, double width, double fillOpacity, double glow) {
+   public static void e(long var0) {
+      SDLVideo.SDL_RaiseWindow(var0);
+   }
+
+   private hy() {
    }
 }

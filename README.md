@@ -1,10 +1,10 @@
-# Recovered LarpClient 2.2.7 for Minecraft 26.3
+# Recovered LarpClient 2.2.8
 
-The recovered JAR contains ordinary Java implementations and no license, native protection, or signed-inventory bootstrap. The installed original was not changed.
+The recovered JAR contains ordinary Java implementations with client licensing, native protection, and signed-inventory bootstrap removed.
 
-- `sources/`: readable decompiled code and original resources.
-- `dump/`: recovered implementations, decoded tables, and server-delivered method blocks; reusable offline.
+- `sources/`: decompiled Java and original resources.
+- `dump/`: recovered implementations, decoded tables, and any server-delivered method blocks; reusable offline.
 - `class-mapping.csv`: descriptive recovered module names.
-- `verification.json` and `reports/`: verification details.
+- `verification.json` and `reports/`: verification and automatic detection details.
 
-Original source identifiers and comments were not present in the JAR; decompilation cannot restore them exactly. The source export is not a reconstructed Gradle project. Private online endpoints can still require server-side access; client requests no longer send license tokens or hardware identifiers. A complete Minecraft launch of the recovered JAR has not been tested.
+Original names and comments absent from the binary cannot be restored exactly. The source export is not a reconstructed Gradle project. Minecraft account login and Discord Rich Presence remain intact. Private services may enforce server-side access. See verification.json for JVM dependency checks; a complete Minecraft gameplay test is not claimed.

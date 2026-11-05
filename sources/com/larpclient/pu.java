@@ -1,27 +1,66 @@
 package com.larpclient;
 
-public record pu(float u, float v, int width, int height) {
-   public static pu cover(int var0, int var1) {
-      return cover(var0, var1, 1.0, 0.0, 0.0);
-   }
+import java.util.ArrayDeque;
+import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
-   public static pu cover(int var0, int var1, double var2, double var4, double var6) {
-      return cover(var0, var1, 1672, 941, var2, var4, var6);
-   }
+public final class pu {
+   private final ArrayDeque<pu.x> Z = new ArrayDeque<>();
+   private final int T;
+   private boolean f;
 
-   public static pu cover(int var0, int var1, int var2, int var3, double var4, double var6, double var8) {
-      if (var2 > 0 && var3 > 0) {
-         double var10 = Math.max((double)Math.max(1, var0) / var2, (double)Math.max(1, var1) / var3);
-         double var12 = var10 * Math.clamp(Double.isFinite(var4) ? var4 : 1.0, 1.0, 1.1);
-         int var14 = Math.min(var2, Math.max(1, (int)Math.round(var0 / var12)));
-         int var15 = Math.min(var3, Math.max(1, (int)Math.round(var1 / var12)));
-         double var16 = Math.min((var2 - var14) / 2.0, Math.max(0.0, (var0 / var10 - var14) / 2.0));
-         double var18 = Math.min((var3 - var15) / 2.0, Math.max(0.0, (var1 / var10 - var15) / 2.0));
-         double var20 = Double.isFinite(var6) ? Math.clamp(var6, -1.0, 1.0) : 0.0;
-         double var22 = Double.isFinite(var8) ? Math.clamp(var8, -1.0, 1.0) : 0.0;
-         return new pu((float)((var2 - var14) / 2.0 - var20 * var16), (float)((var3 - var15) / 2.0 - var22 * var18), var14, var15);
-      } else {
-         throw new IllegalArgumentException("Invalid artwork dimensions");
+   public pu(int var1) {
+      if (var1 < 1) {
+         throw new IllegalArgumentException("capacity");
       }
+
+      this.T = var1;
+   }
+
+   public boolean D(long var1, long var3, Runnable var5) {
+      if (var3 < 0L) {
+         throw new IllegalArgumentException("duration");
+      } else if (!this.f && this.Z.size() < this.T) {
+         this.Z.addLast(new pu.x(var1 + var3, Objects.requireNonNull(var5)));
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   public int Y() {
+      return this.Z.size();
+   }
+
+   public boolean C() {
+      return this.f;
+   }
+
+   public void H() {
+      this.Z.clear();
+   }
+
+   public void z(long var1, boolean var3, BooleanSupplier var4) {
+      if (!this.f) {
+         this.f = (boolean)1;
+
+         try {
+            while (!this.Z.isEmpty() && var4.getAsBoolean() && (var3 || var1 - this.Z.peekFirst().deadline() >= 0L)) {
+               this.Z.removeFirst().action().run();
+            }
+
+            if (!var4.getAsBoolean()) {
+               this.Z.clear();
+            }
+         } catch (RuntimeException | Error var9) {
+            this.Z.clear();
+            throw var9;
+         } finally {
+            this.f = (boolean)0;
+         }
+      }
+   }
+
+   private record x(long deadline, Runnable action) {
    }
 }

@@ -1,69 +1,131 @@
 package com.larpclient;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
-import net.minecraft.core.BlockPos;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public final class d9 {
-   private final Map<Integer, Long> C = new HashMap<>();
-   private BlockPos i;
-   private long r;
-   private long Q;
-   private long P;
+public final class d9 implements AutoCloseable {
+   private final Path b;
+   private final Consumer<String> p;
+   private final ExecutorService q = Executors.newSingleThreadExecutor(var0 -> new Thread(var0, "Larp-activity-IO"));
+   private final AtomicReference<JsonObject> w = new AtomicReference<>();
+   private boolean i;
+   private boolean E;
 
-   public void H(long var1, IntPredicate var3, Predicate<BlockPos> var4) {
-      this.C.entrySet().removeIf(var3x -> var1 >= var3x.getValue() || !var3.test(var3x.getKey()));
-      if (this.i != null && (var1 >= this.r || var4.test(this.i))) {
-         this.i = null;
+   public d9(Path var1, Consumer<String> var2) {
+      this.b = var1;
+      this.p = var2;
+   }
+
+   public CompletableFuture<JsonObject> l() {
+      return CompletableFuture.supplyAsync(() -> {
+         try {
+            if (!Files.exists(this.b)) {
+               return null;
+            } else if (Files.size(this.b) > 65536L) {
+               throw new IllegalArgumentException();
+            } else {
+               JsonObject var1 = JsonParser.parseString(Files.readString(this.b)).getAsJsonObject();
+               if (var1.get("format").getAsInt() != 1) {
+                  throw new IllegalArgumentException();
+               } else {
+                  return var1;
+               }
+            }
+         } catch (Exception var4) {
+            this.p.accept("Activity queue unreadable; starting empty without replacing the damaged file");
+
+            try {
+               Files.move(this.b, this.b.resolveSibling(this.b.getFileName() + ".invalid-" + System.currentTimeMillis()));
+            } catch (Exception var3) {
+            }
+
+            return null;
+         }
+      }, this.q);
+   }
+
+   public <T> CompletableFuture<T> x(Supplier<T> var1) {
+      return CompletableFuture.supplyAsync(var1, this.q);
+   }
+
+   public synchronized void R(JsonObject var1) {
+      if (!this.E) {
+         this.w.set(var1.deepCopy());
+         if (!this.i) {
+            this.i = (boolean)1;
+            this.q.execute(this::S);
+         }
       }
    }
 
-   public boolean V(long var1, int var3) {
-      return var1 >= this.Q && !this.C.containsKey(var3);
-   }
+   private void S() {
+      while (true) {
+         JsonObject var1;
+         synchronized (this) {
+            var1 = this.w.getAndSet(null);
+            if (var1 == null) {
+               this.i = (boolean)0;
+               return;
+            }
+         }
 
-   public boolean m(long var1) {
-      return var1 >= this.P && this.i == null && this.C.isEmpty();
-   }
-
-   public boolean l() {
-      return !this.C.isEmpty();
-   }
-
-   public boolean c() {
-      return this.i != null;
-   }
-
-   public void L(long var1, int var3, int var4) {
-      this.m(var1, var3, var4, 10);
-   }
-
-   public void C(long var1, BlockPos var3, int var4, boolean var5) {
-      this.R(var1, var3, var4, var5, 10);
-   }
-
-   public void m(long var1, int var3, int var4, int var5) {
-      this.Q = var1 + Math.max(1, var4);
-      this.C.put(var3, var1 + Math.clamp(var5, 2, 40));
-   }
-
-   public void R(long var1, BlockPos var3, int var4, boolean var5, int var6) {
-      this.P = var1 + Math.max(1, var4);
-      if (var5) {
-         this.i = var3.immutable();
-         this.r = var1 + Math.clamp(var6, 2, 40);
+         try {
+            G(this.b, var1);
+         } catch (Exception var4) {
+            this.p.accept("Activity checkpoint failed; retaining in-memory queue until the next checkpoint");
+         }
       }
    }
 
-   public void f(long var1, int var3) {
-      this.P = var1 + Math.max(1, var3);
+   public static void G(Path var0, JsonObject var1) throws IOException {
+      byte[] var2 = var1.toString().getBytes(StandardCharsets.UTF_8);
+      if (var2.length > 65536) {
+         throw new IOException("Activity queue too large");
+      }
+
+      Files.createDirectories(var0.getParent());
+      Path var3 = Files.createTempFile(var0.getParent(), ".activity-", ".tmp");
+
+      try {
+         try {
+            Files.setPosixFilePermissions(var3, PosixFilePermissions.fromString("rw-------"));
+         } catch (UnsupportedOperationException var13) {
+         }
+
+         try (FileChannel var4 = FileChannel.open(var3, StandardOpenOption.WRITE)) {
+            ByteBuffer var5 = ByteBuffer.wrap(var2);
+
+            while (var5.hasRemaining()) {
+               var4.write(var5);
+            }
+
+            var4.force(true);
+         }
+
+         Files.move(var3, var0, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+      } finally {
+         Files.deleteIfExists(var3);
+      }
    }
 
-   public void J() {
-      this.C.clear();
-      this.i = null;
-      this.Q = this.P = this.r = 0L;
+   @Override
+   public synchronized void close() {
+      this.E = (boolean)1;
+      this.q.shutdown();
    }
 }

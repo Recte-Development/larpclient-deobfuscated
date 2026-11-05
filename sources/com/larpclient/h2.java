@@ -1,17 +1,70 @@
 package com.larpclient;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.stream.Collectors;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
 
-public record h2(y6 timed, List<String> plain, String status, long retryAfterSeconds) {
-   public h2(y6 timed, List<String> plain, String status, long retryAfterSeconds) {
-      plain = List.copyOf(plain);
-      this.timed = timed;
-      this.plain = plain;
-      this.status = status;
-      this.retryAfterSeconds = retryAfterSeconds;
+public final class h2 {
+   public static void f(ItemStack var0, boolean var1) {
+      if (!var0.isEmpty() && var0 instanceof h2.p var2) {
+         var2.fakeElytra$setRealPurchase(var1);
+      }
    }
 
-   public static h2 unavailable(String var0, long var1) {
-      return new h2(null, List.of(), var0, var1);
+   private h2() {
+   }
+
+   public static ItemStack H(ItemStack var0) {
+      if (!var0.isEmpty() && var0 instanceof h2.p var1) {
+         var1.fakeSpawner$setPreview(true);
+      }
+
+      return var0;
+   }
+
+   public static boolean I(ItemStack var0) {
+      return var0 != null && !var0.isEmpty() && var0 instanceof h2.p var1 && var1.fakeSpawner$isPreview();
+   }
+
+   public static String m(ItemStack var0) {
+      String var1 = var0.getComponents()
+         .stream()
+         .filter(
+            var0x -> var0x.type() != DataComponents.LORE
+               && var0x.type() != DataComponents.CUSTOM_NAME
+               && var0x.type() != DataComponents.ITEM_NAME
+               && var0x.type() != DataComponents.DAMAGE
+               && var0x.type() != DataComponents.REPAIR_COST
+         )
+         .map(Object::toString)
+         .sorted()
+         .collect(Collectors.joining("\n"));
+      return Z(var0.getItem().builtInRegistryHolder().key().identifier() + "\n" + var1);
+   }
+
+   public static String Z(String var0) {
+      try {
+         return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(var0.getBytes(StandardCharsets.UTF_8)));
+      } catch (NoSuchAlgorithmException var2) {
+         throw new IllegalStateException(var2);
+      }
+   }
+
+   public static boolean M(ItemStack var0) {
+      return var0 != null && !var0.isEmpty() && var0 instanceof h2.p var1 && var1.fakeElytra$isRealPurchase();
+   }
+
+   public interface p {
+      boolean fakeElytra$isRealPurchase();
+
+      void fakeElytra$setRealPurchase(boolean var1);
+
+      boolean fakeSpawner$isPreview();
+
+      void fakeSpawner$setPreview(boolean var1);
    }
 }

@@ -1,93 +1,113 @@
 package com.larpclient;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class xm {
-   private static final List<xm.p> m = List.of(
-      new xm.p("MineCon 2011", "953cac8b779fe41383e675ee2b86071a71658f2180f56fbce8aa315ea70e2ed6"),
-      new xm.p("MineCon 2012", "a2e8d97ec79100e90a75d369d1b3ba81273c4f82bc1b737e934eed4a854be1b6"),
-      new xm.p("MineCon 2013", "153b1a0dfcbae953cdeb6f2c2bf6bf79943239b1372780da44bcbb29273131da"),
-      new xm.p("MineCon 2015", "b0cc08840700447322d953a02b965f1d65a13a603bf64b17c803c21446fe1635"),
-      new xm.p("MineCon 2016", "e7dfea16dc83c97df01a12fabbd1216359c0cd0ea42f9999b6e97c584963e980"),
-      new xm.p("Migrator", "2340c0e03dd24a11b15a8b33c2a7e9e32abb2051b2481d0ba7defd635ca7a933"),
-      new xm.p("Vanilla", "f9a76537647989f9a0b6d001e320dac591c359e9e61a31f4ce11c88f207f0ad4"),
-      new xm.p("Cherry Blossom", "afd553b39358a24edfe3b8a9a939fa5fa4faa4d9a9c3d6af8eafb377fa05c2bb"),
-      new xm.p("15th Anniversary", "cd9d82ab17fd92022dbd4a86cde4c382a7540e117fae7b9a2853658505a80625"),
-      new xm.p("Purple Heart", "cb40a92e32b57fd732a00fc325e7afb00a7ca74936ad50d8e860152e482cfbde"),
-      new xm.p("Followers", "Follower's", "569b7f2a1d00d26f30efe3f9ab9ac817b1e6d35f4f3cfb0324ef2d328223d350"),
-      new xm.p("MCC 15th Year", "56c35628fe1c4d59dd52561a3d03bfa4e1a76d397c8b9c476c2f77cb6aebb1df"),
-      new xm.p("Minecraft Experience", "7658c5025c77cfac7574aab3af94a46a8886e3b7722a895255fbf22ab8652434"),
-      new xm.p("Mojang Office", "5c29410057e32abec02d870ecb52ec25fb45ea81e785a7854ae8429d7236ca26"),
-      new xm.p("Founders", "Founder's", "99aba02ef05ec6aa4d42db8ee43796d6cd50e4b2954ab29f0caeb85f96bf52a1"),
-      new xm.p("Pan", "28de4a81688ad18b49e735a273e086c18f1e3966956123ccb574034c06f5d336"),
-      new xm.p("Common", "5ec930cdd2629c8771655c60eebeb867b4b6559b0e6d3bc71c40c96347fa03f0"),
-      new xm.p("Home", "1de21419009db483900da6298a1e6cbf9f1bc1523a0dcdc16263fab150693edd"),
-      new xm.p("Menace", "dbc21e222528e30dc88445314f7be6ff12d3aeebc3c192054fba7e3b3f8c77b1"),
-      new xm.p("Yearn", "308b32a9e303155a0b4262f9e5483ad4a22e3412e84fe8385a0bdd73dc41fa89"),
-      new xm.p("Copper", "5e6f3193e74cd16cdd6637d9bae5484e3a37ff2a14c2d157c659a07810b1bdca"),
-      new xm.p("Zombie Horse", "a3f6e4f14801f3ea55e3d95b9b4ef3b5e8802d947f669de93d6ec4b9354a436b"),
-      new xm.p("Moonlight Trail", "fe8a02dfe9e390e44ff33d69feef9d3943f76d3901015bbd50f0b67722d288bd"),
-      new xm.p("Crafter", "479eacefa3cdd7aca94207f36c0dd449653ddf259daf40544a5866baf05eee22"),
-      new xm.p("Builder", "2c579968c64c1719740fd8c2a451461879b238002574fce48f7d1a7c36a1c7d4"),
-      new xm.p("Hero", "bb384a1079b9a6f2811520c7991b6e8150d02e5a96457e44509e30822f72f38e"),
-      new xm.p("Twisted", "24aafc451aa2cc34ddc7265211678585c0ef4da4d32edb75ecec1bd8b5408381"),
-      new xm.p("Aurora", "7c418dfbd37412a55e9f1425c9807a591ad10cf71b1edb576a587be9114c277f"),
-      new xm.p("Mojang Studios", "9e507afc56359978a3eb3e32367042b853cddd0995d17d0da995662913fb00f7"),
-      new xm.p("Mojang", "5786fe99be377dfb6858859f926c4dbc995751e91cee373468c5fbf4865e7151"),
-      new xm.p("Mojang Classic", "Mojang (Classic)", "8f120319222a9f4a104e2f5cb97b2cda93199a2ee9e1585cb8d09d6f687cb761"),
-      new xm.p("Realms MapMaker", "17912790ff164b93196f08ba71d0e62129304776d0f347334f8a6eae509f8a56"),
-      new xm.p("Scrolls Champion", "3efadf6510961830f9fcc077f19b4daf286d502b5f5aafbd807c7bbffcaca245"),
-      new xm.p("Cobalt", "ca35c56efe71ed290385f4ab5346a1826b546a54d519e6a3ff01efa01acce81"),
-      new xm.p("Moderator", "ae677f7d98ac70a533713518416df4452fe5700365c09cf45d0d156ea9396551"),
-      new xm.p("Translator", "1bf91499701404e21bd46b0191d63239a4ef76ebde88d27e4d430ac211df681e"),
-      new xm.p("Chinese Translator", "2262fb1d24912209490586ecae98aca8500df3eff91f2a07da37ee524e7e3cb6"),
-      new xm.p("Cheapsh0t", "ca29f5dd9e94fb1748203b92e36b66fda80750c87ebc18d6eafdb0e28cc1d05f"),
-      new xm.p("Millionth Customer", "70efffaf86fe5bc089608d3cb297d3e276b9eb7a8f9f2fe6659c23a2d8b18edf"),
-      new xm.p("dB", "bcfbe84c6542a4a5c213c1cacf8979b5e913dcb4ad783a8b80e3c4a7d5c8bdac"),
-      new xm.p("Snowman", "23ec737f18bfe4b547c95935fc297dd767bb84ee55bfd855144d279ac9bfd9fe"),
-      new xm.p("Spade", "2e002d5e1758e79ba51d08d92a0f3a95119f2f435ae7704916507b6c565a7da8"),
-      new xm.p("Prismarine", "d8f8d13a1adf9636a16c31d47f3ecc9bb8d8533108aa5ad2a01b13b1a0c55eac"),
-      new xm.p("Turtle", "5048ea61566353397247d2b7d946034de926b997d5e66c86483dfb1e031aee95"),
-      new xm.p("Birthday", "2056f2eebd759cce93460907186ef44e9192954ae12b227d817eb4b55627a7fc"),
-      new xm.p("Valentine", "e578ef995fabcf0a94768f9651ac3aaba30c59ef85d2438e9b3e0cc1d810652b"),
-      new xm.p("Oxeye", "7706b5f5fc90329691e59277dcc66ba20572219fa8e5da472afd5235fad12cc8"),
-      new xm.p("Blueprint", "fdcf48f01ec480d1d7cbec27f7ddce48c9da2be6724641109444dae58d4cd013"),
-      new xm.p("Bacon", "fd14214cd8073059e93d9c626260f5df85e5a959181537119df56cadaf5002cc")
-   );
-
-   public static List<xm.p> E() {
-      return m;
+   public static double h(double var0) {
+      double var2 = Math.clamp(var0 - 0.5, 0.0, 1.0);
+      return var2 * var2 * (3.0 - 2.0 * var2);
    }
 
-   public static String[] h() {
-      return m.stream().map(xm.p::name).toArray(String[]::new);
+   public static float[] T(AABB var0, Vec3 var1, Vec3 var2, float var3, float var4) {
+      if (var0.contains(var1)) {
+         return new float[]{var3, var4};
+      }
+
+      float[] var5 = m9.Z(var1, var2);
+      if (Math.hypot(var2.x - var1.x, var2.z - var1.z) < 1.0E-6) {
+         var5[0] = var3;
+      }
+
+      return var5;
    }
 
-   public static String g(String var0) {
-      xm.p var1 = m(var0);
-      return var1 == null ? var0 : var1.label();
-   }
+   public static float[] x(AABB var0, Vec3 var1, Vec3 var2, AABB var3, Vec3 var4, float var5, float var6, double var7) {
+      float[] var9 = T(var0, var1, var2, var5, var6);
+      if (var0.contains(var1)) {
+         return var9;
+      }
 
-   public static xm.p m(String var0) {
-      for (xm.p var2 : m) {
-         if (var2.name().equals(var0)) {
-            return var2;
+      float var10 = var5;
+      float var11 = var6;
+      if (var3 != null && var4 != null && !var3.contains(var4) && var1.distanceToSqr(var4) <= 1.0 && var0.getCenter().distanceToSqr(var3.getCenter()) <= 1.0) {
+         Vec3 var12 = I(var3, Z(var0, var2));
+         float[] var13 = m9.Z(var4, var12);
+         float var14 = Mth.wrapDegrees(var9[0] - var13[0]);
+         float var15 = var9[1] - var13[1];
+         if (Math.abs(var14) <= 60.0F && Math.abs(var15) <= 60.0F) {
+            var10 += var14;
+            var11 += var15;
          }
       }
 
-      return null;
+      return m9.W(var10, var11, var9[0], var9[1], var7);
+   }
+
+   public static Vec3 r(AABB var0, Vec3 var1) {
+      double var2 = Math.min(0.001, Math.min(var0.getXsize(), Math.min(var0.getYsize(), var0.getZsize())) / 4.0);
+      return new Vec3(
+         Math.clamp(var1.x, var0.minX + var2, var0.maxX - var2),
+         Math.clamp(var1.y, var0.minY + var2, var0.maxY - var2),
+         Math.clamp(var1.z, var0.minZ + var2, var0.maxZ - var2)
+      );
+   }
+
+   public static Vec3 Z(AABB var0, Vec3 var1) {
+      return new Vec3(
+         (var1.x - var0.minX) / Math.max(0.001, var0.getXsize()),
+         (var1.y - var0.minY) / Math.max(0.001, var0.getYsize()),
+         (var1.z - var0.minZ) / Math.max(0.001, var0.getZsize())
+      );
+   }
+
+   public static Vec3 I(AABB var0, Vec3 var1) {
+      return r(var0, new Vec3(var0.minX + var1.x * var0.getXsize(), var0.minY + var1.y * var0.getYsize(), var0.minZ + var1.z * var0.getZsize()));
+   }
+
+   public static Optional<Vec3> d(AABB var0, Vec3 var1, Vec3 var2, Vec3 var3, Predicate<Vec3> var4) {
+      Vec3 var5 = r(var0, var2);
+      if (var4.test(var5)) {
+         return Optional.of(var5);
+      }
+
+      if (var3 != null) {
+         var5 = I(var0, var3);
+         if (var4.test(var5)) {
+            return Optional.of(var5);
+         }
+      }
+
+      var5 = r(var0, var1);
+      if (var4.test(var5)) {
+         return Optional.of(var5);
+      }
+
+      for (double var9 : new double[]{0.5, 0.9, 0.1}) {
+         for (double[] var14 : new double[][]{{0.5, 0.5}, {0.1, 0.1}, {0.1, 0.9}, {0.9, 0.1}, {0.9, 0.9}}) {
+            var5 = I(var0, new Vec3(var14[0], var9, var14[1]));
+            if (var4.test(var5)) {
+               return Optional.of(var5);
+            }
+         }
+      }
+
+      return Optional.empty();
+   }
+
+   public static Vec3 D(AABB var0, Vec3 var1, Vec3 var2, double var3, Predicate<Vec3> var5) {
+      Vec3 var6 = new Vec3(var2.x, 0.0, var2.z).scale(var3);
+      if (var6.lengthSqr() > 0.25) {
+         var6 = var6.normalize().scale(0.5);
+      }
+
+      Vec3 var7 = r(var0, var1.add(var6));
+      return var5.test(var7) ? var7 : var1;
    }
 
    private xm() {
-   }
-
-   public record p(String name, String label, String hash) {
-      p(String var1, String var2) {
-         this(var1, var1, var2);
-      }
-
-      public String url() {
-         return "https://textures.minecraft.net/texture/" + this.hash;
-      }
    }
 }

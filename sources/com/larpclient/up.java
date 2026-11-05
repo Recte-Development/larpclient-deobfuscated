@@ -1,46 +1,61 @@
 package com.larpclient;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public final class up {
-   public static boolean s(int var0, int var1) {
-      return var0 > 0 && var0 > var1;
+public final class up extends b {
+   private final BooleanSupplier H;
+   private final Consumer<Boolean> K;
+
+   public up(BooleanSupplier var1, Consumer<Boolean> var2) {
+      this.H = var1;
+      this.K = var2;
+      this.W = 52;
    }
 
-   public static int x(int var0, int var1) {
-      float var2 = Math.clamp(var0 / 15.0F, 0.0F, 1.0F);
-      return Math.clamp(var1, 0, 255) << 24 | Math.round(50.0F + 150.0F * var2) << 16 | Math.round(130.0F * var2) << 8 | Math.round(70.0F + 185.0F * var2);
-   }
+   @Override
+   public void render(GuiGraphicsExtractor var1, int var2, int var3) {
+      int var4 = Math.max(1, (this.A - 6) / 2);
 
-   public static List<up.t> X(byte[] var0, int var1, int var2, int var3) {
-      if (var0.length % 256 != 0) {
-         throw new IllegalArgumentException("Incomplete light layers");
-      }
+      for (int var5 = 0; var5 < 2; var5++) {
+         int var6 = var5 == 0 ? 1 : 0;
+         int var7 = this.q + var5 * (var4 + 6);
+         int var8 = var6 != 0 ? -131587 : -15724526;
+         int var9 = var6 != 0 ? -1776409 : -14408664;
+         pn.b(var1, var7, this.J, var4, 36, 6, var8);
+         pn.D(var1, var7, this.J, var4, 36, 6, f.I);
+         pn.b(var1, var7 + 5, this.J + 4, 8, 28, 2, var6 != 0 ? -723723 : -15132387);
 
-      ArrayList var4 = new ArrayList();
-      int var5 = 0;
-
-      while (var5 < var0.length) {
-         int var6 = var0[var5] & 15;
-         int var7 = var5;
-         if (var6 == 0) {
-            var5++;
-         } else {
-            do {
-               var5++;
-            } while ((var5 & 15) != 0 && var5 < var0.length && var0[var5] == var6);
-
-            var4.add(new up.t(var1 * 16 + (var7 & 15), var3 + (var7 >> 8), var2 * 16 + (var7 >> 4 & 15), var5 - var7, var6));
+         for (int var10 = 0; var10 < 3; var10++) {
+            pn.b(var1, var7 + 16, this.J + 7 + var10 * 7, Math.max(1, var4 - 22), 4, 2, var9);
          }
+
+         k6.T(var1, var6 != 0 ? "Light" : "Dark", var7 + 4, this.J + 40, var6 == this.H.getAsBoolean() ? f.J : f.s, k6.d.K);
       }
 
-      return List.copyOf(var4);
+      if (this.l && this.R) {
+         pn.y(var1, this.q, this.J, this.A, this.W, 6);
+      }
    }
 
-   private up() {
+   @Override
+   public boolean click(double var1, double var3, int var5) {
+      if (var5 == 0 && this.contains(var1, var3)) {
+         this.K.accept(var1 < this.q + this.A / 2.0);
+         return true;
+      } else {
+         return false;
+      }
    }
 
-   public record t(int x, int y, int z, int length, int light) {
+   @Override
+   public boolean key(int var1) {
+      if (var1 != 263 && var1 != 262 && var1 != 32 && var1 != 257) {
+         return false;
+      }
+
+      this.K.accept(var1 == 263 || var1 != 262 && !this.H.getAsBoolean());
+      return true;
    }
 }

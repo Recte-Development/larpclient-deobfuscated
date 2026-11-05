@@ -1,58 +1,102 @@
 package com.larpclient;
 
-import com.google.gson.JsonObject;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
 
-public record xp(String id, String name, String avatar, int fallbackAvatar) {
-   private static final int FALLBACKS = 6;
-   private static final int LEGACY_FALLBACKS = 5;
-   private static final int MAX_NAME = 40;
-   private static final int MAX_ID = 24;
-   private static final int MAX_HASH = 40;
+public final class xp {
+   public static final int C = 128;
+   private final cg t = new cg();
+   private final pf M = new pf();
 
-   public String avatarUrl(int var1) {
-      return this.avatar.isEmpty()
-         ? "https://cdn.discordapp.com/embed/avatars/" + this.fallbackAvatar + ".png"
-         : "https://cdn.discordapp.com/avatars/" + this.id + "/" + this.avatar + ".png?size=" + var1;
+   public xp() {
+      this.t.X = 128;
+      this.M.X = 2048;
    }
 
-   static xp read(JsonObject var0) {
-      if (var0 == null) {
-         return null;
-      }
-
-      String var1 = fl.w(var0, "id");
-      if (!var1.isEmpty() && var1.length() <= 24 && var1.chars().allMatch(Character::isDigit)) {
-         String var2 = clean(fl.w(var0, "global_name"));
-         if (var2.isEmpty()) {
-            var2 = clean(fl.w(var0, "username"));
-         }
-
-         if (var2.isEmpty()) {
-            return null;
-         }
-
-         String var3 = fl.w(var0, "avatar");
-         if (var3.length() > 40 || !var3.chars().allMatch(var0x -> var0x == 95 || var0x >= 48 && var0x <= 57 || var0x >= 97 && var0x <= 102)) {
-            var3 = "";
-         }
-
-         return new xp(var1, var2, var3, fallbackAvatar(var1, fl.w(var0, "discriminator")));
-      } else {
-         return null;
-      }
+   public void q(Vec3 var1, Vec3 var2, u8 var3) {
+      this.t.X = Math.min(128, _k.m(128));
+      this.M.g = var3 == u8.o ? 3 : 5;
+      this.M.P = cg.u.B;
+      this.M.p = pf.x.S;
+      this.M.S = hp.y.h;
+      this.M.l = hp.u.C;
+      this.M.E = _3.A(-7026494, 0.75 * var3.w);
+      this.M.N = _3.A(-15260879, 0.05);
+      this.M.M = var3.m * 0.7;
+      this.M.O = var3.m;
+      this.M.C = 0.025;
+      this.M.d = 0.055;
+      this.M.Z = 0.45;
+      this.M.b = 0.6;
+      this.M.r = 0.3;
+      this.M.W = 0.1;
+      this.M.q = 1.5;
+      this.M.f = 0.08;
+      this.M.z = var2.x * 0.25;
+      this.M.K = var2.y * 0.15;
+      this.M.v = var2.z * 0.25;
+      this.M.G = 0.0;
+      this.M.Y = 0.04;
+      this.M.m = 1.0;
+      this.M.j = 40.0;
+      this.M.i = var3.O();
+      this.t.i(var1, this.M);
+      this.M.g = 2;
+      this.M.P = cg.u.M;
+      this.M.E = _3.A(-3046331, 0.7 * var3.w);
+      this.M.N = _3.A(-6540233, 0.1);
+      this.M.C = 0.018;
+      this.M.d = 0.03;
+      this.M.M = 0.14;
+      this.M.O = 0.24;
+      this.M.Z = 0.65;
+      this.t.i(var1, this.M);
+      this.M.g = 1;
+      this.M.P = cg.u.p;
+      this.M.E = _3.A(-7026494, 0.2 * var3.w);
+      this.M.N = _3.A(-7026494, 0.0);
+      this.M.M = this.M.O = var3.m * 0.8;
+      this.M.C = this.M.d = 0.08;
+      this.M.B = 0.32;
+      this.M.L = 0.012;
+      this.M.V = var2.lengthSqr() < 1.0E-8 ? new Vec3(0.0, 1.0, 0.0) : var2;
+      this.M.Z = this.M.r = this.M.W = this.M.z = this.M.K = this.M.v = 0.0;
+      this.M.f = this.M.Y = 0.0;
+      this.M.i = (boolean)0;
+      this.t.i(var1, this.M);
    }
 
-   private static String clean(String var0) {
-      StringBuilder var1 = new StringBuilder(Math.min(var0.length(), 40));
-      var0.codePoints().filter(var0x -> var0x == 32 || Character.getType(var0x) != 15).limit(40L).forEach(var1::appendCodePoint);
-      return var1.toString().strip();
+   public void a() {
+      int var1 = _k.m(128);
+      if (this.t.x() > var1) {
+         this.t.J();
+      }
+
+      this.t.X = var1;
+      this.t.Y(1.0);
    }
 
-   private static int fallbackAvatar(String var0, String var1) {
-      try {
-         return !var1.isEmpty() && !var1.equals("0") ? Integer.parseInt(var1) % 5 : (int)((Long.parseUnsignedLong(var0) >>> 22) % 6L);
-      } catch (NumberFormatException var3) {
-         return 0;
-      }
+   public void i(float var1, CameraRenderState var2) {
+      this.t.q(var2.pos, var1, var2.cullFrustum);
+   }
+
+   public void s(ki var1, boolean var2) {
+      this.t.e(var1, Vec3.ZERO, 0.0F, var2);
+   }
+
+   public boolean f() {
+      return this.t.r();
+   }
+
+   public boolean s() {
+      return this.t.C();
+   }
+
+   public int U() {
+      return this.t.x();
+   }
+
+   public void Z() {
+      this.t.J();
    }
 }

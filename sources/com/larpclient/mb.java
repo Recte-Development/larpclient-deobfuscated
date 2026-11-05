@@ -1,59 +1,91 @@
 package com.larpclient;
 
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
-import net.minecraft.world.item.component.TooltipDisplay;
+import com.larpclient.module.Module;
+import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 
-public enum mb {
-   v("Skeleton", EntityTypes.SKELETON, Items.BONE, Items.ARROW, null),
-   p("Iron Golem", EntityTypes.IRON_GOLEM, Items.IRON_INGOT, Items.AIR, "MHF_Golem"),
-   R("Zombified Piglin", EntityTypes.ZOMBIFIED_PIGLIN, Items.ROTTEN_FLESH, Items.GOLD_NUGGET, "MHF_PigZombie");
+final class mb {
+   private static List<c> V = List.of();
 
-   public final String x;
-   public final EntityType<?> u;
-   public final Item N;
-   public final Item j;
-   private final String K;
-   private ResolvableProfile S;
-
-   mb(String var3, EntityType<?> var4, Item var5, Item var6, String var7) {
-      this.x = var3;
-      this.u = var4;
-      this.N = var5;
-      this.j = var6;
-      this.K = var7;
+   static void i(List<Module> var0) {
+      V = var0.stream().filter(var0x -> var0x instanceof c).map(var0x -> (c)var0x).toList();
    }
 
-   public ItemStack y() {
-      ItemStack var1 = new ItemStack(this.K == null ? Items.SKELETON_SKULL : Items.PLAYER_HEAD);
-      if (this.K != null) {
-         if (this.S == null) {
-            JsonObject var2 = new JsonObject();
-            var2.addProperty("name", this.K);
-            this.S = (ResolvableProfile)ResolvableProfile.CODEC.parse(JsonOps.INSTANCE, var2).getOrThrow();
+   static void i(Minecraft var0) {
+      for (c var2 : V) {
+         if (K(var2)) {
+            h.K(var2.effectName(), () -> var2.tick(var0));
          }
-
-         var1.set(DataComponents.PROFILE, this.S);
-         var1.set(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT.withHidden(DataComponents.PROFILE, true));
       }
-
-      return var1;
    }
 
-   public static boolean j(Item var0) {
-      for (mb var4 : values()) {
-         if (var0 == var4.N || var0 != Items.AIR && var0 == var4.j) {
-            return true;
+   static void P(float var0, CameraRenderState var1) {
+      for (c var3 : V) {
+         if (K(var3)) {
+            h.K(var3.effectName(), () -> {
+               long var3x = kx.G();
+
+               try {
+                  var3.prepare(var0, var1);
+               } finally {
+                  kx.u(var3.effectName() + " preparation CPU", var3x);
+               }
+            });
          }
       }
+   }
 
-      return false;
+   static void w(ki var0, boolean var1) {
+      if (!var1 || _k.t != m5.n.N) {
+         for (c var3 : V) {
+            if (K(var3)) {
+               h.K(var3.effectName(), () -> {
+                  long var3x = kx.G();
+
+                  try {
+                     var3.render(var0, var1);
+                  } finally {
+                     var0.v(false);
+                     var0.blend(pf.x.S);
+                     kx.u(var3.effectName() + (var1 ? " glow CPU" : " base CPU"), var3x);
+                  }
+               });
+            }
+         }
+      }
+   }
+
+   private static boolean K(c var0) {
+      return !(var0 instanceof Module var1 && !var1.isRuntimeActive());
+   }
+
+   static boolean h() {
+      return _k.t != m5.n.N && V.stream().anyMatch(var0 -> K(var0) && !h.m(var0.effectName()) && var0.glowing());
+   }
+
+   static boolean f() {
+      return _k.t != m5.n.N && V.stream().anyMatch(var0 -> K(var0) && !h.m(var0.effectName()) && var0.soft());
+   }
+
+   static void e() {
+      for (c var1 : V) {
+         A(var1.effectName());
+      }
+   }
+
+   static void A(String var0) {
+      for (c var2 : V) {
+         if (var2.effectName().equals(var0)) {
+            try {
+               var2.clear();
+            } catch (RuntimeException var4) {
+               mt.B("Render", "Effect cleanup failed: " + var0, var4);
+            }
+         }
+      }
+   }
+
+   private mb() {
    }
 }

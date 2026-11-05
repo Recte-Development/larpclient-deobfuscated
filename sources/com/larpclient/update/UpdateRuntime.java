@@ -4,11 +4,11 @@ import com.larp.updater.Host;
 import com.larp.updater.Identity;
 import com.larp.updater.UpdateManifest;
 import com.larpclient.LarpClient;
-import com.larpclient.fs;
-import com.larpclient.hl;
-import com.larpclient.mo;
-import com.larpclient.r4;
-import com.larpclient.xo;
+import com.larpclient.cm;
+import com.larpclient.mt;
+import com.larpclient.w9;
+import com.larpclient.xv;
+import com.larpclient.zq;
 import com.mojang.blaze3d.Blaze3D;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public final class UpdateRuntime {
       if (service == null) {
          try {
             FabricLoader var0 = FabricLoader.getInstance();
-            Identity var1 = new Identity(xo.h, xo.X, xo.D, xo.T, xo.A, xo.i, xo.y, xo.z);
+            Identity var1 = new Identity(zq.f, zq.X, zq.C, zq.k, zq.T, zq.R, zq.x, zq.w);
             Host var2 = Host.current(((ModContainer)var0.getModContainer("fabricloader").orElseThrow()).getMetadata().getVersion().getFriendlyString());
 
             byte[] var3;
@@ -55,16 +55,16 @@ public final class UpdateRuntime {
             List var11 = ((ModContainer)var0.getModContainer("larp-client").orElseThrow()).getOrigin().getPaths();
             Path var5 = var11.size() == 1 && Files.isRegularFile((Path)var11.getFirst(), LinkOption.NOFOLLOW_LINKS) ? (Path)var11.getFirst() : null;
             UpdateStore var6 = new UpdateStore(var0.getGameDir(), var5, var1);
-            UpdateTransport var7 = new UpdateTransport(hl::D);
+            UpdateTransport var7 = new UpdateTransport(cm::a);
             service = new UpdateService(var1, var2, var3, var6, var7, Minecraft.getInstance()::execute, Clock.systemUTC(), (var0x, var1x) -> {
                if (var1x == null) {
-                  r4.V("Updates", var0x);
+                  mt.K("Updates", var0x);
                } else {
-                  r4.r("Updates", var0x, var1x);
+                  mt.P("Updates", var0x, var1x);
                }
             });
-            service.initialize(preferences().h);
-            r4.V(
+            service.initialize(preferences().o);
+            mt.K(
                "Updates",
                "Updater initialized for {}/{}/{}/{}; public metadata only until a download is approved",
                var1.edition(),
@@ -73,7 +73,7 @@ public final class UpdateRuntime {
                var1.flavor()
             );
          } catch (Exception var10) {
-            r4.r("Updates", "Update initialization failed; official manual download remains available", var10);
+            mt.P("Updates", "Update initialization failed; official manual download remains available", var10);
          }
       }
    }
@@ -86,8 +86,8 @@ public final class UpdateRuntime {
       return unavailable;
    }
 
-   private static fs preferences() {
-      return LarpClient.y().v().E();
+   private static xv preferences() {
+      return LarpClient.F().f().t();
    }
 
    public static void open(Screen var0) {
@@ -99,11 +99,11 @@ public final class UpdateRuntime {
    }
 
    public static boolean automatic(boolean var0) {
-      mo var1 = LarpClient.y().v();
-      boolean var2 = preferences().h;
-      preferences().h = var0;
-      if (!var1.Y()) {
-         preferences().h = var2;
+      w9 var1 = LarpClient.F().f();
+      boolean var2 = preferences().o;
+      preferences().o = var0;
+      if (!var1.S()) {
+         preferences().o = var2;
          return false;
       }
 
@@ -116,11 +116,11 @@ public final class UpdateRuntime {
 
    public static boolean skip() {
       if (service != null && service.snapshot().release() != null) {
-         mo var0 = LarpClient.y().v();
-         String var1 = preferences().G;
-         preferences().G = service.snapshot().release().releaseId();
-         if (!var0.Y()) {
-            preferences().G = var1;
+         w9 var0 = LarpClient.F().f();
+         String var1 = preferences().l;
+         preferences().l = service.snapshot().release().releaseId();
+         if (!var0.S()) {
+            preferences().l = var1;
             return false;
          } else {
             later();
@@ -136,11 +136,11 @@ public final class UpdateRuntime {
    }
 
    public static boolean notice() {
-      return UpdateNotices.visible(noticeKey(), dismissed, preferences().G);
+      return UpdateNotices.visible(noticeKey(), dismissed, preferences().l);
    }
 
    private static String noticeKey() {
-      return UpdateNotices.key(service == null ? null : service.snapshot(), preferences().m, shownReceipt);
+      return UpdateNotices.key(service == null ? null : service.snapshot(), preferences().a, shownReceipt);
    }
 
    public static String noticeAction() {
@@ -179,12 +179,12 @@ public final class UpdateRuntime {
          String var0 = service.snapshot().installedNotice();
          if (!var0.equals(shownReceipt)) {
             shownReceipt = var0;
-            if (!var0.equals(preferences().m)) {
-               mo var1 = LarpClient.y().v();
-               String var2 = preferences().m;
-               preferences().m = var0;
-               if (!var1.Y()) {
-                  preferences().m = var2;
+            if (!var0.equals(preferences().a)) {
+               w9 var1 = LarpClient.F().f();
+               String var2 = preferences().a;
+               preferences().a = var0;
+               if (!var1.S()) {
+                  preferences().a = var2;
                }
             }
          }
@@ -207,13 +207,13 @@ public final class UpdateRuntime {
                }
 
                service.launchInstaller(var2, installerJava());
-               r4.V(
+               mt.K(
                   "Updates",
                   "Installer started; version {} installs after Minecraft exits (config/larp-client/updates/installer.log)",
                   service.snapshot().release().version()
                );
             } catch (Exception var6) {
-               r4.r("Updates", "Could not start the installer; the approved update stays queued for the next close", var6);
+               mt.P("Updates", "Could not start the installer; the approved update stays queued for the next close", var6);
             }
          }
       }

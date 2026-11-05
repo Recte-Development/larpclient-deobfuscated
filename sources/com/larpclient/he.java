@@ -1,740 +1,666 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.GpuFormat;
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice.MappedView;
-import com.mojang.renderpearl.api.commands.CommandEncoder;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
-import com.mojang.renderpearl.api.pipeline.BlendFactor;
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.BindGroupLayout.Builder;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
-import com.mojang.renderpearl.api.textures.FilterMode;
-import com.mojang.renderpearl.api.textures.GpuSampler;
-import com.mojang.renderpearl.api.textures.GpuTextureView;
-import java.nio.ByteBuffer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.larpclient.module.AnimationsModule;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.function.Consumer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.pip.GuiBannerResultRenderer;
-import net.minecraft.client.gui.render.pip.GuiBookModelRenderer;
-import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
-import net.minecraft.client.gui.render.pip.GuiProfilerChartRenderer;
-import net.minecraft.client.gui.render.pip.GuiSkinRenderer;
-import net.minecraft.client.renderer.SubmitNodeStorage;
-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher.PreparedFrame;
-import net.minecraft.client.renderer.gizmos.DrawableGizmoPrimitives;
-import net.minecraft.client.renderer.state.gui.GuiRenderState;
-import net.minecraft.client.renderer.state.gui.GuiRenderState.TraverseRange;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.gizmos.SimpleGizmoCollector.GizmoInstance;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
-import org.joml.Vector4f;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
-final class he {
-   private static final Vector4f D = new Vector4f(0.0F, 0.0F, 0.0F, 0.0F);
-   private static final int N = 3;
-   static final RenderPipeline b = E("streamproof_pack", "Interface", "Effects");
-   static final RenderPipeline M = E("streamproof_pack_interface", "Interface");
-   static final RenderPipeline i = E("streamproof_opaque_blur", "Source");
-   static final RenderPipeline H = O("streamproof_hand_cover", C(), "Scene", "Depth");
-   static final RenderPipeline O = O("streamproof_sky", C(), "Sky", "Depth");
-   private final GuiRenderState l = new GuiRenderState();
-   private GuiRenderer V;
-   private TextureTarget U;
-   private TextureTarget g;
-   private TextureTarget m;
-   private TextureTarget n;
-   private TextureTarget e;
-   private TextureTarget J;
-   private boolean u;
-   private long o = -1L;
-   private final he.s[] q = new he.s[3];
-   private boolean f;
-   private boolean S;
-   private boolean F;
-   private boolean W;
-   private long I = -1L;
-   private long E = -1L;
-   private int v;
+public final class he {
+   private static final List<String> Q;
+   private static final List<String> p;
+   private static final List<String> B;
+   private static final Map<String, Double> X;
+   private static final List<String> Y;
+   private static final List<String> d;
+   public static boolean J;
+   private static final String[] a;
 
-   private static ColorTargetState C() {
-      return new ColorTargetState(new BlendFunction(BlendFactor.ONE_MINUS_DST_ALPHA, BlendFactor.ONE, BlendFactor.ONE_MINUS_DST_ALPHA, BlendFactor.ONE));
-   }
+   public static JsonObject q(JsonObject var0) {
+      JsonObject var1 = var0.deepCopy();
+      JsonObject var2 = var1.has("modules") ? var1.getAsJsonObject("modules") : var1;
+      Q.forEach(var2::remove);
 
-   GuiRenderState D() {
-      return this.l;
-   }
+      for (String var6 : new String[]{"Base Finder", "SusChunkFinder"}) {
+         if (var2.has(var6) && var2.get(var6).isJsonObject()) {
+            JsonObject var7 = var2.getAsJsonObject(var6);
+            JsonObject var8 = V(var7);
+            int var9 = var6.equals("Base Finder") ? 320 : 128;
 
-   boolean y(Object var1) {
-      return var1 != null && var1 == this.V;
-   }
-
-   RenderTarget j() {
-      return this.U;
-   }
-
-   boolean g() {
-      return this.S;
-   }
-
-   boolean M() {
-      return this.v > 0;
-   }
-
-   boolean M(long var1) {
-      return this.I == var1;
-   }
-
-   RenderTarget b() {
-      return this.v > 0 ? this.g : null;
-   }
-
-   boolean b() {
-      boolean[] var1 = new boolean[]{false};
-      this.l.forEachElement(var1x -> var1[0] = (boolean)1, TraverseRange.ALL);
-      if (!var1[0]) {
-         this.l.forEachText(var1x -> var1[0] = (boolean)1);
-      }
-
-      if (!var1[0]) {
-         this.l.forEachItem(var1x -> var1[0] = (boolean)1);
-      }
-
-      if (!var1[0]) {
-         this.l.forEachPictureInPicture(var1x -> var1[0] = (boolean)1);
-      }
-
-      return var1[0];
-   }
-
-   void k(long var1) {
-      if (this.I != var1) {
-         RenderTarget var3 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-         this.g = l(this.g, "Larp Stream Proof effects", var3.width, var3.height, true);
-         CommandEncoder var4 = RenderSystem.getDevice().createCommandEncoder();
-         var4.clearColorTexture(this.g.getColorTexture(), D);
-         this.I = var1;
-         this.F = (boolean)0;
-         this.W = (boolean)0;
-      }
-   }
-
-   RenderTarget M(long var1) {
-      this.k(var1);
-      this.h();
-      return this.g;
-   }
-
-   private void h() {
-      if (!this.F) {
-         this.g.copyDepthFrom(Minecraft.getInstance().gameRenderer.mainRenderTarget());
-         this.F = (boolean)1;
-      }
-   }
-
-   RenderTarget n(long var1) {
-      this.k(var1);
-      RenderTarget var3 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-      this.m = l(this.m, "Larp Stream Proof sky", var3.width, var3.height, true);
-      if (!this.W) {
-         RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(this.m.getColorTexture(), D, this.m.getDepthTexture(), 0.0);
-         this.W = (boolean)1;
-      }
-
-      return this.m;
-   }
-
-   void J(long var1, boolean var3) {
-      if (this.W && this.I == var1 && !this.S) {
-         RenderTarget var4 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-         this.h();
-         Object var5 = var3 ? this.g : var4;
-
-         try {
-            this.Y();
-            GpuSampler var6 = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
-            RenderPass var7 = RenderSystem.getDevice()
-               .createCommandEncoder()
-               .createRenderPass(() -> "Larp Stream Proof sky", this.g.getColorTextureView(), Optional.empty());
-
-            try {
-               of.z(var7, O);
-               of.h(var7, "Sky", this.m.getColorTextureView(), var6);
-               of.h(var7, "Depth", var5.getDepthTextureView(), var6);
-               var7.draw(3, 1, 0, 0);
-            } catch (Throwable var11) {
-               if (var7 != null) {
-                  try {
-                     var7.close();
-                  } catch (Throwable var10) {
-                     var11.addSuppressed(var10);
+            for (String var13 : new String[]{"Min Scan Y", "Max Scan Y"}) {
+               JsonElement var14 = var8.get(var13);
+               if (var14 != null && var14.isJsonPrimitive() && var14.getAsJsonPrimitive().isNumber()) {
+                  double var15 = var14.getAsDouble();
+                  if (Double.isFinite(var15) && var15 > 60.0 && var15 <= var9) {
+                     L(var7, var13, var14);
+                     var8.addProperty(var13, 60);
                   }
                }
+            }
+         }
+      }
 
-               throw var11;
+      if (var2.has("AltLook") && var2.get("AltLook").isJsonObject()) {
+         JsonObject var17 = var2.remove("AltLook").getAsJsonObject();
+         boolean var22 = var2.has("Freelook");
+         JsonObject var27 = var22 ? var2.getAsJsonObject("Freelook") : var17.deepCopy();
+         JsonObject var30 = V(var27);
+         JsonObject var33 = V(var17);
+         if (var22) {
+            if (var17.has("enabled")) {
+               L(var27, "AltLook Enabled", var17.get("enabled"));
             }
 
-            if (var7 != null) {
-               var7.close();
-            }
-         } catch (RuntimeException var12) {
-            this.C("sky", var12);
-         }
-      }
-   }
-
-   void t(long var1) {
-      if (this.I == var1 && !this.S) {
-         RenderTarget var3 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-
-         try {
-            this.e = l(this.e, "Larp Stream Proof hand backdrop", var3.width, var3.height, false);
-            jk.y(e4.g, var3, this.e);
-         } catch (RuntimeException var5) {
-            this.C("hand backdrop", var5);
-         }
-      }
-   }
-
-   void Z(long var1) {
-      if (this.I == var1 && !this.S && this.e != null) {
-         RenderTarget var3 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-
-         try {
-            this.Y();
-            GpuSampler var4 = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
-            CommandEncoder var5 = RenderSystem.getDevice().createCommandEncoder();
-            RenderPass var6 = var5.createRenderPass(() -> "Larp Stream Proof hand cover", this.g.getColorTextureView(), Optional.empty());
-
-            try {
-               of.z(var6, H);
-               of.h(var6, "Scene", this.e.getColorTextureView(), var4);
-               of.h(var6, "Depth", var3.getDepthTextureView(), var4);
-               var6.draw(3, 1, 0, 0);
-            } catch (Throwable var10) {
-               if (var6 != null) {
-                  try {
-                     var6.close();
-                  } catch (Throwable var9) {
-                     var10.addSuppressed(var9);
-                  }
-               }
-
-               throw var10;
+            if (var17.has("keybind")) {
+               L(var27, "AltLook Keybind", var17.get("keybind"));
             }
 
-            if (var6 != null) {
-               var6.close();
+            if (var33.has("Distance")) {
+               L(var27, "AltLook Distance", var33.get("Distance"));
+            }
+         }
+
+         for (String var39 : new String[]{"Sensitivity", "Smoothing"}) {
+            if (var33.has(var39)) {
+               L(var27, var39, var33.get(var39));
             }
 
-            var5.clearDepthTexture(var3.getDepthTexture(), 0.0);
-         } catch (RuntimeException var11) {
-            this.C("hand cover", var11);
+            var30.remove(var39);
+         }
+
+         var2.add("Freelook", var27);
+      }
+
+      D(var2, "Criticals", "Mode", "Packet", "Jump");
+      D(var2, "Reach", "Mode", "Spoof", "Normal");
+      D(var2, "Reach", "Mode", "Backtrack", "Normal");
+      if (var2.has("Reach") && var2.get("Reach").isJsonObject()) {
+         JsonObject var18 = var2.getAsJsonObject("Reach");
+         JsonObject var23 = V(var18);
+
+         for (String var36 : new String[]{"LagComp", "PacketSpoof", "Backtrack"}) {
+            if (var23.has(var36)) {
+               L(var18, var36, var23.remove(var36));
+            }
          }
       }
-   }
 
-   void Z(long var1, Runnable var3) {
-      if (this.I == var1 && !this.S) {
-         RenderTarget var4 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-         GpuTextureView var5 = _m.M;
-         GpuTextureView var6 = _m.U;
-         _m.M = this.g.getColorTextureView();
-         _m.U = var4.getDepthTextureView();
-
-         try {
-            var3.run();
-         } finally {
-            _m.M = var5;
-            _m.U = var6;
+      M(var2);
+      if (var2.has("Animations") && var2.get("Animations").isJsonObject()) {
+         JsonObject var19 = var2.getAsJsonObject("Animations");
+         JsonObject var24 = V(var19);
+         if (var24.has("Swing") && var24.get("Swing").isJsonPrimitive() && var24.getAsJsonPrimitive("Swing").isString()) {
+            String var29 = var24.get("Swing").getAsString();
+            String var32 = AnimationsModule.E(var29);
+            if (!var29.equals(var32)) {
+               L(var19, "Mode", var24.get("Swing"));
+            }
          }
-      } else {
-         var3.run();
-      }
-   }
 
-   void Q(boolean var1) {
-      this.u = var1;
-   }
-
-   RenderTarget V(RenderTarget var1) {
-      return (RenderTarget)(this.u && this.g != null ? this.g : var1);
-   }
-
-   void m(long var1) {
-      this.k(var1);
-      RenderTarget var3 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-      this.n = l(this.n, "Larp Stream Proof self depth", var3.width, var3.height, true);
-      this.n.copyDepthFrom(var3);
-      this.o = var1;
-   }
-
-   void z(long var1, Runnable var3) {
-      if (this.o == var1 && this.n != null) {
-         this.k(var1);
-         GpuTextureView var4 = _m.M;
-         GpuTextureView var5 = _m.U;
-         RenderTarget var6 = jk.j;
-         _m.M = this.g.getColorTextureView();
-         _m.U = this.n.getDepthTextureView();
-         jk.j = this.g;
-         this.v++;
-
-         try {
-            var3.run();
-         } finally {
-            this.v--;
-            _m.M = var4;
-            _m.U = var5;
-            jk.j = var6;
-         }
-      } else {
-         this.P(var1, var3);
-      }
-   }
-
-   void P(long var1, Runnable var3) {
-      this.k(var1);
-      this.h();
-      GpuTextureView var4 = _m.M;
-      GpuTextureView var5 = _m.U;
-      RenderTarget var6 = jk.j;
-      _m.M = this.g.getColorTextureView();
-      _m.U = this.g.getDepthTextureView();
-      jk.j = this.g;
-      this.v++;
-
-      try {
-         var3.run();
-      } finally {
-         this.v--;
-         _m.M = var4;
-         _m.U = var5;
-         jk.j = var6;
-      }
-   }
-
-   void N(Runnable var1) {
-      if (this.v == 0) {
-         var1.run();
-      } else {
-         GpuTextureView var2 = _m.M;
-         GpuTextureView var3 = _m.U;
-         RenderTarget var4 = jk.j;
-         int var5 = this.v;
-         _m.M = null;
-         _m.U = null;
-         jk.j = null;
-         this.v = 0;
-
-         try {
-            var1.run();
-         } finally {
-            this.v = var5;
-            _m.M = var2;
-            _m.U = var3;
-            jk.j = var4;
-         }
-      }
-   }
-
-   boolean y(long var1, long var3, boolean var5, Consumer<RenderTarget> var6, he.l var7) {
-      if (this.S) {
-         this.l.reset();
-         return false;
+         AnimationsModule.s(var24);
       }
 
-      RenderTarget var8 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-      String var9 = "resources";
-      long var10 = h_.U();
+      I(var2);
+      if (var2.has("Aim Assist") && var2.get("Aim Assist").isJsonObject()) {
+         var2.add("Aim Assist", j(var2.getAsJsonObject("Aim Assist")));
+      }
 
-      try {
-         this.Y();
-         int var12 = var8.width;
-         int var13 = var8.height;
-         this.U = l(this.U, "Larp Stream Proof interface", var12, var13, true);
-         this.J = l(this.J, "Larp Stream Proof pack", var12, var13, false);
-         CommandEncoder var14 = RenderSystem.getDevice().createCommandEncoder();
-         var14.clearColorAndDepthTextures(this.U.getColorTexture(), D, this.U.getDepthTexture(), 0.0);
-         var9 = "interface blur";
-         var6.accept(this.U);
-         var9 = "interface GUI";
-         this.x().render();
-         this.x().endFrame();
-         var9 = "compose";
-         int var15 = var5 && this.I == var1 && this.g != null && this.g.width == var12 && this.g.height == var13 ? 1 : 0;
-         GpuSampler var16 = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
-         RenderPass var17 = var14.createRenderPass(() -> "Larp Stream Proof compose", this.J.getColorTextureView(), Optional.empty());
+      if (var2.get("Player Model") instanceof JsonObject var20) {
+         var2.add("Player Model", b(var20));
+      }
 
-         try {
-            of.z(var17, var15 != 0 ? b : M);
-            of.h(var17, "Interface", this.U.getColorTextureView(), var16);
-            if (var15 != 0) {
-               of.h(var17, "Effects", this.g.getColorTextureView(), var16);
+      if (var2.get("Jesus") instanceof JsonObject var21) {
+         var2.add("Jesus", K(var21));
+      }
+
+      j(var2);
+      E(var2);
+      u(var2);
+      h(var2);
+      w6.g(var2);
+      return var1;
+   }
+
+   private static void M(JsonObject var0) {
+      if (var0.get("KillAura") instanceof JsonObject var1) {
+         JsonObject var7 = var1.get("settings") instanceof JsonObject var3 ? var3 : new JsonObject();
+         o(var0, var1, var7);
+         if (!var0.has("Aura")) {
+            JsonObject var8 = new JsonObject();
+            if (var1.get("enabled") instanceof JsonPrimitive var9 && var9.isBoolean()) {
+               var8.add("enabled", var9.deepCopy());
             }
 
-            var17.draw(3, 1, 0, 0);
-         } catch (Throwable var26) {
-            if (var17 != null) {
-               try {
-                  var17.close();
-               } catch (Throwable var25) {
-                  var26.addSuppressed(var25);
+            if (var1.get("keybind") instanceof JsonPrimitive var10 && var10.isNumber()) {
+               var8.add("keybind", var10.deepCopy());
+            }
+
+            JsonObject var11 = new JsonObject();
+
+            for (String var6 : p) {
+               if (var7.has(var6)) {
+                  var11.add(var6, var7.get(var6).deepCopy());
                }
             }
 
-            throw var26;
-         }
-
-         if (var17 != null) {
-            var17.close();
-         }
-
-         var9 = "read-back";
-         return this.d(var3, var12, var13, var7);
-      } catch (RuntimeException var27) {
-         this.l.reset();
-         this.C(var9, var27);
-         return false;
-      } finally {
-         h_.n("Stream Proof compose", var10);
-      }
-   }
-
-   void l() {
-      this.l.reset();
-   }
-
-   void R(RenderTarget var1) {
-      if (jk.d()) {
-         this.j(var1, null);
-      } else {
-         for (int[] var3 : jk.b()) {
-            this.j(var1, var3);
-         }
-      }
-   }
-
-   boolean H() {
-      if (this.U != null && !this.S) {
-         this.j(this.U, null);
-         return true;
-      } else {
-         return false;
-      }
-   }
-
-   private void j(RenderTarget var1, int[] var2) {
-      GpuTextureView var3 = jk.d();
-      if (var3 != null) {
-         this.Y();
-         RenderPass var4 = RenderSystem.getDevice()
-            .createCommandEncoder()
-            .createRenderPass(() -> "Larp Stream Proof blur", var1.getColorTextureView(), Optional.empty());
-
-         try {
-            of.z(var4, i);
-            of.h(var4, "Source", var3, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
-            if (var2 != null) {
-               int var5 = Minecraft.getInstance().getWindow().getGuiScale();
-               int var6 = var2[0];
-               int var7 = var2[1];
-               int var8 = var2[2];
-               int var9 = var2[3];
-               var4.enableScissor(
-                  Math.max(0, var6 * var5),
-                  Math.max(0, var1.height - (var7 + var9) * var5),
-                  Math.max(0, Math.min(var8 * var5, var1.width - var6 * var5)),
-                  Math.max(0, Math.min(var9 * var5, var1.height - var7 * var5))
-               );
+            if (var7.has("Range")) {
+               var11.add("Attack Range", var7.get("Range").deepCopy());
             }
 
-            var4.draw(3, 1, 0, 0);
-         } catch (Throwable var11) {
-            if (var4 != null) {
-               try {
-                  var4.close();
-               } catch (Throwable var10) {
-                  var11.addSuppressed(var10);
-               }
-            }
-
-            throw var11;
+            var8.add("settings", var11);
+            var0.add("Aura", var8);
+            mt.K("Config", "Replaced KillAura with Aura; shared range, target and indicator values carried over");
          }
 
-         if (var4 != null) {
-            var4.close();
+         var0.remove("KillAura");
+      }
+   }
+
+   private static void o(JsonObject var0, JsonObject var1, JsonObject var2) {
+      if (!var0.has("TargetAura") && var2.has("Indicator")) {
+         if (var2.remove("Indicator") instanceof JsonPrimitive var4 && var4.isBoolean()) {
+            JsonObject var5 = new JsonObject();
+            var5.addProperty("enabled", var4.getAsBoolean() && var1.get("enabled") instanceof JsonPrimitive var6 && var6.isBoolean() && var6.getAsBoolean());
+            JsonObject var8 = new JsonObject();
+            var8.addProperty("Style", "Orbit");
+            var8.addProperty("Source", "Aura");
+            var5.add("settings", var8);
+            var0.add("TargetAura", var5);
+            mt.K("Config", "Migrated KillAura.Indicator to TargetAura (explicit TargetAura settings take priority)");
+         } else {
+            mt.T("Config", "Invalid legacy target indicator ignored");
          }
       }
    }
 
-   void D(List<GizmoInstance> var1, CameraRenderState var2, FeatureRenderDispatcher var3) {
-      if (!this.S && !var1.isEmpty()) {
-         long var4 = h_.U();
-
-         try {
-            long var6 = Util.getMillis();
-            DrawableGizmoPrimitives var8 = new DrawableGizmoPrimitives();
-            DrawableGizmoPrimitives var9 = new DrawableGizmoPrimitives();
-
-            for (GizmoInstance var11 : var1) {
-               var11.gizmo().emit(var11.isAlwaysOnTop() ? var9 : var8, var11.getAlphaMultiplier(var6));
-            }
-
-            SubmitNodeStorage var29 = new SubmitNodeStorage();
-            var8.submit(var29, var2, false);
-            var9.submit(var29, var2, true);
-            RenderTarget var30 = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-            PreparedFrame var12 = var3.prepareFrame(var29);
-
-            try {
-               RenderPass var13 = RenderSystem.getDevice()
-                  .createCommandEncoder()
-                  .createRenderPass(
-                     () -> "Larp stream proof gizmos", var30.getColorTextureView(), Optional.empty(), var30.getDepthTextureView(), OptionalDouble.empty()
-                  );
-
-               try {
-                  RenderSystem.bindDefaultUniforms(var13);
-                  FeatureRenderDispatcher.renderAllFeatures(var13, var12);
-               } catch (Throwable var25) {
-                  if (var13 != null) {
-                     try {
-                        var13.close();
-                     } catch (Throwable var24) {
-                        var25.addSuppressed(var24);
-                     }
-                  }
-
-                  throw var25;
-               }
-
-               if (var13 != null) {
-                  var13.close();
-               }
-            } catch (Throwable var26) {
-               if (var12 != null) {
-                  try {
-                     var12.close();
-                  } catch (Throwable var23) {
-                     var26.addSuppressed(var23);
-                  }
-               }
-
-               throw var26;
+   private static void u(JsonObject var0) {
+      int var10000 = xv.N;
+      String[] var9 = a;
+      JsonElement var4 = var0.get(var9[6]);
+      int var1 = var10000;
+      if (var4 instanceof JsonObject var2 && var2.get(var9[9]) instanceof JsonObject var3 && var1 == 0) {
+         var9 = a;
+         JsonPrimitive var11 = var3.get(var9[8]) instanceof JsonPrimitive var5 && var5.isBoolean() ? var5 : null;
+         var9 = a;
+         JsonPrimitive var12 = var3.get(var9[0]) instanceof JsonPrimitive var13 && var13.isBoolean() ? var13 : null;
+         if (var11 != null || var12 != null) {
+            if (var11 != null) {
+               var9 = a;
+               L(var2, var9[3], var3.remove(var9[3]));
             }
 
             if (var12 != null) {
-               var12.close();
+               var9 = a;
+               L(var2, var9[1], var3.remove(var9[1]));
             }
-         } catch (RuntimeException var27) {
-            this.C("gizmo overlay", var27);
-         } finally {
-            h_.n("Stream Proof gizmos", var4);
+
+            var9 = a;
+            if (!var0.has(var9[3])) {
+               var9 = a;
+               int var14 = (var2.get(var9[2]) instanceof JsonPrimitive var15 && var15.isBoolean() && !var15.getAsBoolean() ? 1 : 0) == 0 ? 1 : 0;
+               JsonObject var16 = new JsonObject();
+               var9 = a;
+               var16.addProperty(var9[5], var14 != 0 && var11 != null && var11.getAsBoolean());
+               var9 = a;
+               var16.addProperty(var9[10], -1);
+               JsonObject var17 = new JsonObject();
+               if (var12 != null) {
+                  var17.add(var9[7], var12.deepCopy());
+               }
+
+               var9 = a;
+               var16.add(var9[4], var17);
+               var0.add(var9[3], var16);
+            }
          }
       }
    }
 
-   private boolean d(long var1, int var3, int var4, he.l var5) {
-      he.s var6 = null;
+   private static void h(JsonObject var0) {
+      if (var0.get("Pets") instanceof JsonObject var1 && var1.get("settings") instanceof JsonObject var2) {
+         int var10 = var2.get("Realism") instanceof JsonPrimitive var4 && var4.isBoolean() && var4.getAsBoolean() ? 1 : 0;
+         String var11 = null;
 
-      for (int var7 = 0; var7 < 3; var7++) {
-         if (this.q[var7] == null) {
-            this.q[var7] = new he.s();
-         }
-
-         he.s var8 = this.q[var7];
-         if (!var8.l) {
-            if (var8.K == null || var8.p != var3 || var8.t != var4) {
-               if (var8.K != null) {
-                  var8.K.close();
+         for (String var6 : List.of("Pet", "Realistic Pet")) {
+            if (var2.get(var6) instanceof JsonPrimitive var7 && var7.isString() && B.contains(var7.getAsString())) {
+               if (var6.equals(var10 != 0 ? "Realistic Pet" : "Pet")) {
+                  var11 = var7.getAsString();
                }
 
-               var8.K = RenderSystem.getDevice().createBuffer(() -> "Larp Stream Proof read-back", 9, (long)var3 * var4 * 4L);
-               var8.p = var3;
-               var8.t = var4;
+               L(var1, var6, var2.remove(var6));
+            }
+         }
+
+         if (var11 != null && !var0.has("Crypto Pets")) {
+            JsonObject var13 = new JsonObject();
+            var13.addProperty("enabled", Q(var1));
+            var13.addProperty("keybind", -1);
+            JsonObject var14 = new JsonObject();
+
+            for (String var17 : B) {
+               var14.addProperty(var17, var17.equals(var11));
             }
 
-            var6 = var8;
-            break;
+            var14.addProperty("Count", 1);
+            if (var2.get(var10 != 0 ? "Realistic Size" : "Size") instanceof JsonPrimitive var16 && var16.isNumber() && Double.isFinite(var16.getAsDouble())) {
+               var14.addProperty("Size", Math.clamp(var16.getAsDouble(), 0.5, 2.5));
+            }
+
+            var13.add("settings", var14);
+            var0.add("Crypto Pets", var13);
+            if (Q(var1)) {
+               L(var1, "Coin enabled", var1.get("enabled"));
+               var1.addProperty("enabled", false);
+            }
+         }
+      }
+   }
+
+   public static JsonObject j(JsonObject var0) {
+      JsonObject var1 = var0.deepCopy();
+      JsonObject var2 = V(var1);
+      JsonElement var3 = var2.remove("Mode");
+      if (var3 != null) {
+         if (!var3.isJsonPrimitive() || var3.toString().length() > 128 || var3.getAsJsonPrimitive().isNumber() && !Double.isFinite(var3.getAsDouble())) {
+            mt.T("Config", "Invalid retired Aim Assist.Mode ignored");
+         } else {
+            L(var1, "Mode", var3);
          }
       }
 
-      if (var6 == null) {
-         h_.A("Stream Proof skipped read-backs", 1L);
-         return false;
+      return var1;
+   }
+
+   public static JsonObject K(JsonObject var0) {
+      JsonObject var1 = var0.deepCopy();
+      JsonElement var2 = V(var1).remove("Mode");
+      if (var2 == null
+         || !var2.isJsonPrimitive()
+         || var2.toString().length() > 128
+         || var2.getAsJsonPrimitive().isNumber() && !Double.isFinite(var2.getAsDouble())) {
+         if (var2 != null) {
+            mt.T("Config", "Invalid retired Jesus.Mode ignored");
+         }
       } else {
-         he.s var9 = var6;
-         var9.l = (boolean)1;
-         RenderSystem.getDevice().createCommandEncoder().copyTextureToBuffer(this.J.getColorTexture(), var9.K, 0L, () -> {
-            try {
-               if (!var9.U && var1 > this.E) {
-                  MappedView var7x = var9.K.map(true, false);
+         L(var1, "Mode", var2);
+      }
 
-                  try {
-                     var5.p(var1, var3, var4, var7x.data());
-                  } catch (Throwable var16) {
-                     if (var7x != null) {
-                        try {
-                           var7x.close();
-                        } catch (Throwable var15) {
-                           var16.addSuppressed(var15);
-                        }
-                     }
+      return var1;
+   }
 
-                     throw var16;
-                  }
+   public static JsonObject b(JsonObject var0) {
+      JsonObject var1 = var0.deepCopy();
+      JsonObject var2 = V(var1);
 
-                  if (var7x != null) {
-                     var7x.close();
-                  }
+      for (String var4 : List.of("Model", "Through Walls")) {
+         JsonElement var5 = var2.remove(var4);
+         if (var5 != null) {
+            if (var5.isJsonPrimitive() && var5.toString().length() <= 128 && (!var5.getAsJsonPrimitive().isNumber() || Double.isFinite(var5.getAsDouble()))) {
+               L(var1, var4, var5);
+            } else {
+               mt.T("Config", "Invalid retired Player Model.{} ignored", var4);
+            }
+         }
+      }
 
-                  this.E = var1;
-               }
-            } catch (RuntimeException var17) {
-               r4.T("StreamProof", "Read-back delivery failed; the overlay keeps its previous frame", var17);
-            } finally {
-               var9.l = (boolean)0;
-               if (var9.U && var9.K != null) {
-                  var9.K.close();
-                  var9.K = null;
+      return var1;
+   }
+
+   private static void I(JsonObject var0) {
+      if (var0.get("Animations") instanceof JsonObject var1) {
+         JsonObject var16 = y(var1);
+         int var3 = !Y.stream().anyMatch(var16::has) && !X.keySet().stream().anyMatch(var16::has) ? 0 : 1;
+         if (var3 != 0 || Q(var1)) {
+            HashMap var4 = new HashMap();
+            X.forEach(
+               (var2, var3x) -> var4.put(
+                  var2,
+                  var16.get(var2) instanceof JsonPrimitive var4x && var4x.isNumber() && Double.isFinite(var4x.getAsDouble()) ? var4x.getAsDouble() : var3x
+               )
+            );
+            int var5 = !(var16.get("Custom Position") instanceof JsonPrimitive var7 && var7.isBoolean() && var7.getAsBoolean())
+                  || var16.get("Offsets only with aura") instanceof JsonPrimitive var6 && var6.isBoolean() && var6.getAsBoolean()
+               ? 0
+               : 1;
+
+            for (String var19 : Stream.concat(X.keySet().stream(), Y.stream()).sorted().toList()) {
+               JsonElement var23 = var16.remove(var19);
+               if (var23 instanceof JsonPrimitive var9 && var9.toString().length() <= 128 && (!var9.isNumber() || Double.isFinite(var9.getAsDouble()))) {
+                  L(var1, var19, var9);
+               } else if (var23 != null) {
+                  mt.T("Config", "Invalid retired Animations.{} ignored", var19);
                }
             }
-         }, 0);
-         return true;
+
+            if (!var0.has("ViewModel")) {
+               JsonObject var18 = new JsonObject();
+
+               for (String var10 : new String[]{"Main", "Off"}) {
+                  String var11 = var10.equals("Main") ? "Right" : "Left";
+                  var18.addProperty(var10 + " Scale", Math.clamp((Double)var4.get("Item Scale"), 0.1, 2.0));
+                  var18.addProperty(var10 + " X", Math.clamp((Double)var4.get("Hand X") + (var5 != 0 ? (Double)var4.get(var11 + " X") : 0.0), -2.5, 2.5));
+                  var18.addProperty(var10 + " Y", Math.clamp((Double)var4.get("Hand Y") + (var5 != 0 ? (Double)var4.get(var11 + " Y") : 0.0), -2.0, 2.0));
+                  var18.addProperty(var10 + " Z", Math.clamp((Double)var4.get("Hand Z") + (var5 != 0 ? (Double)var4.get(var11 + " Z") : 0.0), -2.0, 1.0));
+
+                  for (String var15 : new String[]{"Pitch", "Yaw", "Roll"}) {
+                     var18.addProperty(var10 + " " + var15, Math.clamp((Double)var4.get(var15), -180.0, 180.0));
+                  }
+               }
+
+               JsonObject var21 = new JsonObject();
+               var21.addProperty("enabled", Q(var1));
+               var21.addProperty("keybind", -1);
+               var21.add("settings", var18);
+               var0.add("ViewModel", var21);
+               mt.K("Config", "Moved SwingAnimation hand size and position to ViewModel; old values archived");
+            }
+         }
       }
    }
 
-   private GuiRenderer x() {
-      if (this.V == null) {
-         Minecraft var1 = Minecraft.getInstance();
-         this.V = new GuiRenderer(
-            this.l,
-            var1.gameRenderer.featureRenderDispatcher(),
-            List.of(
-               new GuiEntityRenderer(var1.getEntityRenderDispatcher()),
-               new GuiSkinRenderer(),
-               new GuiBookModelRenderer(),
-               new GuiBannerResultRenderer(var1.getAtlasManager()),
-               new GuiProfilerChartRenderer()
-            )
-         );
-         r4.g("StreamProof", "Interface GUI renderer created");
+   private static void j(JsonObject var0) {
+      if (var0.get("Crystal Optimizer") instanceof JsonObject var1 && var1.get("settings") instanceof JsonObject var2) {
+         for (String var4 : d) {
+            if (var2.get(var4) instanceof JsonPrimitive var5) {
+               L(var1, var4, var5);
+               var2.remove(var4);
+            }
+         }
       }
-
-      return this.V;
    }
 
-   private void Y() {
-      if (!this.f) {
-         for (RenderPipeline var4 : new RenderPipeline[]{b, M, i, H, O}) {
-            e4.U(var4);
+   private static void E(JsonObject var0) {
+      JsonObject var1 = var0.get("AutoLunge") instanceof JsonObject var2 ? var2 : null;
+      JsonObject var12 = var0.get("Spear Swap") instanceof JsonObject var13 ? var13 : null;
+      if (var1 != null || var12 != null) {
+         if (!var0.has("Lunge Swap")) {
+            int var14 = var1 == null ? -1 : f(y(var1).get("Lunge Bind"));
+            int var15 = var12 == null ? -1 : r(y(var12));
+            JsonObject var5 = E(var1, var14, var12, var15);
+            JsonObject var6 = new JsonObject();
+            var6.addProperty("enabled", Q(var1) || Q(var12));
+            if (var5.get("keybind") instanceof JsonPrimitive var7 && var7.isNumber()) {
+               var6.add("keybind", var7.deepCopy());
+            }
+
+            JsonObject var16 = new JsonObject();
+            int var17 = var5 == var1 ? var14 : var15;
+            if (var17 < 0) {
+               var17 = var14 >= 0 ? var14 : var15;
+            }
+
+            if (var17 >= 0) {
+               var16.addProperty("Activation Key", var17);
+            }
+
+            if ((var5 == var1 ? y(var1).get("Swap Back") : y(var12).get("Switch Back")) instanceof JsonPrimitive var10 && var10.isBoolean()) {
+               var16.add("Swap Back", var10.deepCopy());
+            }
+
+            if (var1 != null && y(var1).get("Bind Hold Loop") instanceof JsonPrimitive var18 && var18.isBoolean()) {
+               var16.add("Hold To Lunge", var18.deepCopy());
+            }
+
+            var6.add("settings", var16);
+            var0.add("Lunge Swap", var6);
+            mt.K("Config", "Replaced AutoLunge and Spear Swap with Lunge Swap; toggle, binds and swap back carried over");
          }
 
-         this.f = (boolean)1;
-         r4.V("StreamProof", "Layer pipelines compiled");
+         var0.remove("AutoLunge");
+         var0.remove("Spear Swap");
       }
    }
 
-   private void C(String var1, RuntimeException var2) {
-      this.S = (boolean)1;
-      r4.r("StreamProof", "Layer stage=" + var1 + " failed; Stream Proof falls back to normal drawing until it is re-enabled", var2);
-   }
-
-   private static TextureTarget l(TextureTarget var0, String var1, int var2, int var3, boolean var4) {
-      if (var0 != null && var0.width == var2 && var0.height == var3) {
+   private static JsonObject E(JsonObject var0, int var1, JsonObject var2, int var3) {
+      if (Q(var0) && var1 >= 0) {
          return var0;
+      } else if (Q(var2) && var3 >= 0) {
+         return var2;
+      } else if (Q(var0)) {
+         return var0;
+      } else if (Q(var2)) {
+         return var2;
+      } else if (var1 >= 0) {
+         return var0;
+      } else if (var3 >= 0) {
+         return var2;
+      } else {
+         return var0 != null ? var0 : var2;
       }
-
-      if (var0 != null) {
-         var0.destroyBuffers();
-      }
-
-      return of.T(var1, var2, var3, var4, GpuFormat.RGBA8_UNORM);
    }
 
-   void u() {
-      this.l.reset();
-      if (this.V != null) {
-         this.V.close();
-         this.V = null;
+   private static boolean Q(JsonObject var0) {
+      return var0 != null && var0.get("enabled") instanceof JsonPrimitive var1 && var1.isBoolean() && var1.getAsBoolean();
+   }
+
+   private static JsonObject y(JsonObject var0) {
+      return var0.get("settings") instanceof JsonObject var1 ? var1 : new JsonObject();
+   }
+
+   private static int f(JsonElement var0) {
+      if (var0 instanceof JsonPrimitive var1 && var1.isNumber()) {
+         double var2 = var1.getAsDouble();
+         return var2 == Math.rint(var2) && cc.N((int)var2) ? (int)var2 : -1;
+      } else {
+         return -1;
+      }
+   }
+
+   private static int r(JsonObject var0) {
+      int var1 = var0.get("Lunge Input") instanceof JsonPrimitive var2 && var2.isString() && var2.getAsString().equals("Mouse") ? 1 : 0;
+      if (var1 == 0) {
+         return f(var0.get("Lunge Key"));
+      } else if (var0.get("Lunge Mouse") instanceof JsonPrimitive var4 && var4.isString()) {
+         int var6 = List.of("Unbound", "Left", "Right", "Middle", "Mouse 4", "Mouse 5", "Mouse 6", "Mouse 7", "Mouse 8").indexOf(var4.getAsString());
+         return var6 > 0 ? cc.M(var6 - 1) : -1;
+      } else {
+         return -1;
+      }
+   }
+
+   private static JsonObject V(JsonObject var0) {
+      if (!var0.has("settings")) {
+         var0.add("settings", new JsonObject());
       }
 
-      for (TextureTarget var4 : new TextureTarget[]{this.U, this.g, this.m, this.n, this.e, this.J}) {
-         if (var4 != null) {
-            var4.destroyBuffers();
+      return var0.getAsJsonObject("settings");
+   }
+
+   private static void D(JsonObject var0, String var1, String var2, String var3, String var4) {
+      if (var0.has(var1) && var0.get(var1).isJsonObject()) {
+         JsonObject var5 = var0.getAsJsonObject(var1);
+         JsonObject var6 = V(var5);
+         if (var6.has(var2) && var6.get(var2).isJsonPrimitive() && var6.get(var2).getAsJsonPrimitive().isString() && var6.get(var2).getAsString().equals(var3)) {
+            L(var5, var2, var6.get(var2));
+            var6.addProperty(var2, var4);
+         }
+      }
+   }
+
+   private static void L(JsonObject var0, String var1, JsonElement var2) {
+      if (!var0.has("legacySettings")) {
+         var0.add("legacySettings", new JsonObject());
+      }
+
+      var0.getAsJsonObject("legacySettings").add(var1, var2.deepCopy());
+   }
+
+   public static void Z(JsonObject var0) {
+      if (var0.has("legacySettings")) {
+         JsonObject var1 = p_.S(var0.get("legacySettings"));
+         if (var1.size() > 200) {
+            throw new IllegalArgumentException("Too many legacy settings");
+         }
+
+         p_.O(var1, false);
+
+         for (Entry var3 : var1.entrySet()) {
+            JsonElement var4 = (JsonElement)var3.getValue();
+            if (!((String)var3.getKey()).equals("Text List")
+               || !var4.isJsonPrimitive()
+               || !var4.getAsJsonPrimitive().isString()
+               || var4.getAsString().length() > 8192) {
+               if (!var4.isJsonPrimitive() || var4.toString().length() > 128) {
+                  throw new IllegalArgumentException("Invalid legacy value");
+               }
+
+               if (var4.getAsJsonPrimitive().isNumber() && !Double.isFinite(var4.getAsDouble())) {
+                  throw new IllegalArgumentException("Invalid legacy number");
+               }
+            }
+         }
+      }
+   }
+
+   public static void y(JsonObject var0, JsonObject var1) {
+      JsonObject var2 = var0.deepCopy();
+      JsonObject var3 = var2.has("modules") ? var2.getAsJsonObject("modules") : var2;
+      ArrayList var4 = new ArrayList();
+
+      for (String var6 : Q) {
+         if (var3.remove(var6) != null) {
+            var4.add(var6);
          }
       }
 
-      this.U = this.g = this.m = this.n = this.e = this.J = null;
-      this.u = (boolean)0;
-      this.o = -1L;
-      this.F = this.W = (boolean)0;
+      if (!var4.isEmpty()) {
+         mt.K("Config", "Ignored retired modules {}; original profile bytes retained until explicit save", var4);
+      }
 
-      for (int var5 = 0; var5 < 3; var5++) {
-         he.s var6 = this.q[var5];
-         if (var6 != null) {
-            if (var6.l) {
-               var6.U = (boolean)1;
-            } else if (var6.K != null) {
-               var6.K.close();
+      if (!var2.equals(var1)) {
+         mt.K(
+            "Config",
+            "Migrated gameplay settings; retired values preserved in legacySettings. Unsupported combat variation/range claims retired; original values retained."
+         );
+      }
+   }
+
+   private he() {
+   }
+
+   static {
+      String[] var5 = new String[11];
+      int var3 = 0;
+      String var2 = "\r\u0010\b&c\u001dU;\u0005\r3\u000b\r\u0010\b&c\u001dU;\u0005\r3\u0007;\n\b\"iXy\n\r\u0010\b&c\u001dQ7\u0017\u001d\b-\u0001\u001d4lSz-\u0007;\n\b\"iXy\u0003\u00161-\f\u000e\b\b9`O=\u0016\u0001\b$v\n\r\u0010\b&c\u001dQ7\u0017\u001d";
+      int var4 = "\r\u0010\b&c\u001dU;\u0005\r3\u000b\r\u0010\b&c\u001dU;\u0005\r3\u0007;\n\b\"iXy\n\r\u0010\b&c\u001dQ7\u0017\u001d\b-\u0001\u001d4lSz-\u0007;\n\b\"iXy\u0003\u00161-\f\u000e\b\b9`O=\u0016\u0001\b$v\n\r\u0010\b&c\u001dQ7\u0017\u001d"
+         .length();
+      char var1 = 11;
+      int var7 = -1;
+
+      label24:
+      while (true) {
+         String var10000 = var2.substring(++var7, var7 + var1);
+         byte var10001 = -1;
+
+         while (true) {
+            String var12 = a(a(var10000));
+            switch (var10001) {
+               case 0:
+                  var5[var3++] = var12;
+                  if ((var7 += var1) >= var4) {
+                     a = var5;
+                     Q = List.of(
+                        "NameProtect",
+                        "AntiAFK",
+                        "Aimbot",
+                        "HitBoxes",
+                        "InventoryMove",
+                        "LongJump",
+                        "Spider",
+                        "Velocity",
+                        "Grim anti-KB",
+                        "Derp",
+                        "Spin",
+                        "Particles",
+                        "NoHurtCam",
+                        "FastEat",
+                        "Render Animations"
+                     );
+                     p = List.of(
+                        "FOV",
+                        "Players",
+                        "Mobs",
+                        "Animals",
+                        "Invisibles",
+                        "FOV Cone",
+                        "Indicator Width",
+                        "Visible Lines",
+                        "Hit Zone",
+                        "Zone Width",
+                        "Zone Opacity",
+                        "Zone Fill",
+                        "Zone Bloom",
+                        "Zone Motion"
+                     );
+                     B = List.of("Bitcoin", "Solana", "Ethereum", "Litecoin", "Monero");
+                     X = Map.ofEntries(
+                        Map.entry("Item Scale", 0.4),
+                        Map.entry("Hand X", 0.0),
+                        Map.entry("Hand Y", 0.2),
+                        Map.entry("Hand Z", 0.0),
+                        Map.entry("Pitch", 0.0),
+                        Map.entry("Yaw", 0.0),
+                        Map.entry("Roll", 0.0),
+                        Map.entry("Right X", 0.0),
+                        Map.entry("Right Y", 0.0),
+                        Map.entry("Right Z", 0.0),
+                        Map.entry("Left X", 0.0),
+                        Map.entry("Left Y", 0.0),
+                        Map.entry("Left Z", 0.0)
+                     );
+                     Y = List.of("Custom Position", "Offsets only with aura");
+                     d = List.of(
+                        "Fast Place",
+                        "Place Delay",
+                        "Break Recovery",
+                        "Work with Crystal",
+                        "Work with Sword",
+                        "Work with Totem",
+                        "Work with Fist",
+                        "Switch Delay Min",
+                        "Switch Delay Max",
+                        "Place Delay Min",
+                        "Place Delay Max",
+                        "Break Delay Min",
+                        "Break Delay Max",
+                        "Swap Back",
+                        "Swap Back Delay Min",
+                        "Swap Back Delay Max",
+                        "Highlight",
+                        "Highlight Color Mode",
+                        "Highlight Color",
+                        "Highlight Opacity",
+                        "Highlight Thickness",
+                        "Highlight Fill",
+                        "Highlight Fill Opacity",
+                        "Highlight Glow"
+                     );
+                     return;
+                  }
+
+                  var1 = var2.charAt(var7);
+                  break;
+               default:
+                  var5[var3++] = var12;
+                  if ((var7 += var1) < var4) {
+                     var1 = var2.charAt(var7);
+                     continue label24;
+                  }
+
+                  var2 = "-\u0001\u001d4lSz-\u00075\u0001\u0010\"lSy";
+                  var4 = "-\u0001\u001d4lSz-\u00075\u0001\u0010\"lSy".length();
+                  var1 = '\b';
+                  var7 = -1;
             }
 
-            this.q[var5] = null;
+            var10000 = var2.substring(++var7, var7 + var1);
+            var10001 = 0;
          }
       }
-
-      this.I = -1L;
-      this.E = -1L;
-      this.v = 0;
-      this.S = (boolean)0;
-      this.f = (boolean)0;
-   }
-
-   private static RenderPipeline E(String var0, String... var1) {
-      return O(var0, ColorTargetState.DEFAULT, var1);
-   }
-
-   private static RenderPipeline O(String var0, ColorTargetState var1, String... var2) {
-      Builder var3 = BindGroupLayout.builder();
-
-      for (String var7 : var2) {
-         var3.withUniform(var7, of.t);
-      }
-
-      return RenderPipeline.builder(new Snippet[0])
-         .withLocation(Identifier.fromNamespaceAndPath("larp-client", var0))
-         .withVertexShader(Identifier.fromNamespaceAndPath("larp-client", "post/fullscreen"))
-         .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "post/" + var0))
-         .withBindGroupLayout(var3.build())
-         .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
-         .withColorTargetState(var1)
-         .withCull(false)
-         .build();
-   }
-
-   interface l {
-      void p(long var1, int var3, int var4, ByteBuffer var5);
-   }
-
-   private static final class s {
-      GpuBuffer K;
-      int p;
-      int t;
-      boolean l;
-      boolean U;
    }
 }

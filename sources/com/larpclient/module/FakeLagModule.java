@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larpclient.me;
-import com.larpclient.r4;
+import com.larpclient.mt;
+import com.larpclient.pu;
 import io.netty.channel.ChannelFutureListener;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
@@ -20,226 +20,222 @@ import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket;
 import net.minecraft.world.phys.Vec3;
 
 public final class FakeLagModule extends Module {
-   private static FakeLagModule d;
-   public static final int k = 256;
-   private static final int w = 10;
-   private static final double y = 1.0E-6;
-   private final lc S = this.addSetting(new lc("Delay", "Delay native movement and its input state in milliseconds", 200.0, 0.0, 1000.0, 10.0));
-   private final ln r = this.addSetting(new ln("Grim Compatibility", "Hold ping and chunk replies with movement. Off flags on Grim", false));
-   private final me u = new me(256);
-   private ClientPacketListener A;
-   private ClientLevel f;
-   private LocalPlayer X;
-   private int Q;
-   private boolean c;
-   private long M;
-   private static LocalPlayer v;
-   private static ClientLevel j;
-   private static ClientPacketListener a;
-   private boolean l;
-   private int I;
+   private static FakeLagModule P;
+   public static final int t = 256;
+   private static final int F = 10;
+   private static final double k = 1.0E-6;
+   private final d9 e = this.addSetting(new d9("Delay", "Delay native movement and its input state in milliseconds", 200.0, 0.0, 1000.0, 10.0));
+   private final dh X = this.addSetting(new dh("Grim Compatibility", "Hold ping and chunk replies with movement. Off flags on Grim", false));
+   private final pu A = new pu(256);
+   private ClientPacketListener H;
+   private ClientLevel T;
+   private LocalPlayer V;
+   private int v;
+   private boolean u;
+   private long d;
+   private static LocalPlayer x;
+   private static ClientLevel o;
+   private static ClientPacketListener W;
    private boolean Y;
-   private boolean t;
-   private int H;
-   private int e;
-   private int x;
-   private boolean C;
+   private int K;
+   private boolean O;
+   private boolean p;
+   private int n;
+   private int L;
+   private int N;
+   private boolean c;
 
    public FakeLagModule() {
       super("Fake Lag", "Delay native movement updates", Category.PLAYER, -1);
-      d = this;
+      P = this;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
    public String getStatus() {
       return !this.isRuntimeActive()
          ? "Inactive"
-         : (
-            this.S.getValue() == 0.0
-               ? "No delay"
-               : (this.t ? "Recovery: stand still" : (this.I < 2 ? "Settling" : (this.l ? "Resyncing" : this.u.p() + " held")))
-         );
+         : (this.e.P() == 0.0 ? "No delay" : (this.p ? "Recovery: stand still" : (this.K < 2 ? "Settling" : (this.Y ? "Resyncing" : this.A.Y() + " held"))));
    }
 
-   public static boolean z() {
-      return d != null && d.isEnabled() ? d != null && d.isRuntimeActive() : false;
+   public static boolean V() {
+      return P != null && P.isEnabled() ? P != null && P.isRuntimeActive() : false;
    }
 
-   public static boolean O(Packet<?> var0) {
+   public static boolean W(Packet<?> var0) {
       return var0 instanceof ServerboundMovePlayerPacket || var0 instanceof ServerboundPlayerInputPacket || var0 instanceof ServerboundPlayerCommandPacket;
    }
 
-   private static boolean K(Packet<?> var0) {
+   private static boolean M(Packet<?> var0) {
       return var0 instanceof ServerboundPongPacket || var0 instanceof ServerboundChunkBatchReceivedPacket;
    }
 
-   public static boolean a(Packet<?> var0) {
-      return !O(var0) && !(var0 instanceof ServerboundClientTickEndPacket) && !(var0 instanceof ServerboundKeepAlivePacket) && !K(var0);
+   public static boolean V(Packet<?> var0) {
+      return !W(var0) && !(var0 instanceof ServerboundClientTickEndPacket) && !(var0 instanceof ServerboundKeepAlivePacket) && !M(var0);
    }
 
    @Override
    public void onEnable() {
-      this.u.h();
-      this.e = 0;
-      this.Y = (boolean)0;
-      this.C = (boolean)0;
-      this.x = 0;
-      this.t = (boolean)0;
-      this.H = 0;
-      this.A = mc.getConnection();
-      this.f = mc.level;
-      this.X = mc.player;
-      this.Q = this.S.getValue().intValue();
-      this.c = this.r.getValue();
-      this.I = 2;
-      this.l = (boolean)(v == this.X && j == this.f && a == this.A ? 1 : 0);
-      r4.V("FakeLag", "Enabled; outgoing delay={} ms, compatibility={}, capacity={}; native packet values and FIFO order retained", this.Q, this.c, 256);
+      this.A.H();
+      this.L = 0;
+      this.O = (boolean)0;
+      this.c = (boolean)0;
+      this.N = 0;
+      this.p = (boolean)0;
+      this.n = 0;
+      this.H = mc.getConnection();
+      this.T = mc.level;
+      this.V = mc.player;
+      this.v = this.e.P().intValue();
+      this.u = this.X.P();
+      this.K = 2;
+      this.Y = (boolean)(x == this.V && o == this.T && W == this.H ? 1 : 0);
+      mt.K("FakeLag", "Enabled; outgoing delay={} ms, compatibility={}, capacity={}; native packet values and FIFO order retained", this.v, this.u, 256);
    }
 
-   private boolean l() {
-      return this.A != null && mc != null && mc.getConnection() == this.A && this.A.getConnection().isConnected();
+   private boolean U() {
+      return this.H != null && mc != null && mc.getConnection() == this.H && this.H.getConnection().isConnected();
    }
 
-   private boolean X() {
-      return this.l() && mc.level == this.f && mc.player == this.X && this.X != null && this.X.isAlive();
+   private boolean x() {
+      return this.U() && mc.level == this.T && mc.player == this.V && this.V != null && this.V.isAlive();
    }
 
    @Override
    public void onDisable() {
       try {
-         if (this.X()) {
-            int var1 = this.u.p();
-            int var2 = this.e;
-            this.L("Stopped; preserve live trajectory");
+         if (this.x()) {
+            int var1 = this.A.Y();
+            int var2 = this.L;
+            this.X("Stopped; preserve live trajectory");
             if (var1 > 0) {
-               r4.V("FakeLag", "Stopped; released {} queued packets including {} movement reports in FIFO order; no new position resend", var1, var2);
+               mt.K("FakeLag", "Stopped; released {} queued packets including {} movement reports in FIFO order; no new position resend", var1, var2);
             }
 
-            if (this.x > 0) {
-               r4.V("FakeLag", "Activation summary: {} early in-order releases at interactions, setting changes or capacity; no movement dropped", this.x);
+            if (this.N > 0) {
+               mt.K("FakeLag", "Activation summary: {} early in-order releases at interactions, setting changes or capacity; no movement dropped", this.N);
             }
          } else {
-            this.d("Stopped after session change");
+            this.g("Stopped after session change");
          }
       } finally {
-         if (!this.X() && v == this.X) {
+         if (!this.x() && x == this.V) {
             j();
          }
 
-         this.u.h();
-         this.e = 0;
-         this.A = null;
-         this.f = null;
-         this.X = null;
-         this.l = (boolean)0;
-         this.I = 0;
-         this.t = (boolean)0;
-         this.H = 0;
+         this.A.H();
+         this.L = 0;
+         this.H = null;
+         this.T = null;
+         this.V = null;
+         this.Y = (boolean)0;
+         this.K = 0;
+         this.p = (boolean)0;
+         this.n = 0;
       }
    }
 
    @Override
    public void onTick() {
-      if (!this.X()) {
-         this.L("Player or world changed; retain live pong replies");
+      if (!this.x()) {
+         this.X("Player or world changed; retain live pong replies");
       } else {
          this.u();
-         boolean var9 = false;
-         byte var8 = this.t;
-         int var10000 = Integer.signum(var8);
+         boolean var5 = false;
+         byte var4 = this.p;
+         int var10000 = Integer.signum(var4);
          if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
-            Vec3 var1 = this.X.getDeltaMovement();
-            if (!this.X.onGround() || var1.horizontalDistanceSqr() > 1.0E-6) {
-               this.H = 0;
+            Vec3 var1 = this.V.getDeltaMovement();
+            if (!this.V.onGround() || var1.horizontalDistanceSqr() > 1.0E-6) {
+               this.n = 0;
                return;
             }
 
-            byte var5 = 1;
-            int var4 = this.H;
-            var10000 = this.H = var4 + var5;
-            byte var7 = 10;
-            int var6 = var10000;
-            if ((Integer.compare(var6, var7) >>> 31 ^ 1) == 0) {
+            byte var7 = 1;
+            int var6 = this.n;
+            var10000 = this.n = var6 + var7;
+            byte var9 = 10;
+            int var8 = var10000;
+            if ((Integer.compare(var8, var9) >>> 31 ^ 1) == 0) {
                return;
             }
 
-            this.t = (boolean)0;
-            this.I = 0;
-            r4.V("FakeLag", "Correction recovery complete; resuming {} ms delay after grounded settling", this.Q);
+            this.p = (boolean)0;
+            this.K = 0;
+            mt.K("FakeLag", "Correction recovery complete; resuming {} ms delay after grounded settling", this.v);
          }
 
          byte var3 = 1;
-         int var2 = this.I;
-         this.I = Math.min(2, var2 + var3);
-         this.u.z(System.nanoTime(), false, this::l);
-         if (this.u.p() == 0) {
-            this.e = 0;
+         int var2 = this.K;
+         this.K = Math.min(2, var2 + var3);
+         this.A.z(System.nanoTime(), false, this::U);
+         if (this.A.Y() == 0) {
+            this.L = 0;
          }
       }
    }
 
    private void u() {
-      int var1 = this.S.getValue().intValue();
-      boolean var2 = this.r.getValue();
-      if (var1 != this.Q || var2 != this.c) {
-         this.g("Settings changed");
-         this.Q = var1;
-         this.c = var2;
+      int var1 = this.e.P().intValue();
+      boolean var2 = this.X.P();
+      if (var1 != this.v || var2 != this.u) {
+         this.C("Settings changed");
+         this.v = var1;
+         this.u = var2;
       }
    }
 
-   private void L(String var1) {
-      int var2 = this.u.p();
-      this.u.z(System.nanoTime(), true, this::l);
-      this.e = 0;
+   private void X(String var1) {
+      int var2 = this.A.Y();
+      this.A.z(System.nanoTime(), true, this::U);
+      this.L = 0;
       if (var2 > 0) {
-         r4.g("FakeLag", "Released or discarded {} held packets: {}", var2, var1);
+         mt.U("FakeLag", "Released or discarded {} held packets: {}", var2, var1);
+      }
+   }
+
+   private void C(String var1) {
+      if (this.A.Y() != 0) {
+         this.N++;
+         if (!this.c) {
+            this.c = (boolean)1;
+            mt.K("FakeLag", "Released {} held packets in order before continuing ({}); movement is never dropped at these boundaries", this.A.Y(), var1);
+         }
+
+         this.X(var1);
       }
    }
 
    private void g(String var1) {
-      if (this.u.p() != 0) {
-         this.x++;
-         if (!this.C) {
-            this.C = (boolean)1;
-            r4.V("FakeLag", "Released {} held packets in order before continuing ({}); movement is never dropped at these boundaries", this.u.p(), var1);
-         }
-
-         this.L(var1);
-      }
-   }
-
-   private void d(String var1) {
-      this.M++;
-      if (this.e > 0 && this.X()) {
-         v = this.X;
-         j = this.f;
-         a = this.A;
-         this.l = (boolean)1;
+      this.d++;
+      if (this.L > 0 && this.x()) {
+         x = this.V;
+         o = this.T;
+         W = this.H;
+         this.Y = (boolean)1;
       }
 
-      this.L(var1);
+      this.X(var1);
    }
 
    private static void j() {
-      v = null;
-      j = null;
-      a = null;
+      x = null;
+      o = null;
+      W = null;
    }
 
-   public static void b() {
+   public static void w() {
       j();
    }
 
-   public static boolean W(LocalPlayer var0) {
-      if (v == null) {
+   public static boolean X(LocalPlayer var0) {
+      if (x == null) {
          return false;
-      } else if (v == var0 && getMc() != null && getMc().player == var0 && getMc().level == j && getMc().getConnection() == a) {
+      } else if (x == var0 && getMc() != null && getMc().player == var0 && getMc().level == o && getMc().getConnection() == W) {
          j();
          return true;
       } else {
@@ -248,74 +244,74 @@ public final class FakeLagModule extends Module {
       }
    }
 
-   public static boolean Y(Connection var0, Packet<?> var1, ChannelFutureListener var2, boolean var3) {
-      if (d != null && d.isEnabled()) {
-         FakeLagModule var4 = d;
+   public static boolean L(Connection var0, Packet<?> var1, ChannelFutureListener var2, boolean var3) {
+      if (P != null && P.isEnabled()) {
+         FakeLagModule var4 = P;
          Minecraft var5 = getMc();
-         if (var4 == null || var5 == null || !var5.isSameThread() || !var4.isRuntimeActive() || var4.u.D()) {
+         if (var4 == null || var5 == null || !var5.isSameThread() || !var4.isRuntimeActive() || var4.A.C()) {
             return false;
          }
 
-         if (!var4.X()) {
-            var4.L("Player or world changed; retain live pong replies");
+         if (!var4.x()) {
+            var4.X("Player or world changed; retain live pong replies");
             return false;
          }
 
-         if (var0 != var4.A.getConnection()) {
+         if (var0 != var4.H.getConnection()) {
             return false;
          }
 
          var4.u();
          long var6 = System.nanoTime();
-         if (var4.t && var1 instanceof ServerboundMovePlayerPacket var8 && !var8.isOnGround()) {
-            var4.H = 0;
+         if (var4.p && var1 instanceof ServerboundMovePlayerPacket var8 && !var8.isOnGround()) {
+            var4.n = 0;
          }
 
-         if (!var4.t && var4.I >= 2 && !var4.l) {
-            var4.u.z(var6, false, var4::l);
-            if (var4.u.p() == 0) {
-               var4.e = 0;
+         if (!var4.p && var4.K >= 2 && !var4.Y) {
+            var4.A.z(var6, false, var4::U);
+            if (var4.A.Y() == 0) {
+               var4.L = 0;
             }
 
-            int var11 = !(var1 instanceof ServerboundClientTickEndPacket) && (!var4.c || !K(var1)) ? 0 : 1;
-            if (!O(var1) && var11 == 0) {
-               if (a(var1)) {
-                  var4.g(var1.getClass().getSimpleName());
+            int var11 = var1 instanceof ServerboundClientTickEndPacket || var4.u && M(var1) ? 1 : 0;
+            if (!W(var1) && var11 == 0) {
+               if (V(var1)) {
+                  var4.C(var1.getClass().getSimpleName());
                }
 
                return false;
             } else {
-               if (var4.Q == 0) {
+               if (var4.v == 0) {
                   return false;
                }
 
-               long var9 = var4.M;
-               if (!var4.u.m(var6, var4.Q * 1000000L, () -> {
+               long var9 = var4.d;
+               if (!var4.A.D(var6, var4.v * 1000000L, () -> {
                   if (var1 instanceof ServerboundMovePlayerPacket) {
-                     var4.e = Math.max(0, var4.e - 1);
+                     var4.L = Math.max(0, var4.L - 1);
                   }
 
-                  if (K(var1) || var4.X() && (!(var1 instanceof ServerboundMovePlayerPacket) || var9 == var4.M)) {
+                  if (M(var1) || var4.x() && (!(var1 instanceof ServerboundMovePlayerPacket) || var9 == var4.d)) {
                      var0.send(var1, var2, var3);
                   }
                })) {
-                  var4.g("Capacity reached");
+                  var4.C("Capacity reached");
                   return false;
                }
 
                if (var1 instanceof ServerboundMovePlayerPacket) {
-                  var4.e++;
-                  if (!var4.Y) {
-                     var4.Y = (boolean)1;
-                     r4.V("FakeLag", "Holding native movement at {} ms; input, sprint changes and airborne reports keep their original order", var4.Q);
+                  var4.L++;
+                  if (!var4.O) {
+                     var4.O = (boolean)1;
+                     mt.K("FakeLag", "Holding native movement at {} ms; input, sprint changes and airborne reports keep their original order", var4.v);
                   }
                }
 
                return true;
             }
          } else {
-            if (var1 instanceof ServerboundClientTickEndPacket && v == null) {
-               var4.l = (boolean)0;
+            if (var1 instanceof ServerboundClientTickEndPacket && x == null) {
+               var4.Y = (boolean)0;
             }
 
             return false;
@@ -325,19 +321,19 @@ public final class FakeLagModule extends Module {
       }
    }
 
-   public static void z(LocalPlayer var0) {
-      FakeLagModule var1 = d;
-      if (var1 != null && var1.isRuntimeActive() && var0 == var1.X) {
-         int var2 = !var1.t ? 1 : 0;
-         var1.t = (boolean)1;
-         var1.H = 0;
-         var1.I = 0;
-         var1.d("Server position correction; discard rejected movement");
+   public static void q(LocalPlayer var0) {
+      FakeLagModule var1 = P;
+      if (var1 != null && var1.isRuntimeActive() && var0 == var1.V) {
+         int var2 = !var1.p ? 1 : 0;
+         var1.p = (boolean)1;
+         var1.n = 0;
+         var1.K = 0;
+         var1.g("Server position correction; discard rejected movement");
          if (var2 != 0) {
-            r4.V(
+            mt.K(
                "FakeLag",
                "Server position correction at {} ms delay; enabled preference retained, native packets pass until {} stationary grounded ticks",
-               var1.Q,
+               var1.v,
                10
             );
          }

@@ -1,126 +1,151 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
-import java.util.Optional;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.resources.Identifier;
+import com.larpclient.module.AuraModule;
+import com.larpclient.module.d5;
+import java.util.SplittableRandom;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Input;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 public final class ob {
-   private static final RenderType R = RenderType.create(
-      "larp_glyphs",
-      RenderSetup.builder(
-            RenderPipeline.builder(new Snippet[]{RenderPipelines.DEBUG_FILLED_SNIPPET})
-               .withLocation(Identifier.fromNamespaceAndPath("larp-client", "larp/glyphs"))
-               .withDepthStencilState(Optional.empty())
-               .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-               .withCull(false)
-               .build()
-         )
-         .createRenderSetup()
-   );
-   private static final RenderType d = RenderType.create(
-      "larp_pearls",
-      RenderSetup.builder(
-            RenderPipeline.builder(new Snippet[]{RenderPipelines.GUI_TEXTURED_SNIPPET})
-               .withLocation(Identifier.fromNamespaceAndPath("larp-client", "larp/pearls"))
-               .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "larp/pearl"))
-               .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
-               .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-               .withCull(false)
-               .build()
-         )
-         .withTexture("Sampler0", Identifier.fromNamespaceAndPath("larp-client", "shaders/larp/pearl_bloom.png"))
-         .createRenderSetup()
-   );
-   private static final int[] h = new int[]{-1, 1, 1, -1};
-   private static final int[] Y = new int[]{1, 1, -1, -1};
-   private static int x = -1;
-   private final y2 U;
-   private final Matrix4f T;
-   private final Vec3 L;
-   private final Vector3f N;
-   private final Vector3f e;
+   static final double P = 0.546;
+   static final double J = 0.4;
+   static final double g = 1.5;
+   private static final float j = 6.0F;
+   private static final int H = Integer.MIN_VALUE;
+   private final com.larpclient.module.d8 R = new com.larpclient.module.d8(com.larpclient.module.d8.D);
+   private final com.larpclient.module.a d = new com.larpclient.module.a();
+   private final SplittableRandom M = new SplittableRandom();
+   private float F;
+   private float w;
+   private float N;
+   private boolean X;
+   private boolean n;
+   private int o = -1;
+   private int Z = Integer.MIN_VALUE;
 
-   public ob(PoseStack var1, y2 var2, CameraRenderState var3) {
-      if (x != jk.v) {
-         e4.U(R.pipeline());
-         e4.U(d.pipeline());
-         x = jk.v;
+   public ob() {
+      this.x();
+   }
+
+   public void x() {
+      this.F = this.w = 0.0F;
+      this.X = this.n = (boolean)0;
+      this.o = -1;
+      this.Z = Integer.MIN_VALUE;
+      this.N = this.C();
+      this.R.F();
+      this.d.P();
+   }
+
+   public float[] Z(float var1, float var2, float var3, float var4, boolean var5) {
+      float var6 = Mth.wrapDegrees(var3 - var1);
+      float var7 = Mth.clamp(var4, -90.0F, 90.0F) - var2;
+      float var8 = (float)Math.hypot(var6, var7);
+      if (!var5 || !(var8 <= this.N) && (!this.X || !(var8 <= 3.5F))) {
+         this.X = (boolean)0;
+         int var9 = var8 < 6.0F ? 1 : 0;
+         this.R.q();
+         float var10 = this.R.g(var8, (boolean)var9);
+         this.F = B(var6, this.F, 12.0F * this.R.O(com.larpclient.module.d8.a.G, (boolean)var9) * var10, 3.0F, this.R.c(com.larpclient.module.d8.a.G) * 0.08F);
+         this.w = B(var7, this.w, 9.0F * this.R.O(com.larpclient.module.d8.a.L, (boolean)var9) * var10, 2.25F, this.R.c(com.larpclient.module.d8.a.L) * 0.06F);
+         this.w = B(this.w + this.R.Q(this.F), var7);
+         d5 var11 = this.d.T(new d5(var1, var2), new d5(var1 + this.F, var2 + this.w));
+         return new float[]{var11.M, var11.G};
       }
 
-      this.U = var2;
-      this.T = var1.last().pose();
-      this.L = var3.pos;
-      this.N = new Vector3f(1.0F, 0.0F, 0.0F).rotate(var3.orientation);
-      this.e = new Vector3f(0.0F, 1.0F, 0.0F).rotate(var3.orientation);
+      if (!this.X) {
+         this.N = this.C();
+      }
+
+      this.X = (boolean)1;
+      this.F = this.w = 0.0F;
+      return new float[]{var1, var2};
    }
 
-   private void j(VertexConsumer var1, double var2, double var4, double var6, int var8) {
-      var1.addVertex(this.T, (float)(var2 - this.L.x), (float)(var4 - this.L.y), (float)(var6 - this.L.z)).setColor(var8);
+   private static float B(float var0, float var1, float var2, float var3, float var4) {
+      float var5 = Mth.clamp(var0 * 0.32F * (1.0F + var4), -var2, var2);
+      return B(var1 + Mth.clamp(var5 - var1, -var3, var3), var0);
    }
 
-   public void a(Vec3 var1, Vec3 var2, double var3, int var5, int var6) {
-      double var7 = var2.x + -var1.x;
-      double var9 = var2.y + -var1.y;
-      double var11 = var2.z + -var1.z;
-      if (!(var7 * var7 + var9 * var9 + var11 * var11 < 1.0E-10)) {
-         double var13 = this.L.x + -var1.x;
-         double var15 = this.L.y + -var1.y;
-         double var17 = this.L.z + -var1.z;
-         double var19 = var9 * var17 - var11 * var15;
-         double var21 = var11 * var13 - var7 * var17;
-         double var23 = var7 * var15 - var9 * var13;
-         if (var19 * var19 + var21 * var21 + var23 * var23 < 1.0E-10) {
-            var19 = this.N.x;
-            var21 = this.N.y;
-            var23 = this.N.z;
-         }
+   private static float B(float var0, float var1) {
+      return Math.signum(var0) != Math.signum(var1) ? 0.0F : Math.copySign(Math.min(Math.abs(var0), Math.abs(var1)), var1);
+   }
 
-         double var25 = Math.sqrt(var19 * var19 + var21 * var21 + var23 * var23);
-         if (var25 < 1.0E-5F) {
-            var23 = 0.0;
-            var21 = 0.0;
-            var19 = 0.0;
+   private float C() {
+      return 0.8F + (float)this.M.nextDouble() * 1.2F;
+   }
+
+   public boolean d(double var1, double var3, boolean var5) {
+      if (var5 && !(var1 <= 0.0)) {
+         if (this.n) {
+            if (var1 <= Y(var3) + 0.04) {
+               this.n = (boolean)0;
+            }
+         } else if (var1 > 0.4) {
+            if (this.o < 0) {
+               this.o = this.M.nextInt(1, 5);
+            } else if (--this.o <= 0) {
+               this.n = (boolean)1;
+               this.o = -1;
+            }
          } else {
-            var19 /= var25;
-            var21 /= var25;
-            var23 /= var25;
+            this.o = -1;
          }
 
-         double var27 = var3 * 0.5;
-         var19 *= var27;
-         var21 *= var27;
-         var23 *= var27;
-         VertexConsumer var29 = this.U.a(R);
-         this.j(var29, var1.x + var19, var1.y + var21, var1.z + var23, var5);
-         this.j(var29, var2.x + var19, var2.y + var21, var2.z + var23, var6);
-         this.j(var29, var2.x + -var19, var2.y + -var21, var2.z + -var23, var6);
-         this.j(var29, var1.x + -var19, var1.y + -var21, var1.z + -var23, var5);
+         return this.n;
+      } else {
+         this.n = (boolean)0;
+         this.o = -1;
+         return false;
       }
    }
 
-   public void C(Vec3 var1, double var2, int var4) {
-      VertexConsumer var5 = this.U.a(d);
-      float var6 = (float)(var2 * 0.5);
+   public boolean c() {
+      return this.n;
+   }
 
-      for (int var7 = 0; var7 < 4; var7++) {
-         float var8 = (float)(var1.x - this.L.x) + (this.N.x * h[var7] + this.e.x * Y[var7]) * var6;
-         float var9 = (float)(var1.y - this.L.y) + (this.N.y * h[var7] + this.e.y * Y[var7]) * var6;
-         float var10 = (float)(var1.z - this.L.z) + (this.N.z * h[var7] + this.e.z * Y[var7]) * var6;
-         var5.addVertex(this.T, var8, var9, var10).setUv(h[var7] < 0 ? 0.0F : 1.0F, Y[var7] < 0 ? 0.0F : 1.0F).setColor(var4);
+   public static double Y(double var0) {
+      return Math.max(0.0, var0) * 0.546 / 0.45399999999999996;
+   }
+
+   public Input M(float var1, Vec3 var2) {
+      double var3 = Math.toDegrees(Math.atan2(var2.z, var2.x)) - 90.0;
+      double var5 = Mth.wrapDegrees(var3 - var1);
+      int var7 = (int)Math.round(var5 / 45.0);
+      if (var7 == -4) {
+         var7 = 4;
       }
+
+      if (this.Z != Integer.MIN_VALUE && Math.abs(Mth.wrapDegrees(var5 - this.Z * 45.0)) < 28.5) {
+         var7 = this.Z;
+      }
+
+      this.Z = var7;
+      float[] var8 = AuraModule.l(var1 + var7 * 45.0, var1);
+      return new Input(var8[0] > 0.0F, var8[0] < 0.0F, var8[1] > 0.0F, var8[1] < 0.0F, false, false, false);
+   }
+
+   public static Vec2 M(Input var0) {
+      float var1 = var0.forward() == var0.backward() ? 0.0F : (var0.forward() ? 1.0F : -1.0F);
+      float var2 = var0.left() == var0.right() ? 0.0F : (var0.left() ? 1.0F : -1.0F);
+      return new Vec2(var2, var1).normalized();
+   }
+
+   public static double a(Vec3 var0, Vec3 var1, Direction var2) {
+      return (var1.x - var0.x) * var2.getStepX() + (var1.z - var0.z) * var2.getStepZ();
+   }
+
+   public static double P(Vec3 var0, Vec3 var1, Direction var2) {
+      Direction var3 = var2.getClockWise();
+      return (var1.x - var0.x) * var3.getStepX() + (var1.z - var0.z) * var3.getStepZ();
+   }
+
+   public static Vec3 U(Vec3 var0, Vec3 var1, Direction var2) {
+      Direction var3 = var2.getClockWise();
+      double var4 = P(var0, var1, var2);
+      return new Vec3(var2.getStepX() * 1.5 + var3.getStepX() * var4, 0.0, var2.getStepZ() * 1.5 + var3.getStepZ() * var4);
    }
 }

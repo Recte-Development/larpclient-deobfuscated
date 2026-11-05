@@ -1,12 +1,11 @@
 package com.larpclient;
 
-public final class e_ {
-   public static final int y = -16184560;
-   public static final int b = -15260879;
-   public static final int g = -3046331;
-   public static final int r = -7026494;
-   public static final int B = -6540233;
+import com.larpclient.module.CustomSkyModule;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 
-   private e_() {
-   }
+public final class e_ {
+   public final zx t = new zx();
+   public RenderTarget F;
+   public CustomSkyModule x;
+   public double R;
 }

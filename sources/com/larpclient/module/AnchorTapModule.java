@@ -1,8 +1,8 @@
 package com.larpclient.module;
 
-import com.larpclient.d8;
-import com.larpclient.m;
-import com.larpclient.r4;
+import com.larpclient._d;
+import com.larpclient._m;
+import com.larpclient.mt;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import net.minecraft.core.BlockPos;
@@ -19,32 +19,32 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class AnchorTapModule extends Module {
-   private static AnchorTapModule M;
-   private final lc b = this.addSetting(new lc("Delay", "Ticks between executed anchor steps", 0.0, 0.0, 20.0, 1.0));
-   private final ln H = this.addSetting(new ln("Safe Anchor", "Place an obsidian shield between you and the anchor before detonation", false));
-   private final ln n = this.addSetting(new ln("Air Replace", "Replace the removed anchor once after detonation", false));
-   private final lc d = this.addSetting(new lc("Range", "Reach capped by native block interaction distance", 4.1, 1.0, 6.0, 0.1));
-   private final lp S = this.addSetting(new lp("Rotation", "Visible turns the real view; Crosshair waits for your aim", "Visible", "Visible", "Crosshair"));
-   private final ln Y = this.addSetting(new ln("Auto Switch", "Use hotbar items and restore the selected slot after each step", true));
-   private AnchorTapModule.q a = AnchorTapModule.q.i;
-   private BlockPos p;
-   private boolean y;
-   private long z;
-   private long g;
-   private String F = "Aim at an anchor and press Use";
+   private static AnchorTapModule i;
+   private final d9 X = this.addSetting(new d9("Delay", "Ticks between executed anchor steps", 0.0, 0.0, 20.0, 1.0));
+   private final dh E = this.addSetting(new dh("Safe Anchor", "Place an obsidian shield between you and the anchor before detonation", false));
+   private final dh I = this.addSetting(new dh("Air Replace", "Replace the removed anchor once after detonation", false));
+   private final d9 b = this.addSetting(new d9("Range", "Reach capped by native block interaction distance", 4.1, 1.0, 6.0, 0.1));
+   private final d6 W = this.addSetting(new d6("Rotation", "Visible turns the real view; Crosshair waits for your aim", "Visible", "Visible", "Crosshair"));
+   private final dh A = this.addSetting(new dh("Auto Switch", "Use hotbar items and restore the selected slot after each step", true));
+   private AnchorTapModule.j m = AnchorTapModule.j.L;
+   private BlockPos t;
+   private boolean Q;
+   private long L;
+   private long V;
+   private String B = "Aim at an anchor and press Use";
 
    public AnchorTapModule() {
       super("AnchorTap", "Charge and explode an anchor with the use key", Category.COMBAT, -1);
-      M = this;
+      i = this;
    }
 
-   public static boolean b() {
-      if (M != null && M.isEnabled()) {
-         AnchorTapModule var0 = M;
-         if (var0 == null || !var0.isRuntimeActive() || !d8.a()) {
+   public static boolean J() {
+      if (i != null && i.isEnabled()) {
+         AnchorTapModule var0 = i;
+         if (var0 == null || !var0.isRuntimeActive() || !_m.z()) {
             return false;
          } else {
-            return var0.a != AnchorTapModule.q.i
+            return var0.m != AnchorTapModule.j.L
                ? true
                : mc.hitResult instanceof BlockHitResult var1
                   && mc.options.keyUse.isDown()
@@ -57,136 +57,136 @@ public final class AnchorTapModule extends Module {
 
    @Override
    public String getStatus() {
-      return this.F;
+      return this.B;
    }
 
    @Override
-   public Module.b getTickPhase() {
-      return Module.b.w;
+   public Module.f getTickPhase() {
+      return Module.f.Z;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
    public void onTick() {
-      m.g(this);
-      if (d8.a() && mc.isWindowActive()) {
+      _d.N(this);
+      if (_m.z() && mc.isWindowActive()) {
          boolean var1 = mc.options.keyUse.isDown();
          if (var1) {
-            boolean var13 = false;
-            byte var12 = this.y;
-            int var10000 = Integer.signum(var12);
+            boolean var11 = false;
+            byte var10 = this.Q;
+            int var10000 = Integer.signum(var10);
             if ((var10000 | -var10000) >>> 31 == 0
-               && this.a == AnchorTapModule.q.i
+               && this.m == AnchorTapModule.j.L
                && mc.hitResult instanceof BlockHitResult var2
                && mc.level.getBlockState(var2.getBlockPos()).is(Blocks.RESPAWN_ANCHOR)) {
-               this.p = var2.getBlockPos().immutable();
-               this.a = AnchorTapModule.q.x;
-               this.z = mc.level.getGameTime();
-               this.g = 0L;
-               r4.g("AnchorTap", "Anchor cycle started at {}", this.p);
+               this.t = var2.getBlockPos().immutable();
+               this.m = AnchorTapModule.j.E;
+               this.L = mc.level.getGameTime();
+               this.V = 0L;
+               mt.U("AnchorTap", "Anchor cycle started at {}", this.t);
             }
          }
 
-         this.y = var1;
-         if (this.a != AnchorTapModule.q.i && this.p != null) {
+         this.Q = var1;
+         if (this.m != AnchorTapModule.j.L && this.t != null) {
             long var16 = mc.level.getGameTime();
-            if (mc.level.hasChunkAt(this.p) && !mc.player.isUsingItem()) {
-               if (var16 - this.z > 40L) {
-                  this.k("Anchor response timed out");
-               } else if (var16 >= this.g) {
-                  BlockState var4 = mc.level.getBlockState(this.p);
+            if (mc.level.hasChunkAt(this.t) && !mc.player.isUsingItem()) {
+               if (var16 - this.L > 40L) {
+                  this.e("Anchor response timed out");
+               } else if (var16 >= this.V) {
+                  BlockState var4 = mc.level.getBlockState(this.t);
                   boolean var5 = var4.is(Blocks.RESPAWN_ANCHOR);
-                  switch (this.a) {
-                     case x:
+                  switch (this.m) {
+                     case E:
                         if (!var5) {
-                           this.k("Anchor no longer exists");
+                           this.e("Anchor no longer exists");
                            return;
                         }
 
                         if ((Integer)var4.getValue(RespawnAnchorBlock.CHARGE) > 0) {
-                           this.a(AnchorTapModule.q.L);
+                           this.k(AnchorTapModule.j.G);
                            return;
                         }
 
-                        this.Y(
+                        this.w(
                            Items.GLOWSTONE,
-                           AnchorTapModule.q.A,
-                           () -> mc.level.getBlockState(this.p).is(Blocks.RESPAWN_ANCHOR)
-                              && (Integer)mc.level.getBlockState(this.p).getValue(RespawnAnchorBlock.CHARGE) == 0
+                           AnchorTapModule.j.J,
+                           () -> mc.level.getBlockState(this.t).is(Blocks.RESPAWN_ANCHOR)
+                              && (Integer)mc.level.getBlockState(this.t).getValue(RespawnAnchorBlock.CHARGE) == 0
                         );
                         break;
-                     case A:
+                     case J:
                         if (!var5) {
-                           this.k("Anchor removed before charging");
+                           this.e("Anchor removed before charging");
                         } else if ((Integer)var4.getValue(RespawnAnchorBlock.CHARGE) > 0) {
-                           this.a(AnchorTapModule.q.L);
-                        } else if (var16 - this.z > 8L) {
-                           this.k("Anchor charge not confirmed");
+                           this.k(AnchorTapModule.j.G);
+                        } else if (var16 - this.L > 8L) {
+                           this.e("Anchor charge not confirmed");
                         }
                         break;
-                     case L:
-                        if (!this.H.getValue()) {
-                           this.a(AnchorTapModule.q.w);
+                     case G:
+                        if (!this.E.P()) {
+                           this.k(AnchorTapModule.j.N);
                            return;
                         }
 
-                        BlockPos var18 = this.r();
-                        if (!m.Q(var18)) {
+                        BlockPos var18 = this.L();
+                        if (!_d.Z(var18)) {
                            BlockState var19 = mc.level.getBlockState(var18);
                            if (!var19.is(Blocks.OBSIDIAN) && !var19.is(Blocks.CRYING_OBSIDIAN) && !var19.is(Blocks.BEDROCK)) {
-                              this.k("Safe Anchor shield position occupied by another block");
+                              this.e("Safe Anchor shield position occupied by another block");
                            } else {
-                              this.a(AnchorTapModule.q.w);
+                              this.k(AnchorTapModule.j.N);
                            }
 
                            return;
                         }
 
                         if (mc.player.getBoundingBox().intersects(new AABB(var18))) {
-                           this.k("No safe shield position outside your body");
+                           this.e("No safe shield position outside your body");
                            return;
                         }
 
-                        int var23 = m.Q(Items.OBSIDIAN, this.Y.getValue());
-                        byte var11 = -1;
-                        int var10 = var23;
-                        var23 = Integer.compare(var10, var11);
+                        int var23 = _d.B(Items.OBSIDIAN, this.A.P());
+                        byte var15 = -1;
+                        int var14 = var23;
+                        var23 = Integer.compare(var14, var15);
                         if ((var23 | -var23) >>> 31 == 0) {
-                           this.k("Safe Anchor requires hotbar obsidian");
+                           this.e("Safe Anchor requires hotbar obsidian");
                            return;
                         }
 
-                        boolean var7 = m.U(
+                        boolean var7 = _d.a(
                            this,
                            var18,
                            Items.OBSIDIAN,
-                           this.d.getValue(),
-                           this.S.i("Visible"),
-                           this.Y.getValue(),
-                           () -> this.a == AnchorTapModule.q.L && this.V() && !mc.player.getBoundingBox().intersects(new AABB(var18)),
+                           this.b.P(),
+                           this.W.S("Visible"),
+                           this.A.P(),
+                           () -> this.m == AnchorTapModule.j.G && this.z() && !mc.player.getBoundingBox().intersects(new AABB(var18)),
                            var1x -> {
                               if (var1x) {
-                                 this.g = mc.level.getGameTime() + Math.max(1, this.b.getValue().intValue());
-                                 this.F = "Waiting for obsidian shield";
+                                 this.V = mc.level.getGameTime() + Math.max(1, this.X.P().intValue());
+                                 this.B = "Waiting for obsidian shield";
                               }
                            }
                         );
                         if (!var7) {
-                           this.F = "Aim at a reachable shield support";
+                           this.B = "Aim at a reachable shield support";
                         }
                         break;
-                     case w:
-                        if (!this.V()) {
-                           this.k("Charged anchor no longer exists");
+                     case N:
+                        if (!this.z()) {
+                           this.e("Charged anchor no longer exists");
                            return;
                         }
 
-                        if ((Boolean)mc.level.environmentAttributes().getValue(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, this.p)) {
-                           this.k("Anchors set spawn here; detonation skipped");
+                        if ((Boolean)mc.level.environmentAttributes().getValue(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, this.t)) {
+                           this.e("Anchors set spawn here; detonation skipped");
                            return;
                         }
 
@@ -195,110 +195,110 @@ public final class AnchorTapModule extends Module {
                            byte var9 = 4;
                            int var8 = var22;
                            if ((Integer.compare(var8, var9) >>> 31 ^ 1) == 0) {
-                              this.F = "Move offhand glowstone before detonation";
+                              this.B = "Move offhand glowstone before detonation";
                               return;
                            }
                         }
 
-                        Item var17 = this.p();
+                        Item var17 = this.K();
                         if (var17 == null) {
-                           this.k("A non-glowstone hotbar item is required");
+                           this.e("A non-glowstone hotbar item is required");
                            return;
                         }
 
-                        this.Y(
+                        this.w(
                            var17,
-                           AnchorTapModule.q.b,
-                           () -> this.V()
+                           AnchorTapModule.j.R,
+                           () -> this.z()
                               && (
                                  !mc.player.getOffhandItem().is(Items.GLOWSTONE)
-                                    || (Integer)mc.level.getBlockState(this.p).getValue(RespawnAnchorBlock.CHARGE) == 4
+                                    || (Integer)mc.level.getBlockState(this.t).getValue(RespawnAnchorBlock.CHARGE) == 4
                               )
-                              && !(Boolean)mc.level.environmentAttributes().getValue(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, this.p)
+                              && !(Boolean)mc.level.environmentAttributes().getValue(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, this.t)
                         );
                         break;
-                     case b:
+                     case R:
                         if (!var5) {
-                           if (this.n.getValue() && m.Q(this.p)) {
-                              this.a(AnchorTapModule.q.g);
+                           if (this.I.P() && _d.Z(this.t)) {
+                              this.k(AnchorTapModule.j.e);
                            } else {
-                              this.k("Anchor cycle complete");
+                              this.e("Anchor cycle complete");
                            }
-                        } else if (var16 - this.z > 8L) {
-                           this.k("Anchor removal not confirmed");
+                        } else if (var16 - this.L > 8L) {
+                           this.e("Anchor removal not confirmed");
                         }
                         break;
-                     case g:
-                        if (!m.Q(this.p)) {
-                           this.k("Replacement position occupied");
+                     case e:
+                        if (!_d.Z(this.t)) {
+                           this.e("Replacement position occupied");
                            return;
                         }
 
-                        int var20 = m.Q(Items.RESPAWN_ANCHOR, this.Y.getValue());
-                        byte var15 = -1;
-                        int var14 = var20;
-                        var20 = Integer.compare(var14, var15);
+                        int var20 = _d.B(Items.RESPAWN_ANCHOR, this.A.P());
+                        byte var13 = -1;
+                        int var12 = var20;
+                        var20 = Integer.compare(var12, var13);
                         if ((var20 | -var20) >>> 31 == 0) {
-                           this.k("Replacement anchor missing from hotbar");
+                           this.e("Replacement anchor missing from hotbar");
                            return;
                         }
 
-                        boolean var6 = m.U(
+                        boolean var6 = _d.a(
                            this,
-                           this.p,
+                           this.t,
                            Items.RESPAWN_ANCHOR,
-                           this.d.getValue(),
-                           this.S.i("Visible"),
-                           this.Y.getValue(),
-                           () -> this.a == AnchorTapModule.q.g && m.Q(this.p),
+                           this.b.P(),
+                           this.W.S("Visible"),
+                           this.A.P(),
+                           () -> this.m == AnchorTapModule.j.e && _d.Z(this.t),
                            var1x -> {
                               if (var1x) {
-                                 this.a(AnchorTapModule.q.p);
+                                 this.k(AnchorTapModule.j.r);
                               }
                            }
                         );
                         if (!var6) {
-                           this.F = "Aim at a reachable replacement support";
+                           this.B = "Aim at a reachable replacement support";
                         }
                         break;
-                     case p:
+                     case r:
                         if (var5) {
-                           this.k("Anchor replacement complete");
-                        } else if (var16 - this.z > 8L) {
-                           this.k("Anchor replacement not confirmed");
+                           this.e("Anchor replacement complete");
+                        } else if (var16 - this.L > 8L) {
+                           this.e("Anchor replacement not confirmed");
                         }
                   }
                }
             } else {
-               this.k("Anchor cycle cancelled");
+               this.e("Anchor cycle cancelled");
             }
          }
       } else {
-         this.k("Anchor interaction suspended");
+         this.e("Anchor interaction suspended");
       }
    }
 
-   private BlockPos r() {
-      Vec3 var1 = mc.player.position().subtract(Vec3.atCenterOf(this.p));
+   private BlockPos L() {
+      Vec3 var1 = mc.player.position().subtract(Vec3.atCenterOf(this.t));
       Direction var2 = Math.abs(var1.x) > Math.abs(var1.z)
          ? (var1.x >= 0.0 ? Direction.EAST : Direction.WEST)
          : (var1.z >= 0.0 ? Direction.SOUTH : Direction.NORTH);
-      return this.p.relative(var2);
+      return this.t.relative(var2);
    }
 
-   private boolean V() {
-      return this.p != null
-         && mc.level.getBlockState(this.p).is(Blocks.RESPAWN_ANCHOR)
-         && (Integer)mc.level.getBlockState(this.p).getValue(RespawnAnchorBlock.CHARGE) > 0;
+   private boolean z() {
+      return this.t != null
+         && mc.level.getBlockState(this.t).is(Blocks.RESPAWN_ANCHOR)
+         && (Integer)mc.level.getBlockState(this.t).getValue(RespawnAnchorBlock.CHARGE) > 0;
    }
 
-   private Item p() {
+   private Item K() {
       ItemStack var1 = mc.player.getMainHandItem();
       if (!var1.is(Items.GLOWSTONE)) {
          return var1.getItem();
       }
 
-      if (this.Y.getValue()) {
+      if (this.A.P()) {
          for (int var2 = 0; var2 < 9; var2++) {
             ItemStack var3 = mc.player.getInventory().getItem(var2);
             if (!var3.is(Items.GLOWSTONE)) {
@@ -310,67 +310,65 @@ public final class AnchorTapModule extends Module {
       return null;
    }
 
-   private void Y(Item var1, AnchorTapModule.q var2, BooleanSupplier var3) {
-      if (m.Q(var1, this.Y.getValue()) == -1) {
-         this.k("Required anchor item missing from hotbar");
+   private void w(Item var1, AnchorTapModule.j var2, BooleanSupplier var3) {
+      if (_d.B(var1, this.A.P()) == -1) {
+         this.e("Required anchor item missing from hotbar");
       } else {
-         AnchorTapModule.q var4 = this.a;
-         boolean var5 = m.e(
-            this, this.p, var1, this.d.getValue(), this.S.i("Visible"), this.Y.getValue(), () -> this.a == var4 && var3.getAsBoolean(), var2x -> {
-               if (var2x) {
-                  this.a(var2);
-                  this.g = mc.level.getGameTime() + Math.max(1, this.b.getValue().intValue());
-               } else {
-                  this.F = "Anchor interaction rejected; retrying";
-               }
+         AnchorTapModule.j var4 = this.m;
+         boolean var5 = _d.U(this, this.t, var1, this.b.P(), this.W.S("Visible"), this.A.P(), () -> this.m == var4 && var3.getAsBoolean(), var2x -> {
+            if (var2x) {
+               this.k(var2);
+               this.V = mc.level.getGameTime() + Math.max(1, this.X.P().intValue());
+            } else {
+               this.B = "Anchor interaction rejected; retrying";
             }
-         );
+         });
          if (!var5) {
-            this.F = "Aim at the anchor within native reach";
+            this.B = "Aim at the anchor within native reach";
          }
       }
    }
 
-   private void a(AnchorTapModule.q var1) {
-      this.a = var1;
-      this.z = mc.level.getGameTime();
-      this.F = var1.name().toLowerCase().replace('_', ' ');
+   private void k(AnchorTapModule.j var1) {
+      this.m = var1;
+      this.L = mc.level.getGameTime();
+      this.B = var1.name().toLowerCase().replace('_', ' ');
    }
 
-   private void k(String var1) {
-      m.g(this);
-      if (this.a != AnchorTapModule.q.i) {
-         r4.g("AnchorTap", "{}", var1);
+   private void e(String var1) {
+      _d.N(this);
+      if (this.m != AnchorTapModule.j.L) {
+         mt.U("AnchorTap", "{}", var1);
       }
 
-      this.a = AnchorTapModule.q.i;
-      this.p = null;
-      this.z = 0L;
-      this.g = 0L;
-      this.F = var1;
+      this.m = AnchorTapModule.j.L;
+      this.t = null;
+      this.L = 0L;
+      this.V = 0L;
+      this.B = var1;
    }
 
    @Override
    public void onEnable() {
-      this.y = (boolean)(mc.player != null && mc.options.keyUse.isDown() ? 1 : 0);
-      this.k("Aim at an anchor and press Use");
-      r4.g("AnchorTap", "Anchor use handler active");
+      this.Q = (boolean)(mc.player != null && mc.options.keyUse.isDown() ? 1 : 0);
+      this.e("Aim at an anchor and press Use");
+      mt.U("AnchorTap", "Anchor use handler active");
    }
 
    @Override
    public void onDisable() {
-      this.k("Anchor intents cleared");
-      this.y = (boolean)0;
+      this.e("Anchor intents cleared");
+      this.Q = (boolean)0;
    }
 
-   private enum q {
-      i,
-      x,
-      A,
+   private enum j {
       L,
-      w,
-      b,
-      g,
-      p;
+      E,
+      J,
+      G,
+      N,
+      R,
+      e,
+      r;
    }
 }

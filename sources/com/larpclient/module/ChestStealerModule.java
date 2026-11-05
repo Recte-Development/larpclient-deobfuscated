@@ -1,6 +1,6 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
+import com.larpclient.mt;
 import java.util.BitSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
@@ -9,12 +9,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class ChestStealerModule extends Module {
-   private final lc n = this.addSetting(new lc("Delay", "Ticks between items", 2.0, 0.0, 10.0, 1.0));
-   private int c;
-   private ChestMenu u;
-   private ItemStack[] S;
-   private final BitSet d = new BitSet();
-   private boolean j;
+   private final d9 u = this.addSetting(new d9("Delay", "Ticks between items", 2.0, 0.0, 10.0, 1.0));
+   private int x;
+   private ChestMenu Y;
+   private ItemStack[] g;
+   private final BitSet U = new BitSet();
+   private boolean q;
 
    public ChestStealerModule() {
       super("ChestStealer", "Automatically loot chests", Category.PLAYER, -1);
@@ -22,27 +22,27 @@ public class ChestStealerModule extends Module {
 
    @Override
    public void onDisable() {
-      this.R();
+      this.w();
    }
 
-   private void R() {
-      this.c = 0;
-      this.u = null;
-      this.S = null;
-      this.d.clear();
-      this.j = (boolean)0;
+   private void w() {
+      this.x = 0;
+      this.Y = null;
+      this.g = null;
+      this.U.clear();
+      this.q = (boolean)0;
    }
 
-   private void z(ChestMenu var1) {
-      if (var1 != this.u) {
-         this.R();
-         this.u = var1;
+   private void M(ChestMenu var1) {
+      if (var1 != this.Y) {
+         this.w();
+         this.Y = var1;
       }
 
-      int var2 = this.S != null && this.S.length == var1.slots.size() ? 0 : 1;
+      int var2 = this.g != null && this.g.length == var1.slots.size() ? 0 : 1;
       if (var2 == 0) {
-         for (int var3 = 0; var3 < this.S.length; var3++) {
-            if (!ItemStack.matches(this.S[var3], var1.getSlot(var3).getItem())) {
+         for (int var3 = 0; var3 < this.g.length; var3++) {
+            if (!ItemStack.matches(this.g[var3], var1.getSlot(var3).getItem())) {
                var2 = 1;
                break;
             }
@@ -50,18 +50,18 @@ public class ChestStealerModule extends Module {
       }
 
       if (var2 != 0) {
-         this.S = new ItemStack[var1.slots.size()];
+         this.g = new ItemStack[var1.slots.size()];
 
-         for (int var4 = 0; var4 < this.S.length; var4++) {
-            this.S[var4] = var1.getSlot(var4).getItem().copy();
+         for (int var4 = 0; var4 < this.g.length; var4++) {
+            this.g[var4] = var1.getSlot(var4).getItem().copy();
          }
 
-         this.d.clear();
-         this.j = (boolean)0;
+         this.U.clear();
+         this.q = (boolean)0;
       }
    }
 
-   private boolean e(ChestMenu var1, ItemStack var2, int var3) {
+   private boolean j(ChestMenu var1, ItemStack var2, int var3) {
       for (int var4 = var3; var4 < var1.slots.size(); var4++) {
          Slot var5 = var1.getSlot(var4);
          ItemStack var6 = var5.getItem();
@@ -87,18 +87,18 @@ public class ChestStealerModule extends Module {
          var10000 = Integer.signum(var7);
          if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
             ChestMenu var1 = (ChestMenu)var2;
-            if (AutoSellModule.Q(var1)) {
-               this.R();
+            if (AutoSellModule.U(var1)) {
+               this.w();
                return;
             }
 
-            this.z(var1);
+            this.M(var1);
             boolean var10 = false;
-            int var9 = this.c;
+            int var9 = this.x;
             if ((-Integer.signum(var9) >>> 31 ^ 1) == 0) {
                byte var12 = 1;
-               int var11 = this.c;
-               this.c = var11 - var12;
+               int var11 = this.x;
+               this.x = var11 - var12;
                return;
             }
 
@@ -114,10 +114,10 @@ public class ChestStealerModule extends Module {
                ItemStack var6 = var5.getItem();
                if (!var6.isEmpty()) {
                   var3 = 1;
-                  if (!this.d.get(var4) && var5.mayPickup(mc.player) && this.e(var1, var6, var15)) {
-                     this.d.set(var4);
+                  if (!this.U.get(var4) && var5.mayPickup(mc.player) && this.j(var1, var6, var15)) {
+                     this.U.set(var4);
                      mc.gameMode.handleContainerInput(var1.containerId, var4, 0, ContainerInput.QUICK_MOVE, mc.player);
-                     this.c = this.n.getValue().intValue();
+                     this.x = this.u.P().intValue();
                      return;
                   }
                }
@@ -125,14 +125,14 @@ public class ChestStealerModule extends Module {
 
             if (var3 == 0) {
                mc.player.closeContainer();
-               this.R();
+               this.w();
             } else {
                boolean var14 = false;
-               byte var13 = this.j;
+               byte var13 = this.q;
                var10000 = Integer.signum(var13);
                if ((var10000 | -var10000) >>> 31 == 0) {
-                  this.j = (boolean)1;
-                  r4.g("ChestStealer", "Waiting for inventory capacity or container update");
+                  this.q = (boolean)1;
+                  mt.U("ChestStealer", "Waiting for inventory capacity or container update");
                }
             }
 
@@ -140,6 +140,6 @@ public class ChestStealerModule extends Module {
          }
       }
 
-      this.R();
+      this.w();
    }
 }

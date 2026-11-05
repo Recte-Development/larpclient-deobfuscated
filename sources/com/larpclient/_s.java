@@ -1,82 +1,42 @@
 package com.larpclient;
 
-import java.util.function.BooleanSupplier;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 public final class _s {
-   private static LocalPlayer j;
-   private static BlockHitResult X;
-   private static BooleanSupplier i;
-   private static int K;
-   private static boolean P;
-   private static int v = -1;
+   private static final Set<GpuTexture> T = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+   private static final Set<String> P = Arrays.stream(k6.v.values())
+      .filter(var0 -> var0 != k6.v.U)
+      .map(var0 -> var0.name().toLowerCase(Locale.ROOT))
+      .collect(Collectors.toUnmodifiableSet());
 
-   public static void q(Minecraft var0, BlockHitResult var1, BooleanSupplier var2) {
-      if (j != var0.player || X == null || var0.player.tickCount - K > 5) {
-         j = var0.player;
-         X = var1;
-         i = var2;
-         K = j.tickCount;
-         P = (boolean)0;
-         v = -1;
-      }
+   private _s() {
    }
 
-   private static boolean r(LocalPlayer var0) {
-      return var0 == j && X != null && var0.tickCount - K <= 5 && Minecraft.getInstance().player == var0 && !var0.isPassenger() && !ep.f();
-   }
-
-   public static float Q(LocalPlayer var0) {
-      if (!r(var0)) {
-         return var0.getYRot();
+   public static boolean s(GpuTexture var0, String var1, boolean var2) {
+      if (!w(var1, var2)) {
+         return false;
       }
 
-      P = (boolean)1;
-      Vec3 var1 = X.getLocation().subtract(var0.getEyePosition());
-      return (float)Math.toDegrees(Math.atan2(-var1.x, var1.z));
+      T.add(var0);
+      return true;
    }
 
-   public static float R(LocalPlayer var0) {
-      if (!r(var0)) {
-         return var0.getXRot();
-      }
-
-      Vec3 var1 = X.getLocation().subtract(var0.getEyePosition());
-      return (float)(-Math.toDegrees(Math.atan2(var1.y, Math.hypot(var1.x, var1.z))));
+   public static boolean p(GpuTexture var0) {
+      return T.contains(var0);
    }
 
-   public static void E(LocalPlayer var0) {
-      if (r(var0) && P) {
-         if (v < 0) {
-            v = var0.tickCount;
-            return;
-         }
-
-         if (var0.tickCount <= v) {
-            return;
-         }
-
-         if (i != null) {
-            if (!i.getAsBoolean()) {
-               return;
-            }
-
-            i = null;
-            v = var0.tickCount - 1;
-         }
-
-         if (var0.tickCount <= v + 2) {
-            return;
-         }
+   public static boolean w(String var0, boolean var1) {
+      if (!var1 && var0 != null && var0.startsWith("larp-client:")) {
+         int var2 = var0.indexOf(47);
+         return var2 > 0 && P.contains(var0.substring("larp-client:".length(), var2));
+      } else {
+         return false;
       }
-
-      j = null;
-      X = null;
-      i = null;
-      P = (boolean)0;
-      v = -1;
    }
 }

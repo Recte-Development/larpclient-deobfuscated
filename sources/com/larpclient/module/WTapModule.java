@@ -1,11 +1,12 @@
 package com.larpclient.module;
 
 import com.larpclient.LarpClient;
-import com.larpclient.d8;
-import com.larpclient.r4;
-import com.larpclient.rr;
-import com.larpclient.yu;
-import com.larpclient.yy;
+import com.larpclient._m;
+import com.larpclient.d_;
+import com.larpclient.mt;
+import com.larpclient.te;
+import com.larpclient.tq;
+import com.larpclient.wq;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -18,32 +19,32 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 
 public final class WTapModule extends Module {
-   private static WTapModule U;
-   private final ln H = this.addSetting(new ln("Players Only", "Only release forward after attacking a player", true));
-   private final ln j = this.addSetting(new ln("Weapons Only", "Require a held melee weapon", true));
-   private final lc T = this.addSetting(new lc("Release Duration", "Forward release in native input ticks", 1.0, 1.0, 3.0, 1.0));
-   private final yy.n c = new yy.n();
-   private final yy.r C = new yy.r();
-   private LocalPlayer X;
+   private static WTapModule A;
+   private final dh i = this.addSetting(new dh("Players Only", "Only release forward after attacking a player", true));
+   private final dh B = this.addSetting(new dh("Weapons Only", "Require a held melee weapon", true));
+   private final d9 V = this.addSetting(new d9("Release Duration", "Forward release in native input ticks", 1.0, 1.0, 3.0, 1.0));
+   private final d_.k o = new d_.k();
+   private final d_.l v = new d_.l();
+   private LocalPlayer I;
    private Object J;
-   private String o = "Waiting for a sprint attack";
+   private String l = "Waiting for a sprint attack";
 
    public WTapModule() {
       super("W Tap", "Briefly release forward after a charged sprint attack", Category.COMBAT, -1);
-      U = this;
+      A = this;
    }
 
-   public static void q(Player var0, Entity var1) {
-      if (U != null && U.isEnabled()) {
-         WTapModule var2 = U;
+   public static void f(Player var0, Entity var1) {
+      if (A != null && A.isEnabled()) {
+         WTapModule var2 = A;
          if (var2 != null && var0 == getMc().player) {
-            var2.C.u();
+            var2.v.X();
             if (var2.isRuntimeActive() && var0 == getMc().player && var0 instanceof LocalPlayer var3) {
-               int var4 = !d8.E() && mc.options.keyAttack.isDown() && mc.hitResult instanceof EntityHitResult var5 && var5.getEntity() == var1 ? 1 : 0;
-               boolean var7 = var2.v(var1);
-               boolean var8 = yy.B(
+               int var4 = !_m.w() && mc.options.keyAttack.isDown() && mc.hitResult instanceof EntityHitResult var5 && var5.getEntity() == var1 ? 1 : 0;
+               boolean var7 = var2.Z(var1);
+               boolean var8 = d_.Q(
                   (boolean)var4,
-                  var2.y(var3),
+                  var2.i(var3),
                   var3.isSprinting(),
                   mc.options.keyUp.isDown(),
                   mc.options.keyDown.isDown(),
@@ -51,9 +52,9 @@ public final class WTapModule extends Module {
                   var3.getAttackStrengthScale(0.5F),
                   var7
                );
-               var2.C.C(var0, var1, var8);
+               var2.v.l(var0, var1, var8);
                if (var8) {
-                  var2.X = var3;
+                  var2.I = var3;
                   var2.J = mc.level;
                }
             }
@@ -61,44 +62,44 @@ public final class WTapModule extends Module {
       }
    }
 
-   public static void u(Player var0, Entity var1) {
-      if (U != null && U.isEnabled()) {
-         WTapModule var2 = U;
+   public static void U(Player var0, Entity var1) {
+      if (A != null && A.isEnabled()) {
+         WTapModule var2 = A;
          if (var2 != null) {
-            var2.C.E(var0, var1);
+            var2.v.y(var0, var1);
          }
       }
    }
 
-   public static void G(Player var0, Entity var1) {
-      if (U != null && U.isEnabled()) {
-         WTapModule var2 = U;
+   public static void o(Player var0, Entity var1) {
+      if (A != null && A.isEnabled()) {
+         WTapModule var2 = A;
          if (var2 != null && var0 == getMc().player) {
-            if (var2.C.K(var0, var1) && var2.isRuntimeActive() && var0 == var2.X && var2.y(var2.X)) {
-               var2.c.O(var2.T.getValue().intValue());
-               var2.o = "Forward release queued";
-               r4.g("WTap", "Executed manual sprint attack; release queued for {} input ticks", var2.T.getValue().intValue());
+            if (var2.v.U(var0, var1) && var2.isRuntimeActive() && var0 == var2.I && var2.i(var2.I)) {
+               var2.o.l(var2.V.P().intValue());
+               var2.l = "Forward release queued";
+               mt.U("WTap", "Executed manual sprint attack; release queued for {} input ticks", var2.V.P().intValue());
             }
          }
       }
    }
 
-   public static Input A(LocalPlayer var0, Input var1) {
-      if (U != null && U.isEnabled()) {
-         WTapModule var2 = U;
+   public static Input g(LocalPlayer var0, Input var1) {
+      if (A != null && A.isEnabled()) {
+         WTapModule var2 = A;
          if (var2 == null || !var2.isRuntimeActive()) {
             return var1;
-         } else if (var2.X != var0 || var2.J != getMc().level || !var2.y(var0) || !var1.forward() || var1.backward() || var1.shift()) {
-            var2.h("Input or movement context changed");
+         } else if (var2.I != var0 || var2.J != getMc().level || !var2.i(var0) || !var1.forward() || var1.backward() || var1.shift()) {
+            var2.c("Input or movement context changed");
             return var1;
-         } else if (!var2.c.X(var0.tickCount, true)) {
-            var2.o = "Waiting for a sprint attack";
+         } else if (!var2.o.b(var0.tickCount, true)) {
+            var2.l = "Waiting for a sprint attack";
             return var1;
          } else {
-            var2.o = "Releasing forward";
+            var2.l = "Releasing forward";
             var0.setSprinting(false);
-            Input var3 = yy.D(var1);
-            var0.input.moveVector = yy.M(var3);
+            Input var3 = d_.r(var1);
+            var0.input.moveVector = d_.Y(var3);
             return var3;
          }
       } else {
@@ -106,32 +107,32 @@ public final class WTapModule extends Module {
       }
    }
 
-   public static boolean I() {
-      if (U != null && U.isEnabled()) {
-         WTapModule var0 = U;
+   public static boolean u() {
+      if (A != null && A.isEnabled()) {
+         WTapModule var0 = A;
          Minecraft var1 = getMc();
          if (var0 == null || !var0.isRuntimeActive() || var1.player == null) {
             return false;
          }
 
-         if (var0.X == var1.player && var0.J == var1.level && var0.y(var1.player)) {
-            return var0.c.p(var1.player.tickCount);
+         if (var0.I == var1.player && var0.J == var1.level && var0.i(var1.player)) {
+            return var0.o.L(var1.player.tickCount);
          }
 
-         var0.h("Sprint ownership changed");
+         var0.c("Sprint ownership changed");
          return false;
       } else {
          return false;
       }
    }
 
-   private boolean y(LocalPlayer var1) {
+   private boolean i(LocalPlayer var1) {
       if (var1 != null
          && var1 == getMc().player
-         && yu.r()
-         && d8.T()
+         && te.i()
+         && _m.k()
          && mc.isWindowActive()
-         && rr.u() == rr.f.i
+         && tq.l() == tq.y.A
          && !var1.isUsingItem()
          && !var1.isInWater()
          && !var1.isInLava()
@@ -144,17 +145,17 @@ public final class WTapModule extends Module {
          && !var1.noPhysics
          && !var1.isCrouching()
          && !var1.isShiftKeyDown()
-         && com.larpclient.k.F() == null) {
-         AirStuckModule var2 = AirStuckModule.H();
-         ElytraMotionModule var3 = ElytraMotionModule.S();
-         FlyModule var4 = FlyModule.s();
-         return (var2 == null || !var2.D()) && (var3 == null || !var3.m()) && (var4 == null || !var4.E()) && !AuraModule.w();
+         && wq.g() == null) {
+         AirStuckModule var2 = AirStuckModule.X();
+         ElytraMotionModule var3 = ElytraMotionModule.d();
+         FlyModule var4 = FlyModule.d();
+         return (var2 == null || !var2.U()) && (var3 == null || !var3.z()) && (var4 == null || !var4.s()) && !AuraModule.z();
       } else {
          return false;
       }
    }
 
-   private boolean v(Entity var1) {
+   private boolean Z(Entity var1) {
       if (!(
          var1 instanceof LivingEntity var2
             && var1 != mc.player
@@ -164,64 +165,64 @@ public final class WTapModule extends Module {
             && var1.level() == mc.level
             && !var1.isInvisible()
             && !mc.player.isAlliedTo(var1)
-            && (!this.H.getValue() || var1 instanceof Player)
+            && (!this.i.P() || var1 instanceof Player)
             && mc.player.hasLineOfSight(var1)
-            && !(d8.L(var1) > mc.player.entityInteractionRange() + 1.0E-7)
+            && !(_m.p(var1) > mc.player.entityInteractionRange() + 1.0E-7)
       )) {
          return false;
       } else {
-         if (this.j.getValue() && !Y(mc.player)) {
+         if (this.B.P() && !e(mc.player)) {
             return false;
          }
 
-         LarpClient var3 = LarpClient.y();
-         MCFriendModule var4 = var3 != null && var3.e() != null ? var3.e().y(MCFriendModule.class) : null;
-         return !(var1 instanceof Player) || var4 == null || !var4.e(var1.getName().getString());
+         LarpClient var3 = LarpClient.F();
+         MCFriendModule var4 = var3 != null && var3.x() != null ? var3.x().V(MCFriendModule.class) : null;
+         return !(var1 instanceof Player) || var4 == null || !var4.V(var1.getName().getString());
       }
    }
 
-   public static boolean Y(Player var0) {
+   public static boolean e(Player var0) {
       ItemStack var1 = var0.getMainHandItem();
       return !var1.isEmpty() && (var1.is(ItemTags.SWORDS) || var1.is(ItemTags.AXES) || var1.is(ItemTags.MELEE_WEAPON_ENCHANTABLE));
    }
 
-   private void h(String var1) {
-      if (this.c.k()) {
-         r4.g("WTap", "Release cancelled: {}; native input resumes", var1);
+   private void c(String var1) {
+      if (this.o.F()) {
+         mt.U("WTap", "Release cancelled: {}; native input resumes", var1);
       }
 
-      this.c.p();
-      this.C.u();
-      this.o = "Waiting for a sprint attack";
+      this.o.i();
+      this.v.X();
+      this.l = "Waiting for a sprint attack";
    }
 
-   public static void N(LocalPlayer var0) {
-      WTapModule var1 = U;
-      if (var1 != null && var1.X == var0) {
-         var1.h("Position correction");
+   public static void F(LocalPlayer var0) {
+      WTapModule var1 = A;
+      if (var1 != null && var1.I == var0) {
+         var1.c("Position correction");
       }
    }
 
    @Override
    public void onEnable() {
-      this.h("Activated");
+      this.c("Activated");
    }
 
    @Override
    public void onDisable() {
-      this.h("Disabled or disconnected");
-      this.X = null;
+      this.c("Disabled or disconnected");
+      this.I = null;
       this.J = null;
    }
 
-   public static void b() {
-      WTapModule var0 = U;
+   public static void z() {
+      WTapModule var0 = A;
       if (var0 != null) {
          if (!var0.isRuntimeActive()) {
-            var0.h("Runtime unavailable");
+            var0.c("Runtime unavailable");
          } else {
-            if (var0.X != null && (var0.X != getMc().player || var0.J != mc.level || !var0.y(mc.player))) {
-               var0.h("Context unavailable");
+            if (var0.I != null && (var0.I != getMc().player || var0.J != mc.level || !var0.i(mc.player))) {
+               var0.c("Context unavailable");
             }
          }
       }
@@ -229,16 +230,16 @@ public final class WTapModule extends Module {
 
    @Override
    public void onTick() {
-      b();
+      z();
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z);
    }
 
    @Override
    public String getStatus() {
-      return this.o;
+      return this.l;
    }
 }

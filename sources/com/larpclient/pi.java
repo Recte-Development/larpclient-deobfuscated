@@ -1,46 +1,58 @@
 package com.larpclient;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.IOException;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Optional;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class pi {
-   private pi() {
+   public static final double A = 4.0;
+   public static final double o = 1.0;
+   public static final double i = 0.1;
+
+   public static double M(int var0) {
+      return BowItem.getPowerForTime(Math.max(0, var0)) * 3.0F;
    }
 
-   public static JsonObject Y(Path var0) throws IOException {
-      if (!Files.exists(var0)) {
-         return new JsonObject();
-      }
-
-      try {
-         return JsonParser.parseString(Files.readString(var0)).getAsJsonObject();
-      } catch (RuntimeException var3) {
-         Path var2 = var0.resolveSibling(var0.getFileName() + ".invalid-" + System.currentTimeMillis());
-         Files.copy(var0, var2);
-         r4.r("FakeSpawner", "Malformed JSON preserved at " + var2 + "; recovering empty state", var3);
-         return new JsonObject();
-      }
+   public static double Q(double var0, double var2) {
+      return Double.isFinite(var0) && Double.isFinite(var2) ? 4.0 + 1.0 * Math.clamp(var2, 0.0, 1.0) * 1.5 * Math.min(Math.max(0.0, var0), 5.0) : 4.0;
    }
 
-   public static void U(Path var0, String var1) throws IOException {
-      Files.createDirectories(var0.getParent());
-      Path var2 = Files.createTempFile(var0.getParent(), "spawner-", ".tmp");
+   public static double[] k(double var0) {
+      return new double[]{Q(var0, 0.0), Q(var0, 0.5), Q(var0, 1.0)};
+   }
 
-      try {
-         Files.writeString(var2, var1);
+   public static double X(float[] var0) {
+      return (var0[0] + 4.0F * var0[1] + var0[2]) / 6.0F;
+   }
 
-         try {
-            Files.move(var2, var0, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-         } catch (AtomicMoveNotSupportedException var7) {
-            Files.move(var2, var0, StandardCopyOption.REPLACE_EXISTING);
+   public static boolean S(Vec3 var0, Vec3 var1, AABB var2, List<AABB> var3) {
+      if (var2.contains(var0)) {
+         return false;
+      }
+
+      Optional var4 = var2.clip(var0, var1);
+      if (var4.isEmpty()) {
+         return false;
+      }
+
+      double var5 = var0.distanceToSqr((Vec3)var4.get());
+
+      for (AABB var8 : var3) {
+         if (var8.contains(var0)) {
+            return false;
          }
-      } finally {
-         Files.deleteIfExists(var2);
+
+         Optional var9 = var8.clip(var0, var1);
+         if (var9.isPresent() && var0.distanceToSqr((Vec3)var9.get()) <= var5) {
+            return false;
+         }
       }
+
+      return true;
+   }
+
+   private pi() {
    }
 }

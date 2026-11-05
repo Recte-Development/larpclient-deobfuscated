@@ -1,13 +1,12 @@
 package com.larpclient.module;
 
-import com.larpclient.et;
-import com.larpclient.o1;
-import com.larpclient.oc;
-import com.larpclient.oh;
-import com.larpclient.ok;
-import com.larpclient.or;
-import com.larpclient.r4;
-import com.larpclient.rv;
+import com.larpclient._3;
+import com.larpclient.ct;
+import com.larpclient.mt;
+import com.larpclient.od;
+import com.larpclient.t9;
+import com.larpclient.w8;
+import com.larpclient.wj;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -17,27 +16,27 @@ import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
 public final class WorldLyricsModule extends Module {
-   private static final double u = 0.75;
-   private static WorldLyricsModule M;
-   private final lp w = this.addSetting(new lp("Style", "Fixed plane tilt for new lyric lines", "Calm", "Calm", "Floating", "Dreamy"));
-   private final lp C = this.addSetting(new lp("Motion", "How letters enter, move while sung and leave", "Pop", "Pop", "Wave", "Fade"));
-   private final lc n = this.addSetting(new lc("Density", "Length and amount of fading lyric trail", 16.0, 4.0, 32.0, 1.0));
-   private final lc g = this.addSetting(new lc("Size", "World text size", 1.0, 0.5, 2.0, 0.1));
-   private final lv K = this.addSetting(new lv("Color", "Lyric tint", -724993));
-   private final ln k = this.addSetting(new ln("Gradient", "Flow the lyric tint into the client accent color", true));
-   private final ln J = this.addSetting(new ln("Glow", "Soft text bloom", true));
-   private final ln X = this.addSetting(new ln("Through Walls", "Keep lyrics visible behind blocks and entities", true));
-   private final or y = new or();
-   private final o1 e = new o1();
-   private final Quaterniond a = new Quaterniond();
-   private oc j;
-   private ok x;
-   private Object V;
-   private Object d;
-   private boolean N;
-   private boolean o;
-   private long W;
-   private double R;
+   private static final double N = 0.75;
+   private static WorldLyricsModule S;
+   private final d6 P = this.addSetting(new d6("Style", "Fixed plane tilt for new lyric lines", "Calm", "Calm", "Floating", "Dreamy"));
+   private final d6 O = this.addSetting(new d6("Motion", "How letters enter, move while sung and leave", "Pop", "Pop", "Wave", "Fade"));
+   private final d9 W = this.addSetting(new d9("Density", "Length and amount of fading lyric trail", 16.0, 4.0, 32.0, 1.0));
+   private final d9 t = this.addSetting(new d9("Size", "World text size", 1.0, 0.5, 2.0, 0.1));
+   private final dk R = this.addSetting(new dk("Color", "Lyric tint", -724993));
+   private final dh Q = this.addSetting(new dh("Gradient", "Flow the lyric tint into the client accent color", true));
+   private final dh E = this.addSetting(new dh("Glow", "Soft text bloom", true));
+   private final dh c = this.addSetting(new dh("Through Walls", "Keep lyrics visible behind blocks and entities", true));
+   private final t9 d = new t9();
+   private final ct n = new ct();
+   private final Quaterniond b = new Quaterniond();
+   private wj T;
+   private od B;
+   private Object C;
+   private Object f;
+   private boolean G;
+   private boolean I;
+   private long e;
+   private double r;
 
    public WorldLyricsModule() {
       super(
@@ -46,11 +45,11 @@ public final class WorldLyricsModule extends Module {
          Category.VISUALS,
          -1
       );
-      M = this;
+      S = this;
    }
 
-   public static WorldLyricsModule A() {
-      return M;
+   public static WorldLyricsModule s() {
+      return S;
    }
 
    @Override
@@ -60,161 +59,157 @@ public final class WorldLyricsModule extends Module {
 
    @Override
    public String getStatus() {
-      return this.j == null ? "Play a song in Spotify desktop" : this.j.z().status();
+      return this.T == null ? "Play a song in Spotify desktop" : this.T.U().status();
    }
 
    @Override
    public void onEnable() {
-      this.v();
-      this.j = oc.I(this);
-      r4.V(
+      this.d();
+      this.T = wj.O(this);
+      mt.K(
          "WorldLyrics",
-         "Spotify World Lyrics enabled; motion="
-            + this.C.getValue()
-            + ", throughWalls="
-            + this.X.getValue()
-            + ", lines follow the player with fixed birth orientation"
+         "Spotify World Lyrics enabled; motion=" + this.O.P() + ", throughWalls=" + this.c.P() + ", lines follow the player with fixed birth orientation"
       );
    }
 
    @Override
    public void onDisable() {
-      this.v();
+      this.d();
    }
 
-   public void v() {
-      if (this.j != null) {
-         oc.m(this);
-         this.j = null;
+   public void d() {
+      if (this.T != null) {
+         wj.U(this);
+         this.T = null;
       }
 
-      this.Q();
-      r4.g("WorldLyrics", "Stopped playback worker and released world text resources");
+      this.n();
+      mt.U("WorldLyrics", "Stopped playback worker and released world text resources");
    }
 
-   public void Q() {
-      this.y.n();
-      this.e.p();
-      if (this.x != null) {
-         this.x.close();
-         this.x = null;
+   public void n() {
+      this.d.n();
+      this.n.c();
+      if (this.B != null) {
+         this.B.close();
+         this.B = null;
       }
 
-      this.V = this.d = null;
-      this.o = this.N = (boolean)0;
-      this.W = 0L;
-      this.R = 0.0;
+      this.C = this.f = null;
+      this.I = this.G = (boolean)0;
+      this.e = 0L;
+      this.r = 0.0;
    }
 
-   public void v(CameraRenderState var1) {
+   public void H(CameraRenderState var1) {
       if (this.isEnabled()) {
-         this.o = this.N = (boolean)0;
+         this.I = this.G = (boolean)0;
          Minecraft var2 = getMc();
          if (this.isRuntimeActive() && this.isInGame() && this.getPlayer().isAlive()) {
-            if (this.V != var2.level || this.d != var2.player) {
-               this.Q();
-               this.V = var2.level;
-               this.d = var2.player;
-               r4.V(
+            if (this.C != var2.level || this.f != var2.player) {
+               this.n();
+               this.C = var2.level;
+               this.f = var2.player;
+               mt.K(
                   "WorldLyrics",
                   "Lyric planes initialized; player-following placement, per-letter motion, "
-                     + (this.X.getValue() ? "drawn through blocks" : "native scene depth with surface-aware birth")
+                     + (this.c.P() ? "drawn through blocks" : "native scene depth with surface-aware birth")
                );
             }
 
             long var3 = System.nanoTime();
-            double var5 = this.W == 0L ? 0.0 : Math.clamp((var3 - this.W) / 1.0E9, 0.0, 0.1);
-            this.W = var3;
+            double var5 = this.e == 0L ? 0.0 : Math.clamp((var3 - this.e) / 1.0E9, 0.0, 0.1);
+            this.e = var3;
             if (var2.isPaused()) {
                var5 = 0.0;
             }
 
-            this.R += var5;
-            this.e.g(this.n.getValue().intValue());
-            if (!var2.isPaused() && this.j != null) {
-               boolean var7 = this.y.a(this.j.z(), var3);
-               if (this.y.r()) {
-                  this.e.p();
+            this.r += var5;
+            this.n.g(this.W.P().intValue());
+            if (!var2.isPaused() && this.T != null) {
+               boolean var7 = this.d.K(this.T.U(), var3);
+               if (this.d.Q()) {
+                  this.n.c();
                }
 
-               if (var7 || this.y.r()) {
-                  if (!this.y.X().isEmpty()) {
-                     this.e.y(this.X.getValue() ? 8.0 : this.D(var1));
+               if (var7 || this.d.Q()) {
+                  if (!this.d.Y().isEmpty()) {
+                     this.n.s(this.c.P() ? 8.0 : this.F(var1));
                   }
 
-                  this.e.q(this.y.X(), this.y.U());
+                  this.n.j(this.d.Y(), this.d.P());
                }
             }
 
-            if (this.x == null) {
-               this.x = new ok();
+            if (this.B == null) {
+               this.B = new od();
             }
 
-            double var13 = this.w.i("Floating") ? 1.5 : (this.w.i("Dreamy") ? 2.2 : 0.65);
-            List var9 = this.e
-               .p(
+            double var13 = this.P.S("Floating") ? 1.5 : (this.P.S("Dreamy") ? 2.2 : 0.65);
+            List var9 = this.n
+               .m(
                   var1.pos.x,
                   var1.pos.y,
                   var1.pos.z,
-                  this.a.set(var1.orientation),
+                  this.b.set(var1.orientation),
                   1.0F / var1.projectionMatrix.m00(),
                   1.0F / var1.projectionMatrix.m11(),
-                  this.g.getValue(),
+                  this.t.P(),
                   var13,
                   var5,
-                  this.x::B
+                  this.B::k
                );
-            int var10 = this.C.i("Pop") ? 1 : (this.C.i("Wave") ? 2 : 0);
-            int var11 = this.k.getValue() ? rv.e | 0xFF000000 : 0;
+            int var10 = this.O.S("Pop") ? 1 : (this.O.S("Wave") ? 2 : 0);
+            int var11 = this.Q.P() ? com.larpclient.f.C | 0xFF000000 : 0;
             List var12 = var9.stream()
                .map(
-                  var3x -> new ok.p(
+                  var3x -> new od.l(
                      var3x.text(),
                      var3x.x(),
                      var3x.y(),
                      var3x.z(),
                      var3x.scale(),
-                     oh.S(this.K.getValue(), var10 == 0 ? var3x.opacity() : 1.0),
+                     _3.U(this.R.P(), var10 == 0 ? var3x.opacity() : 1.0),
                      (float)var3x.qx(),
                      (float)var3x.qy(),
                      (float)var3x.qz(),
                      (float)var3x.qw(),
                      true,
-                     var10 == 0 && var11 == 0 ? null : new ok.f(var10, Math.min(1.0, var3x.age() / 0.75), var3x.exit(), this.R, var11)
+                     var10 == 0 && var11 == 0 ? null : new od.w(var10, Math.min(1.0, var3x.age() / 0.75), var3x.exit(), this.r, var11)
                   )
                )
                .toList();
-            this.x.I(var12, var1);
-            this.o = (boolean)(!var12.isEmpty() ? 1 : 0);
-            this.N = (boolean)(this.o && this.J.getValue() ? 1 : 0);
+            this.B.H(var12, var1);
+            this.I = (boolean)(!var12.isEmpty() ? 1 : 0);
+            this.G = (boolean)(this.I && this.E.P() ? 1 : 0);
          }
       }
    }
 
-   private double D(CameraRenderState var1) {
-      Vector3d var2 = new Vector3d(0.0, 0.0, -1.0).rotate(this.a.set(var1.orientation)).normalize();
+   private double F(CameraRenderState var1) {
+      Vector3d var2 = new Vector3d(0.0, 0.0, -1.0).rotate(this.b.set(var1.orientation)).normalize();
       Vec3 var3 = var1.pos.add(var2.x * 7.99, var2.y * 7.99, var2.z * 7.99);
-      et.d var4 = et.Q(getMc().level, var1.pos, var3);
+      w8.n var4 = w8.G(getMc().level, var1.pos, var3);
       return var4 == null ? 8.0 : Math.max(0.6, var1.pos.distanceTo(var4.point()) - 0.35);
    }
 
-   public boolean I() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.N && this.x != null && this.x.S();
+   public boolean L() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.G && this.B != null && this.B.Y();
    }
 
-   public void e(PoseStack var1, CameraRenderState var2, boolean var3) {
+   public void N(PoseStack var1, CameraRenderState var2, boolean var3) {
       if (this.isEnabled()) {
-         if (this.isRuntimeActive() && this.o && this.x != null && this.V == getMc().level) {
-            if (!var3 || this.N) {
-               this.x.a(var1, var2, this.X.getValue(), !var3, var3 ? 0.3 : 1.0);
+         if (this.isRuntimeActive() && this.I && this.B != null && this.C == getMc().level) {
+            if (!var3 || this.G) {
+               this.B.i(var1, var2, this.c.P(), !var3, var3 ? 0.3 : 1.0);
             }
          }
       }
    }
 
-   public void w() {
-      if (this.x != null) {
-         this.x.E();
+   public void r() {
+      if (this.B != null) {
+         this.B.J();
       }
    }
 }

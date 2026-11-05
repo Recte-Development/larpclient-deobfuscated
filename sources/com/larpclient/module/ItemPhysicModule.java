@@ -1,26 +1,26 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
+import com.larpclient.mt;
 
 public final class ItemPhysicModule extends Module {
-   private static ItemPhysicModule j;
-   private final lp C = this.addSetting(new lp("Physics", "Dropped-item presentation", "Normal", "Normal", "2D"));
+   private static ItemPhysicModule z;
+   private final d6 N = this.addSetting(new d6("Physics", "Dropped-item presentation", "Normal", "Normal", "2D"));
 
    public ItemPhysicModule() {
       super("Item Physic", "Rest dropped items on the ground, float them in water and tumble them in the air", Category.VISUALS, -1);
-      j = this;
+      z = this;
    }
 
-   public static ItemPhysicModule S() {
-      return j;
+   public static ItemPhysicModule z() {
+      return z;
    }
 
-   public boolean D() {
-      return this.C.i("2D");
+   public boolean v() {
+      return this.N.S("2D");
    }
 
    @Override
    public void onEnable() {
-      r4.V("ItemPhysic", "Dropped-item render choreography enabled; native physics retained");
+      mt.K("ItemPhysic", "Dropped-item render choreography enabled; native physics retained");
    }
 }

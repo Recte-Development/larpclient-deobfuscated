@@ -1,119 +1,106 @@
 package com.larpclient;
 
-public final class xh {
-   private static final double o = 0.5;
-   private Object l;
-   private yi M;
-   private xh.m O = xh.m.Q;
-   private double i;
-   private double S = Double.NaN;
-   private double m;
-   private final xh.n R = new xh.n();
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.function.UnaryOperator;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.StagedVertexBuffer;
+import net.minecraft.client.renderer.StagedVertexBuffer.Draw;
+import net.minecraft.client.renderer.StagedVertexBuffer.ExecuteInfo;
+import net.minecraft.client.renderer.rendertype.PreparedRenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 
-   public xh.m v() {
-      return this.O;
+public final class xh implements AutoCloseable {
+   private final StagedVertexBuffer u = new StagedVertexBuffer(() -> "Larp effects", 524288);
+   private final LinkedHashMap<RenderType, Draw> O = new LinkedHashMap<>();
+   private RenderType a;
+   private VertexConsumer w;
+
+   public VertexConsumer U(RenderType var1) {
+      if (var1 == this.a && this.w != null) {
+         return this.w;
+      }
+
+      this.a = var1;
+      return this.w = this.u
+         .getVertexBuilder(
+            this.O
+               .computeIfAbsent(
+                  var1,
+                  var1x -> this.u
+                     .appendDraw(var1x.format(), var1x.primitiveTopology(), var1x.sortOnUpload() ? RenderSystem.getProjectionType().vertexSorting() : null)
+               )
+         );
    }
 
-   public void c() {
-      this.l = null;
-      this.M = null;
-      this.S = Double.NaN;
-      this.O = xh.m.Q;
+   public void b() {
+      this.g(UnaryOperator.identity());
    }
 
-   public void P() {
-      if (this.l != null) {
-         this.O = xh.m.z;
-      }
-   }
+   public void g(UnaryOperator<PreparedRenderType> var1) {
+      if (!this.O.isEmpty()) {
+         this.a = null;
+         this.w = null;
 
-   public boolean Y(double var1, double var3) {
-      if (this.l != null && this.O == xh.m.Q) {
-         this.O = xh.m.t;
-         this.i = var1;
-         this.m = this.M.p / (this.M.b * Math.clamp(Double.isFinite(var3) ? var3 : 2.0, 0.5, 2.0));
-         return true;
-      } else {
-         return false;
-      }
-   }
+         try {
+            this.u.upload();
 
-   public xh.n X(Object var1, yi var2, double var3, float var5, boolean var6) {
-      int var7 = this.R.k == 2 ? 1 : 0;
-      this.R.J();
-      if (var1 == null) {
-         this.c();
-         return this.R;
-      }
+            for (Entry var3 : this.O.entrySet()) {
+               if (!c((RenderType)var3.getKey())) {
+                  ExecuteInfo var4 = this.u.getExecuteInfo((Draw)var3.getValue());
+                  if (var4 != null) {
+                     PreparedRenderType var5 = var1.apply(((RenderType)var3.getKey()).prepare());
+                     if (!t_.V(var5, var4) && !_v.j(var5, var4)) {
+                        hj.V(var5, var4);
+                     }
 
-      if (!Double.isFinite(var3)) {
-         var3 = 0.0;
-      }
+                     kx.U("Effect draw groups", 1L);
+                  }
+               }
+            }
 
-      if (var1 != this.l || var2 != this.M) {
-         var7 = 0;
-         this.l = var1;
-         this.M = var2;
-         this.O = xh.m.k;
-         this.i = var3;
-      } else if (Double.isFinite(this.S) && (var3 < this.S || var3 - this.S > 0.500001)) {
-         var7 = 0;
-         this.O = xh.m.Q;
-      }
+            for (Entry var10 : this.O.entrySet()) {
+               if (c((RenderType)var10.getKey())) {
+                  ExecuteInfo var11 = this.u.getExecuteInfo((Draw)var10.getValue());
+                  if (var11 != null) {
+                     PreparedRenderType var12 = var1.apply(((RenderType)var10.getKey()).prepare());
+                     if (!t_.V(var12, var11) && !_v.j(var12, var11)) {
+                        hj.V(var12, var11);
+                     }
 
-      this.S = var3;
-      var5 = Float.isFinite(var5) ? Math.clamp(var5, 0.0F, 1.0F) : 0.0F;
-      this.R.K = (boolean)(var7 == 0 || this.O != xh.m.z && !(var5 > 0.0F) ? 0 : 1);
-      if (var5 > 0.0F) {
-         this.O = xh.m.z;
-      } else if (this.O == xh.m.z) {
-         this.O = xh.m.Q;
-      }
-
-      if (this.O == xh.m.k) {
-         float var8 = (float)Math.clamp((var3 - this.i) / this.M.H, 0.0, 1.0);
-         this.R.k = 1;
-         this.R.r = var8;
-         if (var8 >= 1.0F) {
-            this.O = xh.m.Q;
+                     kx.U("Effect draw groups", 1L);
+                  }
+               }
+            }
+         } finally {
+            this.O.clear();
+            this.u.endDraw();
          }
-      } else if (this.O == xh.m.t) {
-         float var10 = (float)Math.clamp((var3 - this.i) / this.m, 0.0, 1.0);
-         this.R.k = 2;
-         this.R.r = var10;
-         if (var10 >= 1.0F) {
-            this.O = xh.m.Q;
-            this.R.J();
-         }
-      } else if (this.O == xh.m.z) {
-         this.R.k = 3;
-         this.R.r = var5;
       }
-
-      if (var6 && this.O == xh.m.Q) {
-         this.R.I = this.R.I + 0.003F * (float)Math.sin(var3 * 1.8);
-      }
-
-      return this.R;
    }
 
-   public enum m {
-      k,
-      Q,
-      t,
-      z;
+   static boolean c(RenderType var0) {
+      return var0.pipeline() == RenderPipelines.GLINT;
    }
 
-   public static final class n {
-      public float I;
-      public float r;
-      public int k;
-      public boolean K;
+   public void o() {
+      this.a = null;
+      this.w = null;
+      this.O.clear();
+      this.u.endDraw();
+   }
 
-      private void J() {
-         this.I = this.r = 0.0F;
-         this.k = 0;
-         this.K = (boolean)0;
-      }
+   public void s() {
+      this.O.clear();
+      this.a = null;
+      this.w = null;
+      this.u.endFrame();
+   }
+
+   @Override
+   public void close() {
+      this.u.close();
    }
 }

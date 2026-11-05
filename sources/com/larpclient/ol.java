@@ -1,45 +1,68 @@
 package com.larpclient;
 
-public enum ol {
-   G(5.0, 48, 12.0, 0.6, 0.38, 12, 0.32),
-   r(8.0, 96, 16.0, 0.82, 0.55, 18, 0.44),
-   R(10.0, 128, 18.0, 0.94, 0.65, 24, 0.5);
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-   public final double p;
-   public final double h;
-   public final double D;
-   public final double j;
-   public final double c;
-   public final int y;
-   public final int J;
+public final class ol {
+   private static final Pattern w = Pattern.compile("(?<![\\p{N}.])([1-9])(?:\\s*\\.\\s*(1))?(?![\\p{N}.])");
 
-   ol(double var3, int var5, double var6, double var8, double var10, int var12, double var13) {
-      this.p = var3;
-      this.y = var5;
-      this.h = var6;
-      this.D = var8;
-      this.j = var10;
-      this.J = var12;
-      this.c = var13;
+   private ol() {
    }
 
-   public int t() {
-      return Math.min(this.y, lo.H(this.y));
+   private static String y(String var0) {
+      return Normalizer.normalize(var0, Form.NFKC).replaceAll("[§&][0-9a-fk-orxA-FK-ORX]", "").replaceAll("\\p{Cf}", "").strip();
    }
 
-   public int d() {
-      return Math.max(8, lo.H(this.J));
+   public static int N(String var0) {
+      Matcher var1 = w.matcher(y(var0));
+      if (!var1.find()) {
+         return -1;
+      }
+
+      int var2 = Integer.parseInt(var1.group(1));
+      return var1.find() ? -1 : var2;
    }
 
-   public boolean y() {
-      return lo.q != jk.x.i;
+   public static boolean U(String var0) {
+      Matcher var1 = w.matcher(y(var0));
+      return N(var0) > 0 && var1.find() && var1.group(2) != null;
    }
 
-   public static ol W(String var0) {
-      return switch (var0) {
-         case "Subtle" -> G;
-         case "Cinematic" -> R;
-         default -> r;
-      };
+   public static ol.e n(int var0, int var1, boolean var2, int var3) {
+      if (var0 >= 1 && var0 <= 9 && var1 >= 1 && var1 <= 9) {
+         if (var2 ? var0 <= var1 : var1 <= var0) {
+            ArrayList var4 = new ArrayList();
+
+            for (int var5 = 1; var5 <= 9; var5++) {
+               for (int var6 = 1; var6 <= 9; var6++) {
+                  if ((var2 ? var5 > var6 : var6 > var5) && (var5 == var0 || var6 == var1)) {
+                     var4.add(new ol.e(var5, var6));
+                  }
+               }
+            }
+
+            if (var4.isEmpty()) {
+               for (int var7 = 1; var7 <= 9; var7++) {
+                  for (int var8 = 1; var8 <= 9; var8++) {
+                     if (var2 ? var7 > var8 : var8 > var7) {
+                        var4.add(new ol.e(var7, var8));
+                     }
+                  }
+               }
+            }
+
+            return (ol.e)var4.get(Math.floorMod(var3, var4.size()));
+         } else {
+            return new ol.e(var0, var1);
+         }
+      } else {
+         throw new IllegalArgumentException("Ranks must be 1-9");
+      }
+   }
+
+   public record e(int host, int viewer) {
    }
 }

@@ -1,38 +1,38 @@
 package com.larpclient.module;
 
-import com.larpclient.yu;
+import com.larpclient.te;
 import java.util.Set;
 import net.minecraft.world.phys.Vec3;
 
 public final class AirStuckModule extends Module {
-   private static AirStuckModule t;
+   private static AirStuckModule H;
 
    public AirStuckModule() {
       super("AirStuck", "Hold your position", Category.MOVEMENT, -1);
-      t = this;
+      H = this;
    }
 
-   public static AirStuckModule H() {
-      return t;
+   public static AirStuckModule X() {
+      return H;
    }
 
-   public boolean D() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.isInGame() && yu.r() && !mc.player.isPassenger();
-   }
-
-   @Override
-   public Module.b getTickPhase() {
-      return Module.b.N;
+   public boolean U() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.isInGame() && te.i() && !mc.player.isPassenger();
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Module.f getTickPhase() {
+      return Module.f.b;
+   }
+
+   @Override
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
    public void onTick() {
-      int var10000 = this.D();
+      int var10000 = this.U();
       boolean var2 = false;
       byte var1 = (byte)var10000;
       var10000 = Integer.signum(var1);
@@ -43,6 +43,6 @@ public final class AirStuckModule extends Module {
 
    @Override
    public String getStatus() {
-      return this.D() ? "Holding" : "";
+      return this.U() ? "Holding" : "";
    }
 }

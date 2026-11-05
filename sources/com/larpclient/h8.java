@@ -1,66 +1,116 @@
 package com.larpclient;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 
-public final class h8 {
-   private final int[] e = new int[4];
-   private int L;
+public abstract class h8 extends Screen implements o3 {
+   protected final List<b> G = new ArrayList<>();
+   protected b q;
+   protected b f;
 
-   public void w() {
-      Arrays.fill(this.e, 0);
-      this.L = 0;
+   protected h8(String var1) {
+      super(Component.literal(var1));
    }
 
-   public int S(int var1) {
-      if (this.L == 0) {
-         this.L = var1;
+   protected void z() {
+      for (b var2 : this.G) {
+         var2.blur();
       }
 
-      ArrayList var2 = new ArrayList();
-      int var3 = this.e[1] + this.e[2] + this.e[3];
+      this.G.clear();
+      this.q = this.f = null;
+   }
 
-      for (int var4 = 1; var4 <= 3; var4++) {
-         if (this.e[var4] < 3 && (var4 == this.L || this.e[var4] < 2 || this.e[this.L] == 3) && (var4 != this.L || this.e[var4] != 2 || var3 >= 4)) {
-            for (int var5 = this.e[var4]; var5 < 3; var5++) {
-               var2.add(var4);
+   protected boolean accepts(b var1, double var2, double var4) {
+      return var1.contains(var2, var4);
+   }
+
+   public boolean mouseClicked(MouseButtonEvent var1, boolean var2) {
+      if (this.q != null && this.q.captureMouse(mo.Z(var1))) {
+         return true;
+      }
+
+      for (b var4 : this.G) {
+         if (this.accepts(var4, var1.x(), var1.y())) {
+            if (this.q != null && this.q != var4) {
+               this.q.blur();
+            }
+
+            this.q = var4;
+            var4.l = (boolean)1;
+            var4.R = (boolean)0;
+            if (var4.click(var1.x(), var1.y(), mo.Z(var1))) {
+               this.f = var4;
+               return true;
             }
          }
       }
 
-      if (var2.isEmpty()) {
-         return this.L;
+      if (this.q != null) {
+         this.q.blur();
       }
 
-      int var6 = (Integer)var2.get(ThreadLocalRandom.current().nextInt(var2.size()));
-      this.e[var6]++;
-      return var6;
+      this.q = null;
+      return false;
    }
 
-   public static int[] R(int[] var0) {
-      int[] var1 = new int[3];
-      int[] var2 = new int[9];
-      if (var0.length != 9) {
-         throw new IllegalArgumentException("Horse Racing requires nine items.");
+   public boolean mouseDragged(MouseButtonEvent var1, double var2, double var4) {
+      if (this.f != null) {
+         this.f.drag(var1.x(), var1.y());
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   public boolean mouseReleased(MouseButtonEvent var1) {
+      if (this.f != null) {
+         this.f.release();
       }
 
-      for (int var3 = 0; var3 < 9; var3++) {
-         int var4 = var0[var3];
-         if (var4 < 0 || var4 > 2) {
-            throw new IllegalArgumentException("Use three armor types, three of each.");
+      this.f = null;
+      return true;
+   }
+
+   public boolean keyPressed(KeyEvent var1) {
+      if (mo.O(var1) != 258) {
+         return this.q != null && this.q.key(mo.O(var1)) ? true : super.keyPressed(var1);
+      }
+
+      int var2 = (var1.modifiers() & 1) != 0 ? -1 : 1;
+      int var3 = this.q == null ? (var2 > 0 ? -1 : 0) : this.G.indexOf(this.q);
+      if (this.q != null) {
+         this.q.blur();
+      }
+
+      for (int var4 = 0; var4 < this.G.size(); var4++) {
+         var3 = Math.floorMod(var3 + var2, this.G.size());
+         b var5 = this.G.get(var3);
+         if (var5.X && var5.D) {
+            this.q = var5;
+            var5.l = (boolean)1;
+            var5.R = (boolean)1;
+            this.focusChanged(var5);
+            break;
          }
-
-         var1[var4]++;
-         var2[var3] = var4 + 1;
       }
 
-      for (int var6 : var1) {
-         if (var6 != 3) {
-            throw new IllegalArgumentException("Use three armor types, three of each.");
-         }
-      }
+      return true;
+   }
 
-      return var2;
+   protected void focusChanged(b var1) {
+   }
+
+   public boolean charTyped(CharacterEvent var1) {
+      return this.q != null && this.q.character(var1.codepoint());
+   }
+
+   public boolean isPauseScreen() {
+      return false;
    }
 }

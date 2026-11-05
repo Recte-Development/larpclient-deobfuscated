@@ -1,141 +1,110 @@
 package com.larpclient;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Locale;
-import java.util.function.Consumer;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class x0 {
-   private static final BigDecimal L = new BigDecimal("9000000000000000");
-   private static final String l = "Usage: /pay <player> <amount>, e.g. /pay Alex 1.5m";
-   public static int E;
+   public static x0.s B(Vec3 var0, float var1, float var2) {
+      double var3 = Math.toRadians(var1);
+      Vec3 var5 = new Vec3(-Math.sin(var3), 0.0, Math.cos(var3));
+      Vec3 var6 = new Vec3(var5.x, Math.clamp(-Math.tan(Math.toRadians(var2)), -5.0, 5.0), var5.z);
+      return new x0.s(var0.add(var5.scale(0.3)), var6.scale(0.6 / var6.length() + 0.5));
+   }
+
+   public static x0.l X(Vec3 var0, Vec3 var1, int var2) {
+      double var3 = var1.x - var0.x;
+      double var5 = var1.z - var0.z;
+      double var7 = Math.hypot(var3, var5);
+      if (var7 > 0.5 && Double.isFinite(var1.y)) {
+         float var9 = (float)Math.toDegrees(Math.atan2(var5, var3)) - 90.0F;
+         float var10 = -35.0F;
+         float var11 = 35.0F;
+         if (B(var0, var9, var10, var7, var1.y, var2) < 0.0) {
+            return null;
+         }
+
+         if (B(var0, var9, var11, var7, var1.y, var2) > 0.0) {
+            return null;
+         }
+
+         for (int var12 = 0; var12 < 32; var12++) {
+            float var13 = (var10 + var11) / 2.0F;
+            if (B(var0, var9, var13, var7, var1.y, var2) > 0.0) {
+               var10 = var13;
+            } else {
+               var11 = var13;
+            }
+         }
+
+         float var14 = (var10 + var11) / 2.0F;
+         int var15 = z(var0, var9, var14, var7, var2);
+         return var15 < 0 ? null : new x0.l(var9, var14, var15);
+      } else {
+         return null;
+      }
+   }
+
+   static double B(Vec3 var0, float var1, float var2, double var3, double var5, int var7) {
+      x0.s var8 = B(var0, var1, var2);
+
+      for (int var9 = 0; var9 < var7; var9++) {
+         Vec3 var10 = var8.position();
+         Vec3 var11 = var8.collisionEnd();
+         double var12 = Math.hypot(var10.x - var0.x, var10.z - var0.z);
+         double var14 = Math.hypot(var11.x - var0.x, var11.z - var0.z);
+         if (var14 >= var3) {
+            double var16 = var14 - var12 < 1.0E-9 ? 1.0 : Math.clamp((var3 - var12) / (var14 - var12), 0.0, 1.0);
+            return var10.y + (var11.y - var10.y) * var16 - var5;
+         }
+
+         var8 = var8.next();
+      }
+
+      return Double.NEGATIVE_INFINITY;
+   }
+
+   private static int z(Vec3 var0, float var1, float var2, double var3, int var5) {
+      x0.s var6 = B(var0, var1, var2);
+
+      for (int var7 = 0; var7 < var5; var7++) {
+         Vec3 var8 = var6.collisionEnd();
+         if (Math.hypot(var8.x - var0.x, var8.z - var0.z) >= var3) {
+            return var7 + 1;
+         }
+
+         var6 = var6.next();
+      }
+
+      return -1;
+   }
+
+   public static double L(Vec3 var0, Vec3 var1, AABB var2) {
+      return var2.contains(var0) ? 0.0 : var2.clip(var0, var1).<Double>map(var0::distanceToSqr).orElse(Double.POSITIVE_INFINITY);
+   }
+
+   public static double a(int var0) {
+      return Math.clamp((var0 - 1) / 20.0, 0.0, 0.3);
+   }
+
+   public static Vec3 j(Vec3 var0, int var1) {
+      double var2 = var0.length();
+      return var0.scale((var2 > 0.6 ? 0.6 / var2 : 1.0) * Math.min(var1, 6));
+   }
 
    private x0() {
    }
 
-   public static boolean B(String var0) {
-      if (var0 == null) {
-         return false;
-      }
-
-      String var1 = var0.strip();
-      if (var1.startsWith("/")) {
-         var1 = var1.substring(1);
-      }
-
-      int var2 = 0;
-
-      while (var2 < var1.length() && !Character.isWhitespace(var1.charAt(var2))) {
-         var2++;
-      }
-
-      String var3 = var1.substring(0, var2).toLowerCase(Locale.ROOT);
-      return var3.equals("pay") || var3.matches("[a-z0-9_.-]+:pay");
+   public record l(float yaw, float pitch, int ticks) {
    }
 
-   public static x0.w W(String var0) {
-      if (var0 == null) {
-         return new x0.w(null, null, "Usage: /pay <player> <amount>, e.g. /pay Alex 1.5m");
+   public record s(Vec3 position, Vec3 velocity) {
+      public Vec3 collisionEnd() {
+         return this.position.add(this.velocity);
       }
 
-      String var1 = var0.strip();
-      if (var1.startsWith("/")) {
-         var1 = var1.substring(1);
-      }
-
-      String[] var2 = var1.split("(?U)\\s+");
-      if (var2.length == 3 && B(var1)) {
-         if (!var2[1].matches("[A-Za-z0-9_]{1,16}")) {
-            return new x0.w(null, null, "Use a Minecraft player name (1 to 16 letters, digits or underscores).");
-         }
-
-         String var3 = var2[2];
-         if (var3.length() <= 40 && var3.matches("\\$?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\\.[0-9]{1,6})?[kKmMbBtT]?")) {
-            String var4 = var3.replace("$", "").replace(",", "").toLowerCase(Locale.ROOT);
-
-            byte var5 = switch (var4.charAt(var4.length() + -1)) {
-               case 'b' -> 9;
-               case 'k' -> 3;
-               case 'm' -> 6;
-               case 't' -> 12;
-               default -> 0;
-            };
-            if (var5 != 0) {
-               var4 = var4.substring(0, var4.length() + -1);
-            }
-
-            BigDecimal var6 = new BigDecimal(var4).scaleByPowerOfTen(var5).stripTrailingZeros();
-            return var6.signum() > 0 && var6.compareTo(L) <= 0 && var6.scale() <= 2
-               ? new x0.w(var2[1], var6, null)
-               : new x0.w(null, null, "Amount must be positive, at most 9 quadrillion, with at most two decimal places after expansion.");
-         } else {
-            return new x0.w(null, null, "Use a positive amount with optional commas and k, m, b or t.");
-         }
-      } else {
-         return new x0.w(null, null, "Usage: /pay <player> <amount>, e.g. /pay Alex 1.5m");
-      }
-   }
-
-   public static boolean v(boolean var0, String var1, Consumer<x0.w> var2, Consumer<RuntimeException> var3) {
-      if (var0 && B(var1)) {
-         try {
-            var2.accept(W(var1));
-         } catch (RuntimeException var7) {
-            RuntimeException var4 = var7;
-
-            try {
-               var3.accept(var4);
-            } catch (RuntimeException var6) {
-            }
-         }
-
-         return true;
-      } else {
-         return false;
-      }
-   }
-
-   public static String V(BigDecimal var0) {
-      String var2 = "";
-      int var1 = E;
-      byte var3 = 0;
-      if (var0.compareTo(BigDecimal.valueOf(1000000000000L)) >= 0) {
-         var3 = 12;
-         var2 = "T";
-         if (var1 == 0) {
-            return var0.scaleByPowerOfTen(-var3).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString() + var2;
-         }
-
-         mo.A = (boolean)(mo.A ? 0 : 1);
-      }
-
-      if (var0.compareTo(BigDecimal.valueOf(1000000000L)) >= 0) {
-         var3 = 9;
-         var2 = "B";
-         if (var1 == 0) {
-            return var0.scaleByPowerOfTen(-var3).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString() + var2;
-         }
-      }
-
-      if (var0.compareTo(BigDecimal.valueOf(1000000L)) >= 0) {
-         var3 = 6;
-         var2 = "M";
-         if (var1 == 0) {
-            return var0.scaleByPowerOfTen(-var3).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString() + var2;
-         }
-      }
-
-      if (var0.compareTo(BigDecimal.valueOf(1000L)) >= 0) {
-         var3 = 3;
-         var2 = "k";
-      }
-
-      return var0.scaleByPowerOfTen(-var3).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString() + var2;
-   }
-
-   public record w(String player, BigDecimal amount, String error) {
-      public boolean valid() {
-         return this.error == null;
+      public x0.s next() {
+         Vec3 var1 = this.velocity.add(0.0, -0.03, 0.0);
+         return new x0.s(this.position.add(var1), var1.scale(0.92));
       }
    }
 }

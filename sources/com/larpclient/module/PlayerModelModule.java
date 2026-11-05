@@ -1,11 +1,12 @@
 package com.larpclient.module;
 
-import com.larpclient._i;
-import com.larpclient.jk;
-import com.larpclient.r4;
-import com.larpclient.rh;
-import com.larpclient.rr;
-import com.larpclient.y2;
+import com.larpclient.hl;
+import com.larpclient.m5;
+import com.larpclient.mk;
+import com.larpclient.mt;
+import com.larpclient.tq;
+import com.larpclient.ww;
+import com.larpclient.xh;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import java.util.Locale;
@@ -19,125 +20,125 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 public final class PlayerModelModule extends Module {
-   private static PlayerModelModule g;
-   private final lc k = this.addSetting(new lc("Scale", "Visual character size", 1.0, 0.5, 2.0, 0.05));
-   private final ln Q = this.addSetting(new ln("Show Timing", "Show CPU model submission timing", false));
-   private Object j;
+   private static PlayerModelModule K;
+   private final d9 I = this.addSetting(new d9("Scale", "Visual character size", 1.0, 0.5, 2.0, 0.05));
+   private final dh x = this.addSetting(new dh("Show Timing", "Show CPU model submission timing", false));
+   private Object Q;
    private Object n;
-   private long E;
-   private long H;
-   private long l;
-   private boolean u;
-   private LivingEntityRenderState L;
-   private int o = -1;
-   private final Matrix4f W = new Matrix4f();
-   private float Y;
-   private boolean z;
-   private com.larpclient.lv D;
+   private long d;
+   private long j;
+   private long v;
+   private boolean Z;
+   private LivingEntityRenderState e;
+   private int f = -1;
+   private final Matrix4f C = new Matrix4f();
+   private float u;
+   private boolean D;
+   private mk W;
 
    public PlayerModelModule() {
       super("Player Model", "Replace your rendered player with Tung Tung Tung Sahur", Category.VISUALS, -1);
-      g = this;
+      K = this;
    }
 
-   public static PlayerModelModule r() {
-      return g;
+   public static PlayerModelModule Y() {
+      return K;
    }
 
-   public List<l6<?>> S() {
-      return List.of(this.k);
+   public List<df<?>> u() {
+      return List.of(this.I);
    }
 
-   public List<l6<?>> N() {
-      return List.of(this.Q);
+   public List<df<?>> T() {
+      return List.of(this.x);
    }
 
-   public boolean n() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.o != jk.v && _i.V();
+   public boolean u() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.f != m5.k && ww.j();
    }
 
-   public boolean v(EntityRenderState var1) {
-      return !this.isEnabled() ? false : this.n() && this.L == var1;
+   public boolean f(EntityRenderState var1) {
+      return !this.isEnabled() ? false : this.u() && this.e == var1;
    }
 
-   public void n(LivingEntityRenderState var1) {
+   public void K(LivingEntityRenderState var1) {
       if (this.isEnabled()) {
-         this.L = var1;
+         this.e = var1;
       }
    }
 
    @Override
    public void onEnable() {
-      this.b();
+      this.a();
 
       try {
-         this.r();
+         this.x();
       } catch (Exception var2) {
-         r4.r("PlayerModel", "Mesh stage failed; retaining native body", var2);
+         mt.P("PlayerModel", "Mesh stage failed; retaining native body", var2);
          this.setEnabled(false);
       }
    }
 
-   private void r() {
-      _i.h();
-      if (this.D == null || this.D.w() != _i.P()) {
-         this.D = new com.larpclient.lv(_i.P());
+   private void x() {
+      ww.n();
+      if (this.W == null || this.W.L() != ww.r()) {
+         this.W = new mk(ww.r());
       }
 
-      r4.g("PlayerModel", "Sahur ready: walk rig, {} triangles, scale={}", this.D.y().triangles(), this.k.getValue());
+      mt.U("PlayerModel", "Sahur ready: walk rig, {} triangles, scale={}", this.W.b().triangles(), this.I.P());
    }
 
    @Override
    public void onDisable() {
-      this.b();
+      this.a();
    }
 
-   public void b() {
-      this.u = (boolean)0;
-      this.L = null;
-      this.j = this.n = null;
-      this.l = this.H = 0L;
+   public void a() {
+      this.Z = (boolean)0;
+      this.e = null;
+      this.Q = this.n = null;
+      this.v = this.j = 0L;
    }
 
-   public void x() {
-      this.b();
-      this.o = jk.v;
+   public void O() {
+      this.a();
+      this.f = m5.k;
    }
 
-   public void g(float var1, Vec3 var2) {
+   public void r(float var1, Vec3 var2) {
       if (this.isEnabled()) {
-         this.u = (boolean)0;
-         if (this.isRuntimeActive() && this.isInGame() && this.o != jk.v) {
-            if (!_i.V() || this.D == null || this.D.w() != _i.P()) {
-               this.r();
+         this.Z = (boolean)0;
+         if (this.isRuntimeActive() && this.isInGame() && this.f != m5.k) {
+            if (!ww.j() || this.W == null || this.W.L() != ww.r()) {
+               this.x();
             }
 
-            if (this.n() && this.isInGame()) {
+            if (this.u() && this.isInGame()) {
                LocalPlayer var3 = mc.player;
-               if (this.j != var3 || this.n != mc.level) {
-                  LivingEntityRenderState var4 = this.L;
-                  this.b();
-                  this.L = var4;
-                  this.j = var3;
+               if (this.Q != var3 || this.n != mc.level) {
+                  LivingEntityRenderState var4 = this.e;
+                  this.a();
+                  this.e = var4;
+                  this.Q = var3;
                   this.n = mc.level;
                }
 
-               if (!mc.options.getCameraType().isFirstPerson() || rr.o()) {
-                  if (this.L != null) {
-                     this.Y = this.k.getValue().floatValue();
-                     this.z = var3.isCrouching();
-                     this.D.Q(this.L.walkAnimationPos, this.L.walkAnimationSpeed);
-                     rh.o(
-                        this.W,
-                        _i.P(),
+               if (!mc.options.getCameraType().isFirstPerson() || tq.f()) {
+                  if (this.e != null) {
+                     this.u = this.I.P().floatValue();
+                     this.D = var3.isCrouching();
+                     this.W.L(this.e.walkAnimationPos, this.e.walkAnimationSpeed);
+                     hl.Q(
+                        this.C,
+                        ww.r(),
                         (float)(Mth.lerp(var1, var3.xOld, var3.getX()) - var2.x),
                         (float)(Mth.lerp(var1, var3.yOld, var3.getY()) - var2.y),
                         (float)(Mth.lerp(var1, var3.zOld, var3.getZ()) - var2.z),
-                        (float)Math.toRadians(Feature3DUIModule.t(var3, Mth.rotLerp(var1, var3.yBodyRotO, var3.yBodyRot), var1)),
-                        this.Y,
-                        this.z
+                        (float)Math.toRadians(Feature3DUIModule.j(var3, Mth.rotLerp(var1, var3.yBodyRotO, var3.yBodyRot), var1)),
+                        this.u,
+                        this.D
                      );
-                     this.u = (boolean)1;
+                     this.Z = (boolean)1;
                   }
                }
             }
@@ -145,41 +146,41 @@ public final class PlayerModelModule extends Module {
       }
    }
 
-   public void L(PoseStack var1, y2 var2) {
+   public void a(PoseStack var1, xh var2) {
       if (this.isEnabled()) {
-         if (this.u && this.n() && this.j == mc.player && this.n == mc.level) {
+         if (this.Z && this.u() && this.Q == mc.player && this.n == mc.level) {
             long var3 = System.nanoTime();
 
             try {
-               _i.s(var1, var2, this.W, this.D.j(), this.D.y().colors());
+               ww.G(var1, var2, this.C, this.W.Y(), this.W.b().colors());
             } catch (RuntimeException var6) {
-               r4.r("PlayerModel", "Submission failed; restoring native body", var6);
+               mt.P("PlayerModel", "Submission failed; restoring native body", var6);
                this.setEnabled(false);
             }
 
-            if (this.Q.getValue()) {
-               this.H = this.H + (System.nanoTime() - var3);
-               this.l++;
-               if (System.nanoTime() - this.E > 1000000000L) {
+            if (this.x.P()) {
+               this.j = this.j + (System.nanoTime() - var3);
+               this.v++;
+               if (System.nanoTime() - this.d > 1000000000L) {
                   mc.player
                      .sendOverlayMessage(
                         Component.literal(
-                           String.format(Locale.ROOT, "%s: %.3f ms CPU/frame", "Tung Tung Tung Sahur", this.H / 1000000.0 / Math.max(1L, this.l))
+                           String.format(Locale.ROOT, "%s: %.3f ms CPU/frame", "Tung Tung Tung Sahur", this.j / 1000000.0 / Math.max(1L, this.v))
                         )
                      );
-                  this.E = System.nanoTime();
-                  this.H = this.l = 0L;
+                  this.d = System.nanoTime();
+                  this.j = this.v = 0L;
                }
             }
          }
       }
    }
 
-   public boolean B(EntityRenderState var1, HumanoidArm var2, PoseStack var3) {
+   public boolean g(EntityRenderState var1, HumanoidArm var2, PoseStack var3) {
       if (this.isEnabled()) {
-         if (this.v(var1) && this.u) {
+         if (this.f(var1) && this.Z) {
             int var4 = var2 == HumanoidArm.RIGHT ? 1 : 0;
-            rh.q(var3, _i.P(), (boolean)var4, this.D.L((boolean)var4, rh.Z((boolean)var4)), this.Y, this.z, this.L.scale);
+            hl.R(var3, ww.r(), (boolean)var4, this.W.w((boolean)var4, hl.G((boolean)var4)), this.u, this.D, this.e.scale);
             return true;
          } else {
             return false;

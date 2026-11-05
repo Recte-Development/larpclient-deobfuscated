@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.larpclient.h4;
+import com.larpclient.oe;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -47,7 +47,7 @@ public final class AccountVault implements AutoCloseable {
    private byte[] wrappedKey;
    private byte[] savedDigest;
    private final LinkedHashMap<UUID, AccountVault.Entry> entries = new LinkedHashMap<>();
-   private final LinkedHashMap<UUID, h4> proxies = new LinkedHashMap<>();
+   private final LinkedHashMap<UUID, oe> proxies = new LinkedHashMap<>();
    private UUID activeProxy;
 
    public AccountVault(Path var1) {
@@ -79,11 +79,11 @@ public final class AccountVault implements AutoCloseable {
       return this.entries.get(var1);
    }
 
-   public synchronized List<h4> proxies() {
+   public synchronized List<oe> proxies() {
       return List.copyOf(this.proxies.values());
    }
 
-   public synchronized h4 activeProxy() {
+   public synchronized oe activeProxy() {
       return this.activeProxy == null ? null : this.proxies.get(this.activeProxy);
    }
 
@@ -146,7 +146,7 @@ public final class AccountVault implements AutoCloseable {
                         }
 
                         for (JsonElement var25 : var22) {
-                           h4 var26 = h4.fromJson(var25.getAsJsonObject());
+                           oe var26 = oe.fromJson(var25.getAsJsonObject());
                            if (this.proxies.putIfAbsent(var26.id(), var26) != null) {
                               throw new AccountVault.Failure("Duplicate saved proxy. Original file retained.");
                            }
@@ -213,7 +213,7 @@ public final class AccountVault implements AutoCloseable {
       this.entries.putAll(var2);
    }
 
-   public synchronized void putProxy(h4 var1, boolean var2) throws IOException {
+   public synchronized void putProxy(oe var1, boolean var2) throws IOException {
       this.requireUnlocked();
       LinkedHashMap var3 = new LinkedHashMap<>(this.proxies);
       var3.put(var1.id(), var1);
@@ -306,7 +306,7 @@ public final class AccountVault implements AutoCloseable {
       }
    }
 
-   private void write(byte[] var1, byte[] var2, Map<UUID, AccountVault.Entry> var3, Map<UUID, h4> var4, UUID var5) throws IOException {
+   private void write(byte[] var1, byte[] var2, Map<UUID, AccountVault.Entry> var3, Map<UUID, oe> var4, UUID var5) throws IOException {
       this.directory();
       JsonObject var6 = new JsonObject();
       var6.addProperty("schema", 1);
@@ -324,7 +324,7 @@ public final class AccountVault implements AutoCloseable {
       if (!var4.isEmpty()) {
          JsonArray var48 = new JsonArray();
 
-         for (h4 var52 : var4.values()) {
+         for (oe var52 : var4.values()) {
             var48.add(var52.json());
          }
 

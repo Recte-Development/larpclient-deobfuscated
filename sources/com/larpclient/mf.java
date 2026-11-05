@@ -1,85 +1,87 @@
 package com.larpclient;
 
-import net.minecraft.world.phys.Vec3;
-
 public final class mf {
-   public static final double A = -0.03125;
-   public static final int X = 80;
-   public static final int K = 40;
-   public static final int i = 2;
-   public static final double I = 0.04;
-   public static final double G = 0.02;
-   private Vec3 u = Vec3.ZERO;
-   private int W;
-   private int n;
-   private int c;
-   private double x;
-   private boolean g;
+   public int X = 32;
+   public double u = 4.0;
+   public double U = 14.0;
+   public double i = -2.0;
+   public double q = 7.0;
+   public double b = 1.8;
+   public double Q = 1.0;
+   public double E = 0.3;
+   public double P = 5.0;
+   public double n = 0.1;
+   public double x = 1.0;
+   public double J = 3.0;
+   public double c = 1.2;
+   public double l = 1.2;
+   public double r = 24.0;
+   public double v = 18.0;
+   public double M = 28.0;
+   public double t = 0.9;
+   public double V = 0.35;
+   public boolean N = (boolean)1;
+   public boolean y = (boolean)0;
+   public boolean S = (boolean)1;
+   public int G = -2109441;
+   public int D = -7873035;
+   public mf.b R = mf.b.E;
+   public mf.a K = mf.a.M;
+   public mf.t a = mf.t.n;
+   public mf.k z = mf.k.K;
+   public mf.f W = mf.f.j;
+   public mf.x h = mf.x.O;
 
-   public void H(double var1, boolean var3) {
-      this.W = !var3 && !(var1 < -0.03125) ? this.W + 1 : 0;
+   public double x() {
+      return Math.min(this.u, this.U);
    }
 
-   public Vec3 G(Vec3 var1, double var2, int var4, int var5, double var6, double var8, boolean var10) {
-      Vec3 var11 = new Vec3(var1.x * var2, 0.0, var1.z * var2);
-      if (var4 <= 0) {
-         this.u = var11;
-      } else {
-         Vec3 var12 = var11.subtract(this.u);
-         double var13 = Math.max(var2, this.u.length()) / var4;
-         double var15 = var12.length();
-         this.u = var15 > var13 ? this.u.add(var12.scale(var13 / var15)) : var11;
-      }
-
-      double var17 = var5 != 0 ? var5 * var6 : -var8;
-      if (var5 != 0) {
-         this.x = 0.0;
-      }
-
-      if (!var10) {
-         this.n = 0;
-         this.x = 0.0;
-      } else if (this.n == 0 && this.W >= 40) {
-         this.n = 2;
-         this.c++;
-      }
-
-      this.g = (boolean)(this.n > 0 ? 1 : 0);
-      if (this.g) {
-         this.n--;
-         if (var17 > -0.04) {
-            if (var5 == 0) {
-               this.x += var17 + 0.04;
-            }
-
-            var17 = -0.04;
-         }
-      } else if (var5 == 0 && this.x > 0.0) {
-         double var14 = Math.min(this.x, 0.02);
-         this.x -= var14;
-         var17 += var14;
-      }
-
-      return new Vec3(this.u.x, var17, this.u.z);
+   public double V() {
+      return Math.max(this.u, this.U);
    }
 
-   public void o() {
-      this.u = Vec3.ZERO;
+   public double A() {
+      return Math.min(this.i, this.q);
    }
 
-   public Vec3 P() {
-      return this.u;
+   public double y() {
+      return Math.max(this.i, this.q);
    }
 
-   public int C() {
-      return this.W;
+   public enum a {
+      M,
+      j,
+      i;
    }
 
-   public boolean V() {
-      return this.g;
+   public enum b {
+      E,
+      v;
    }
 
-   public int H() {
-      return this.c;
+   public enum f {
+      j,
+      h,
+      X;
+   }
+
+   public enum k {
+      K,
+      E,
+      Y,
+      i,
+      X;
+   }
+
+   public enum t {
+      n,
+      B,
+      z;
+   }
+
+   public enum x {
+      Y,
+      O,
+      N;
    }
 }

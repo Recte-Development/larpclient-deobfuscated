@@ -1,367 +1,308 @@
 package com.larpclient;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
+import com.larpclient.module.SwordModelsModule;
+import com.larpclient.module.ViewModelModule;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.PoseStack.Pose;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwingAnimationType;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public final class m2 {
-   public static final int Z = 1280331057;
-   public static final int j = 262144;
-   public static final int b = 16384;
-   public static final int n = 16384;
-   private static final int p = 4;
-   private static final int X = 8;
-   private static final int v = 32;
-   private static final float R = 8.0F;
-   private static final float H = (float)Math.cos(Math.toRadians(40.0));
-   private static final float[] W = r(0.35F, 0.85F, -0.4F);
+   static final float z = (float)(Math.tan(Math.toRadians(35.0)) / (0.75 * Math.tan(Math.toRadians(34.0))));
+   static final float[][] h = new float[][]{
+      {0.36F, 0.16F, 0.78F, 1.0F, 0.25F, 0.78F, 0.2F, 0.82F, 1.0F},
+      {0.42F, 0.14F, 0.8F, 0.85F, 0.2F, 0.95F, 0.55F, 0.4F, 1.0F},
+      {0.62F, 0.07F, 0.25F, 1.0F, 0.42F, 0.55F, 1.0F, 0.7F, 0.3F},
+      {0.12F, 0.25F, 0.7F, 0.15F, 0.85F, 1.0F, 0.7F, 0.95F, 1.0F},
+      {0.28F, 0.31F, 0.36F, 0.62F, 0.68F, 0.78F, 0.92F, 0.95F, 1.0F}
+   };
+   private static final float[] x = new float[]{1.3F, 1.0F, 1.9F};
+   private static final float[] I = new float[]{0.011F, -0.017F, 0.007F};
+   private static final float[] l = new float[]{-0.031F, -0.052F, -0.095F};
+   private static final boolean u = false;
 
-   public static m2.k A(InputStream var0) throws IOException {
-      if (var0 == null) {
-         throw new IOException("Prop mesh missing");
-      }
-
-      byte[] var1 = var0.readNBytes(262145);
-      if (var1.length <= 262144 && var1.length >= 8) {
-         DataInputStream var2 = new DataInputStream(new ByteArrayInputStream(var1, 0, 8));
-         if (var2.readInt() != 1280331057) {
-            throw new IOException("Invalid prop mesh header");
+   public static boolean I(
+      AbstractClientPlayer var0, InteractionHand var1, ItemStack var2, float var3, float var4, float var5, PoseStack var6, SubmitNodeCollector var7, int var8
+   ) {
+      SwordModelsModule var9 = SwordModelsModule.n();
+      Minecraft var10 = Minecraft.getInstance();
+      if (var9 != null && var9.V(var2) && var0 == var10.player && !var0.isScoping()) {
+         z5 var11 = var9.Y();
+         int var12 = var0.getSkin().model() == PlayerModelType.SLIM ? 1 : 0;
+         c1 var13 = zs.U(var11, (boolean)var12);
+         if (var13 == null) {
+            return false;
          }
 
-         int var3 = var2.readInt();
-         if (var3 >= 1 && var3 <= 1048576) {
-            byte[] var4 = new byte[var3];
-            Inflater var5 = new Inflater();
+         HumanoidArm var14 = var1 == InteractionHand.MAIN_HAND ? var0.getMainArm() : var0.getMainArm().getOpposite();
+         int var15 = var14 == HumanoidArm.RIGHT ? 1 : -1;
+         if (var11.o()) {
+            return M(var0, var1, var14, var15, var2, var3, var4, var5, var6, var7, var8, var9, var13);
+         }
 
-            try {
-               var5.setInput(var1, 8, var1.length - 8);
-               int var6 = 0;
+         tt var16 = var9.T(var1);
+         if (var0.isUsingItem() || !var10.isWindowActive()) {
+            var16.x();
+         }
 
-               while (var6 < var3 && !var5.finished()) {
-                  int var7 = var5.inflate(var4, var6, var3 - var6);
-                  if (var7 == 0 && (var5.needsInput() || var5.needsDictionary())) {
-                     break;
-                  }
+         double var17 = ty.P() + Math.clamp(var5, 0.0F, 1.0F) * 0.05;
+         tt.x var19 = var16.F(var2, var11, var17, var3, var9.S.P());
+         Matrix4f[] var20 = var9.J(var1).u(var13, var11, var19, var15, var9.R.P().floatValue(), var17);
+         Vector3f var21 = new Vector3f(var15 * var9.z.P().floatValue(), var9.s.P().floatValue() + var19.Z, var9.E.P().floatValue());
+         Vector3f var22 = var20[0].transformPosition(new Vector3f(var15 * var11.L, var11.H, var11.i));
+         var6.pushPose();
 
-                  var6 += var7;
+         try {
+            B(var6, var1, var15, new Vector3f(var22).add(var21).mul(z, z, 1.0F));
+            var6.scale(z, z, 1.0F);
+            var6.translate(var21.x, var21.y, var21.z);
+            if (!var0.isInvisible()) {
+               var6.pushPose();
+
+               try {
+                  com.larpclient.u.v(var6, var20[1]);
+                  var6.scale(0.72F, 0.72F, 0.72F);
+                  g(var0, var1, var14, var15, var11, var6, var7, var8);
+               } finally {
+                  var6.popPose();
                }
-
-               if (var6 != var3 || !var5.finished() || var5.getRemaining() != 0) {
-                  throw new IOException("Prop mesh payload is truncated or has trailing data");
-               }
-            } catch (DataFormatException var16) {
-               throw new IOException("Prop mesh payload is corrupt", var16);
-            } finally {
-               var5.end();
             }
 
-            DataInputStream var18 = new DataInputStream(new ByteArrayInputStream(var4));
-            int var19 = var18.readUnsignedByte();
-            if (var19 >= 1 && var19 <= 32) {
-               m2.v[] var8 = new m2.v[var19];
+            com.larpclient.u.v(var6, var20[0]);
 
-               for (int var9 = 0; var9 < var19; var9++) {
-                  int var10 = var18.readUnsignedByte();
-                  if (var10 > 3 || var18.readUnsignedByte() != 0) {
-                     throw new IOException("Invalid prop material");
+            for (int var23 = 0; var23 < var13.parts().size(); var23++) {
+               c1.n var24 = var13.parts().get(var23);
+               var6.pushPose();
+
+               try {
+                  com.larpclient.u.v(var6, var20[var23 + 2]);
+                  x3.X(var1, var15 < 0, var6, var24.vertices(), var15);
+                  if (var24.name().equals("blade")) {
+                     x4.K(var1, var2, var24.vertices(), var15, var6, var3, var19.U == 3, var7);
                   }
 
-                  var8[var9] = new m2.v(var10, c(var18.readFloat()), c(var18.readFloat()), c(var18.readFloat()), c(var18.readFloat()));
-               }
+                  if (var24.tint()) {
+                     float[] var25 = h[var9.t()];
+                     int var26 = LightCoordsUtil.pack(Math.max(LightCoordsUtil.block(var8), 11), LightCoordsUtil.sky(var8));
+                     var7.submitCustomGeometry(
+                        var6, Z(zs.y(0), var9.j.P() && var2.hasFoil()), (var6x, var7x) -> w(var24, var6x, var7x, var26, var15, 0, var25, var17)
+                     );
 
-               int var20 = var18.readUnsignedByte();
-               if (var20 >= 1 && var20 <= 4) {
-                  ArrayList var21 = new ArrayList();
-                  int var11 = 0;
-
-                  for (int var12 = 0; var12 < var20; var12++) {
-                     m2.t var13 = H(var18, var8);
-                     var11 += var13.triangles();
-                     if (var11 > 16384) {
-                        throw new IOException("Prop mesh exceeds its triangle budget");
+                     for (int var27 = 1; var27 <= 2; var27++) {
+                        int var28 = var27;
+                        var7.order(1)
+                           .submitCustomGeometry(
+                              var6, RenderTypes.eyes(zs.y(var27)), (var7x, var8x) -> w(var24, var7x, var8x, var26, var15, var28, var25, var17)
+                           );
                      }
-
-                     var21.add(var13);
-                  }
-
-                  if (var18.read() != -1) {
-                     throw new IOException("Unexpected prop mesh trailer");
                   } else {
-                     return new m2.k(List.copyOf(var21));
+                     var7.submitCustomGeometry(var6, Z(zs.j(var11), var9.j.P() && var2.hasFoil()), (var3x, var4x) -> m(var24, var3x, var4x, var8, var15, false));
                   }
-               } else {
-                  throw new IOException("Invalid prop part count");
+               } finally {
+                  var6.popPose();
                }
-            } else {
-               throw new IOException("Invalid prop material count");
             }
+
+            return true;
+         } finally {
+            var6.popPose();
+         }
+      } else {
+         return false;
+      }
+   }
+
+   private static boolean M(
+      AbstractClientPlayer var0,
+      InteractionHand var1,
+      HumanoidArm var2,
+      int var3,
+      ItemStack var4,
+      float var5,
+      float var6,
+      float var7,
+      PoseStack var8,
+      SubmitNodeCollector var9,
+      int var10,
+      SwordModelsModule var11,
+      c1 var12
+   ) {
+      if (!var0.isUsingItem() && !var0.isAutoSpinAttack() && _8.c(var4).type() == SwingAnimationType.WHACK) {
+         var8.pushPose();
+
+         try {
+            z5 var13 = var11.Y();
+            wp var14 = var13 == z5.W ? a.V(var3, var5, var6, var11.R.P().floatValue()) : a.a(var3, var5, var6);
+            Vector3f var15 = new Vector3f(var3 * var11.z.P().floatValue(), var11.s.P().floatValue(), var11.E.P().floatValue());
+            B(var8, var1, var3, var14.weapon().getTranslation(new Vector3f()).add(var15));
+            var8.translate(var15.x, var15.y, var15.z);
+            if (var13 == z5.r) {
+               tt var16 = var11.T(var1);
+               if (!Minecraft.getInstance().isWindowActive()) {
+                  var16.x();
+               }
+
+               double var17 = ty.P() + Math.clamp(var7, 0.0F, 1.0F) * 0.05;
+               p4.q var19 = var11.r(var1).P(var16.F(var4, var13, var17, var5, false), var17);
+               var14 = a.n(var14, var3, var19.phase(), var19.weight());
+            }
+
+            if (!var0.isInvisible()) {
+               var8.pushPose();
+
+               try {
+                  com.larpclient.u.v(var8, var14.arm());
+                  var8.scale(0.72F, 0.72F, 0.72F);
+                  g(var0, var1, var2, var3, var13, var8, var9, var10);
+               } finally {
+                  var8.popPose();
+               }
+            }
+
+            com.larpclient.u.v(var8, var14.weapon());
+
+            for (c1.n var36 : var12.parts()) {
+               var8.pushPose();
+
+               try {
+                  if (var36.name().equals("case")) {
+                     a.v(var8, var11.R.P().floatValue());
+                  }
+
+                  int var18 = var13 != z5.W && !var36.name().equals("case") ? var3 : 1;
+                  x3.X(var1, var3 < 0, var8, var36.vertices(), var18);
+                  var9.submitCustomGeometry(var8, Z(zs.j(var13), var11.j.P() && var4.hasFoil()), (var3x, var4x) -> m(var36, var3x, var4x, var10, var18, false));
+               } finally {
+                  var8.popPose();
+               }
+            }
+
+            return true;
+         } finally {
+            var8.popPose();
+         }
+      } else {
+         return false;
+      }
+   }
+
+   private static void B(PoseStack var0, InteractionHand var1, int var2, Vector3f var3) {
+      ViewModelModule var4 = ViewModelModule.Z();
+      if (var4 != null && var4.isRuntimeActive()) {
+         var4.z(var0, var1, var2 < 0);
+         var0.translate(var3.x, var3.y, var3.z);
+         var4.f(var0, var1, var2 < 0);
+         var0.translate(-var3.x, -var3.y, -var3.z);
+      }
+   }
+
+   private static void g(
+      AbstractClientPlayer var0, InteractionHand var1, HumanoidArm var2, int var3, z5 var4, PoseStack var5, SubmitNodeCollector var6, int var7
+   ) {
+      AvatarRenderer var8 = (AvatarRenderer)Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(var0);
+      var5.pushPose();
+
+      try {
+         int var9 = var0.getSkin().model() == PlayerModelType.SLIM ? 1 : 0;
+         cb.j(var5, var4, var3, (boolean)var9);
+         Identifier var10 = var0.getSkin().body().texturePath();
+         if (var2 == HumanoidArm.RIGHT) {
+            var8.renderRightHand(var5, var6, var7, var10, var0.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE));
          } else {
-            throw new IOException("Invalid prop mesh payload size");
+            var8.renderLeftHand(var5, var6, var7, var10, var0.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
          }
-      } else {
-         throw new IOException("Invalid prop mesh size");
+
+         PlayerModel var11 = (PlayerModel)var8.getModel();
+         x3.B(var1, var3 < 0, var5, var2 == HumanoidArm.RIGHT ? var11.rightArm : var11.leftArm);
+         ma.U(var2, var5, var6, true);
+      } finally {
+         var5.popPose();
       }
    }
 
-   private static m2.t H(DataInputStream var0, m2.v[] var1) throws IOException {
-      int var2 = var0.readUnsignedByte();
-      if (var2 > 1) {
-         throw new IOException("Invalid prop part flags");
-      }
+   private static void m(c1.n var0, Pose var1, VertexConsumer var2, int var3, int var4, boolean var5) {
+      float[] var6 = var0.vertices();
 
-      int var3 = var2 == 1 ? 1 : 0;
-      float[] var4 = new float[3];
-      float[] var5 = new float[3];
-
-      for (int var6 = 0; var6 < 3; var6++) {
-         var4[var6] = G(var0.readFloat());
-      }
-
-      for (int var20 = 0; var20 < 3; var20++) {
-         var5[var20] = G(var0.readFloat()) - var4[var20];
-         if (var5[var20] < 0.0F) {
-            throw new IOException("Invalid prop part bounds");
+      for (byte var7 = 0; var7 < var6.length; var7 += 32) {
+         for (int var8 = 0; var8 < 4; var8++) {
+            int var9 = var7 + c1.vertexIndex(var4, var8) * 8;
+            var2.addVertex(var1, var4 * var6[var9], var6[var9 + 1], var6[var9 + 2])
+               .setColor(-1)
+               .setUv(var5 ? var4 * var6[var9] : var6[var9 + 3], var5 ? var6[var9 + 1] : var6[var9 + 4])
+               .setOverlay(OverlayTexture.NO_OVERLAY)
+               .setLight(var3)
+               .setNormal(var1, var4 * var6[var9 + 5], var6[var9 + 6], var6[var9 + 7]);
          }
       }
+   }
 
-      if (var3 != 0 && var4[0] != 0.0F) {
-         throw new IOException("A mirrored prop part must start at x = 0");
-      }
+   static void w(c1.n var0, Pose var1, VertexConsumer var2, int var3, int var4, int var5, float[] var6, double var7) {
+      float[] var9 = var0.vertices();
+      float[] var10 = var0.finishUv();
+      int[] var11 = var0.finishColor();
+      float var12 = x[var5];
+      float var13 = (float)(var7 * I[var5] % 1.0) + (var5 == 1 ? 0.37F : 0.0F);
+      float var14 = (float)(var7 * l[var5] % 1.0);
+      float var15 = (float)(var7 % 3600.0);
 
-      int var21 = var0.readUnsignedShort();
-      if (var21 >= 3 && var21 <= 16384) {
-         int[][] var7 = new int[3][var21];
-
-         for (int var8 = 0; var8 < 3; var8++) {
-            int var9 = 0;
-
-            for (int var10 = 0; var10 < var21; var10++) {
-               var7[var8][var10] = var9 = var9 + var0.readShort() & 65535;
-            }
-         }
-
-         float[] var22 = new float[var21 * 3];
-
-         for (int var23 = 0; var23 < var21; var23++) {
-            for (int var25 = 0; var25 < 3; var25++) {
-               var22[var23 * 3 + var25] = var4[var25] + var7[var25][var23] / 65535.0F * var5[var25];
-            }
-         }
-
-         int var24 = var0.readUnsignedShort();
-         if (var24 >= 1 && var24 <= 16384) {
-            int[] var26 = new int[var24 * 3];
-            int var11 = 0;
-
-            for (int var12 = 0; var12 < var24; var12++) {
-               int var13 = var11 + var0.readShort();
-               int var14 = var13 + var0.readShort();
-               int var15 = var13 + var0.readShort();
-
-               for (int var19 : new int[]{var13, var14, var15}) {
-                  if (var19 < 0 || var19 >= var21) {
-                     throw new IOException("Prop triangle index out of range");
-                  }
-               }
-
-               var26[var12 * 3] = var13;
-               var26[var12 * 3 + 1] = var14;
-               var26[var12 * 3 + 2] = var15;
-               var11 = var13;
-            }
-
-            int[] var27 = new int[var24];
-
-            for (int var28 = 0; var28 < var24; var28++) {
-               var27[var28] = var0.readUnsignedByte();
-               if (var27[var28] >= var1.length) {
-                  throw new IOException("Prop triangle material out of range");
-               }
-            }
-
-            int var29 = var0.readUnsignedByte();
-            if (var29 >= 1 && var29 <= 8) {
-               float[][] var30 = new float[var29][4];
-
-               for (int var31 = 0; var31 < var29; var31++) {
-                  for (int var32 = 0; var32 < 3; var32++) {
-                     var30[var31][var32] = G(var0.readFloat());
-                  }
-
-                  int var33 = var0.readUnsignedByte();
-                  if (var33 > 1) {
-                     throw new IOException("Invalid prop instance flags");
-                  }
-
-                  var30[var31][3] = var33;
-               }
-
-               return h(var22, var26, var27, var1, (boolean)var3, var30);
+      for (byte var16 = 0; var16 < var9.length; var16 += 32) {
+         for (int var17 = 0; var17 < 4; var17++) {
+            int var18 = var16 + c1.vertexIndex(var4, var17) * 8;
+            float var19 = var10[var18 / 4];
+            float var20 = var10[var18 / 4 + 1];
+            int var21;
+            if (var5 == 0) {
+               float var22 = 1.25F * (var11[var18 / 8] & 0xFF) / 255.0F;
+               var21 = Z(1.0F, var6[0] * var22, var6[1] * var22, var6[2] * var22);
+            } else if (var5 == 1) {
+               float var23 = 0.5F + 0.5F * (float)Math.sin(var20 * 7.0F - var15 * 1.3F);
+               var21 = Z(0.85F, var6[3] + (var6[6] - var6[3]) * var23, var6[4] + (var6[7] - var6[4]) * var23, var6[5] + (var6[8] - var6[5]) * var23);
             } else {
-               throw new IOException("Invalid prop instance count");
-            }
-         } else {
-            throw new IOException("Invalid prop triangle count");
-         }
-      } else {
-         throw new IOException("Invalid prop vertex count");
-      }
-   }
-
-   private static m2.t h(float[] var0, int[] var1, int[] var2, m2.v[] var3, boolean var4, float[][] var5) throws IOException {
-      int var6 = var0.length / 3;
-      int var7 = var2.length;
-      int var8 = var4 ? 2 : 1;
-      int var9 = var5.length * var8 * var7 * 3;
-      float[] var10 = new float[var9 * 5];
-      int[] var11 = new int[var9];
-      int var12 = 0;
-
-      for (int var13 = 0; var13 < var5.length; var13++) {
-         for (int var14 = 0; var14 < var8; var14++) {
-            int var15 = (var14 == 1 ? 1 : 0) != (var5[var13][3] == 1.0F ? 1 : 0) ? 1 : 0;
-            float var16 = var15 != 0 ? -1.0F : 1.0F;
-
-            for (int var17 = 0; var17 < var7; var17++) {
-               m2.v var18 = var3[var2[var17]];
-
-               for (int var19 = 0; var19 < 3; var19++) {
-                  int var20 = var1[var17 * 3 + (var15 != 0 ? (3 - var19) % 3 : var19)];
-                  float var21 = var0[var20 * 3];
-                  float var22 = var0[var20 * 3 + 1];
-                  float var23 = var0[var20 * 3 + 2];
-                  int var24 = var12 * 5;
-                  var10[var24] = var21 * var16 + var5[var13][0];
-                  var10[var24 + 1] = var22 + var5[var13][1];
-                  var10[var24 + 2] = var23 + var5[var13][2];
-
-                  float var25 = switch (var18.kind) {
-                     case 1 -> var23;
-                     case 2 -> var23;
-                     case 3 -> var21;
-                     default -> 0.0F;
-                  };
-
-                  float var26 = switch (var18.kind) {
-                     case 1 -> var22;
-                     case 2 -> var21;
-                     case 3 -> var22;
-                     default -> 0.0F;
-                  };
-                  float var27 = var18.a * var25 + var18.b;
-                  float var28 = var18.c * var26 + var18.d;
-                  if (!(var27 >= -1.0E-4F) || !(var27 <= 1.0001F) || !(var28 >= -1.0E-4F) || !(var28 <= 1.0001F)) {
-                     throw new IOException("Prop texture coordinate outside the atlas");
-                  }
-
-                  var10[var24 + 3] = Math.clamp(var27, 0.0F, 1.0F);
-                  var10[var24 + 4] = Math.clamp(var28, 0.0F, 1.0F);
-                  int var29 = var14 == 1 && var21 == 0.0F ? 1 : 0;
-                  var11[var12] = (var13 * var8 + (var29 != 0 ? 0 : var14)) * var6 + var20;
-                  var12++;
-               }
-            }
-         }
-      }
-
-      return new m2.t(var10, g(var10, var11));
-   }
-
-   private static int[] g(float[] var0, int[] var1) {
-      int var2 = var1.length / 3;
-      float[] var3 = new float[var2 * 3];
-      HashMap var4 = new HashMap();
-
-      for (int var5 = 0; var5 < var2; var5++) {
-         int var6 = var5 * 15;
-         int var7 = var6 + 5;
-         int var8 = var6 + 10;
-         float var9 = var0[var7] - var0[var6];
-         float var10 = var0[var7 + 1] - var0[var6 + 1];
-         float var11 = var0[var7 + 2] - var0[var6 + 2];
-         float var12 = var0[var8] - var0[var6];
-         float var13 = var0[var8 + 1] - var0[var6 + 1];
-         float var14 = var0[var8 + 2] - var0[var6 + 2];
-         var3[var5 * 3] = var10 * var14 - var11 * var13;
-         var3[var5 * 3 + 1] = var11 * var12 - var9 * var14;
-         var3[var5 * 3 + 2] = var9 * var13 - var10 * var12;
-
-         for (int var15 = 0; var15 < 3; var15++) {
-            var4.computeIfAbsent(var1[var5 * 3 + var15], var0x -> new ArrayList<>()).add(var5);
-         }
-      }
-
-      int[] var16 = new int[var1.length];
-
-      for (int var17 = 0; var17 < var2; var17++) {
-         float[] var18 = r(var3[var17 * 3], var3[var17 * 3 + 1], var3[var17 * 3 + 2]);
-
-         for (int var19 = 0; var19 < 3; var19++) {
-            float var20 = 0.0F;
-            float var21 = 0.0F;
-            float var22 = 0.0F;
-
-            for (int var25 : (List)var4.get(var1[var17 * 3 + var19])) {
-               float[] var27 = r(var3[var25 * 3], var3[var25 * 3 + 1], var3[var25 * 3 + 2]);
-               if (!(var27[0] * var18[0] + var27[1] * var18[1] + var27[2] * var18[2] < H)) {
-                  var20 += var3[var25 * 3];
-                  var21 += var3[var25 * 3 + 1];
-                  var22 += var3[var25 * 3 + 2];
-               }
+               var21 = Z(0.75F + 0.25F * (float)Math.sin(var20 * 23.0F + var19 * 11.0F - var15 * 3.1F), 1.0F, 1.0F, 1.0F);
             }
 
-            float[] var24 = r(var20, var21, var22);
-            float var26 = 0.5F + 0.38F * Math.max(0.0F, var24[0] * W[0] + var24[1] * W[1] + var24[2] * W[2]) + 0.12F * (0.5F + 0.5F * var24[1]);
-            int var28 = Math.round(255.0F * Math.min(1.0F, var26));
-            var16[var17 * 3 + var19] = 0xFF000000 | var28 << 16 | var28 << 8 | var28;
+            var2.addVertex(var1, var4 * var9[var18], var9[var18 + 1], var9[var18 + 2])
+               .setColor(var21)
+               .setUv(var19 * var12 + var13, var20 * var12 + var14)
+               .setOverlay(OverlayTexture.NO_OVERLAY)
+               .setLight(var3)
+               .setNormal(var1, var4 * var9[var18 + 5], var9[var18 + 6], var9[var18 + 7]);
          }
       }
-
-      return var16;
    }
 
-   private static float[] r(float var0, float var1, float var2) {
-      float var3 = (float)Math.sqrt(var0 * var0 + var1 * var1 + var2 * var2);
-      return var3 < 1.0E-12F ? new float[]{0.0F, 1.0F, 0.0F} : new float[]{var0 / var3, var1 / var3, var2 / var3};
-   }
-
-   private static float c(float var0) throws IOException {
-      if (!Float.isFinite(var0)) {
-         throw new IOException("Prop mesh value is not finite");
-      } else {
-         return var0;
-      }
-   }
-
-   private static float G(float var0) throws IOException {
-      if (Float.isFinite(var0) && !(Math.abs(var0) > 8.0F)) {
-         return var0;
-      } else {
-         throw new IOException("Prop mesh coordinate out of range");
-      }
+   private static int Z(float var0, float var1, float var2, float var3) {
+      return Math.round(Math.clamp(var0, 0.0F, 1.0F) * 255.0F) << 24
+         | Math.round(Math.clamp(var1, 0.0F, 1.0F) * 255.0F) << 16
+         | Math.round(Math.clamp(var2, 0.0F, 1.0F) * 255.0F) << 8
+         | Math.round(Math.clamp(var3, 0.0F, 1.0F) * 255.0F);
    }
 
    private m2() {
    }
 
-   public record k(List<m2.t> parts) {
-      public int triangles() {
-         return this.parts.stream().mapToInt(m2.t::triangles).sum();
-      }
+   private static RenderType Z(Identifier var0, boolean var1) {
+      return var1 ? RenderTypes.entitySolidGlint(var0) : RenderTypes.entitySolid(var0);
    }
 
-   public record t(float[] vertices, int[] colors) {
-      public int triangles() {
-         return this.colors.length / 3;
-      }
-   }
-
-   private record v(int kind, float a, float b, float c, float d) {
+   private static RenderType k() {
+      throw new IllegalStateException("26.3 glint is part of the base pass");
    }
 }

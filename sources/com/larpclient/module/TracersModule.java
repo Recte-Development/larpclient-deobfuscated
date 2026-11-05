@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larpclient.mi;
-import com.larpclient.r4;
+import com.larpclient.dq;
+import com.larpclient.mt;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
@@ -16,19 +16,19 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public class TracersModule extends Module {
-   private final ln m = this.addSetting(new ln("Players", "Trace players", true));
-   private final ln c = this.addSetting(new ln("Mobs", "Trace hostile mobs", false));
-   private final ln Y = this.addSetting(new ln("Animals", "Trace animals", false));
-   private final lc L = this.addSetting(new lc("Range", "Max tracer range", 96.0, 16.0, 256.0, 8.0));
-   private final lc t = this.addSetting(new lc("Max Entities", "Nearest targets drawn", 64.0, 8.0, 256.0, 8.0));
-   private final mi H = new mi(var1 -> this.addSetting(var1), false);
+   private final dh K = this.addSetting(new dh("Players", "Trace players", true));
+   private final dh q = this.addSetting(new dh("Mobs", "Trace hostile mobs", false));
+   private final dh b = this.addSetting(new dh("Animals", "Trace animals", false));
+   private final d9 O = this.addSetting(new d9("Range", "Max tracer range", 96.0, 16.0, 256.0, 8.0));
+   private final d9 r = this.addSetting(new d9("Max Entities", "Nearest targets drawn", 64.0, 8.0, 256.0, 8.0));
+   private final dq g = new dq(var1 -> this.addSetting(var1), false);
 
    public TracersModule() {
       super("Tracers", "Draw lines to entities", Category.RENDER, -1);
-      LevelRenderEvents.BEFORE_GIZMOS.register((BeforeGizmos)var1 -> this.L());
+      LevelRenderEvents.BEFORE_GIZMOS.register((BeforeGizmos)var1 -> this.n());
    }
 
-   private void L() {
+   private void n() {
       if (this.isEnabled()) {
          if (this.isOperational() && this.isInGame()) {
             Camera var1 = mc.gameRenderer.mainCamera();
@@ -37,41 +37,37 @@ public class TracersModule extends Module {
             float var4 = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
             try {
-               for (Entity var6 : mi.T(
+               for (Entity var6 : dq.y(
                   mc.level.entitiesForRendering(),
                   mc.player,
-                  this.L.getValue(),
-                  this.t.getValue().intValue(),
+                  this.O.P(),
+                  this.r.P().intValue(),
                   var1x -> var1x instanceof LivingEntity
-                     && (
-                        var1x instanceof Player
-                           ? this.m.getValue()
-                           : (var1x instanceof Enemy ? this.c.getValue() : var1x instanceof Animal && this.Y.getValue())
-                     )
+                     && (var1x instanceof Player ? this.K.P() : (var1x instanceof Enemy ? this.q.P() : var1x instanceof Animal && this.b.P()))
                )) {
                   int var7 = var6 instanceof Player ? -4221441 : (var6 instanceof Enemy ? -943189 : -7677757);
-                  int var8 = this.H.k(var7, mc.player.distanceTo(var6), this.L.getValue(), mi.D((LivingEntity)var6), var6.getId());
-                  this.H.D(var3, var6.getPosition(var4).add(0.0, var6.getBbHeight() * 0.5, 0.0), var8);
+                  int var8 = this.g.w(var7, mc.player.distanceTo(var6), this.O.P(), dq.E((LivingEntity)var6), var6.getId());
+                  this.g.n(var3, var6.getPosition(var4).add(0.0, var6.getBbHeight() * 0.5, 0.0), var8);
                }
             } catch (RuntimeException var9) {
-               r4.T("ESP", "Tracer overlay failed", var9);
+               mt.B("ESP", "Tracer overlay failed", var9);
             }
          }
       }
    }
 
-   public List<l6<?>> H() {
-      return List.of(this.m, this.c, this.Y);
+   public List<df<?>> c() {
+      return List.of(this.K, this.q, this.b);
    }
 
-   public List<l6<?>> I() {
-      ArrayList var1 = new ArrayList<>(List.of(this.L));
-      var1.addAll(this.H.t());
-      var1.addAll(this.H.J());
+   public List<df<?>> U() {
+      ArrayList var1 = new ArrayList<>(List.of(this.O));
+      var1.addAll(this.g.q());
+      var1.addAll(this.g.g());
       return List.copyOf(var1);
    }
 
-   public List<l6<?>> B() {
-      return List.of(this.t);
+   public List<df<?>> J() {
+      return List.of(this.r);
    }
 }

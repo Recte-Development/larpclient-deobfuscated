@@ -1,44 +1,40 @@
 package com.larpclient;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import java.util.HashSet;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class mt {
-   public static void q(JsonObject var0) {
-      if (var0.get("CustomSky") instanceof JsonObject var1 && var1.get("settings") instanceof JsonObject var2) {
-         JsonElement var12 = var2.remove("Sun and Moon");
-         if (var12 != null) {
-            if (!var2.has("Show Vanilla Sun")) {
-               var2.add("Show Vanilla Sun", var12.deepCopy());
-            }
+   private static final Logger y = LoggerFactory.getLogger("Larp");
+   private static final Set<String> v = new HashSet<>();
 
-            if (!var2.has("Show Vanilla Moon")) {
-               var2.add("Show Vanilla Moon", var12.deepCopy());
-            }
-         }
-      }
+   public static void K(String var0, String var1, Object... var2) {
+      wz.H(var0, "Info", null);
+      y.info("[Larp/" + var0 + "] " + var1, var2);
+   }
 
-      if (var0.get("SelfVisuals") instanceof JsonObject var6
-         && var6.get("settings") instanceof JsonObject var9
-         && var9.get("Style") != null
-         && var9.get("Style").isJsonPrimitive()
-         && var9.get("Style").getAsString().equals("Theme Gradient")) {
-         var9.addProperty("Style", "Rainbow Outline");
-      }
-
-      for (String var4 : new String[]{"Trails", "BreadCrumbs"}) {
-         JsonElement var5 = var0.remove(var4);
-         if (var5 != null && !var0.has("Player Trail")) {
-            var0.add("Player Trail", var5);
-         }
-      }
-
-      JsonElement var8 = var0.remove("Distance Fog");
-      if (var8 != null && !var0.has("Fog")) {
-         var0.add("Fog", var8);
+   public static void U(String var0, String var1, Object... var2) {
+      if (Boolean.getBoolean("larp.debug")) {
+         K(var0, var1, var2);
+      } else {
+         y.debug("[Larp/" + var0 + "] " + var1, var2);
       }
    }
 
-   private mt() {
+   public static void T(String var0, String var1, Object... var2) {
+      wz.H(var0, "Warning", null);
+      y.warn("[Larp/" + var0 + "] " + var1, var2);
+   }
+
+   public static void P(String var0, String var1, Throwable var2) {
+      wz.H(var0, "Error", var2);
+      y.error("[Larp/" + var0 + "] " + var1, var2);
+   }
+
+   public static void B(String var0, String var1, Throwable var2) {
+      if (v.add(var0 + var1)) {
+         P(var0, var1, var2);
+      }
    }
 }

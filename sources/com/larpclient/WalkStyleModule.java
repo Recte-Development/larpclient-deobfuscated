@@ -7,9 +7,9 @@ import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 
 public final class WalkStyleModule extends Module {
-   private static WalkStyleModule a;
-   private final com.larpclient.module.lp k = this.addSetting(
-      new com.larpclient.module.lp(
+   private static WalkStyleModule S;
+   private final com.larpclient.module.d6 K = this.addSetting(
+      new com.larpclient.module.d6(
          "Style",
          "Local walking choreography",
          "Natural",
@@ -24,26 +24,26 @@ public final class WalkStyleModule extends Module {
          "Runway"
       )
    );
-   private final com.larpclient.module.lc B = this.addSetting(
-      new com.larpclient.module.lc("Strength", "Animation strength in percent", 100.0, 30.0, 150.0, 5.0)
+   private final com.larpclient.module.d9 i = this.addSetting(
+      new com.larpclient.module.d9("Strength", "Animation strength in percent", 100.0, 30.0, 150.0, 5.0)
    );
-   private int p = Integer.MIN_VALUE;
-   private boolean s;
+   private int y = Integer.MIN_VALUE;
+   private boolean c;
 
    public WalkStyleModule() {
       super("Walk Style", "Walking animations with articulated knees and elbows", Category.RENDER, -1);
-      a = this;
+      S = this;
    }
 
-   public static WalkStyleModule f() {
-      return a;
+   public static WalkStyleModule q() {
+      return S;
    }
 
    @Override
    public void onTick() {
       int var4;
       label17: {
-         this.p = this.isInGame() ? getMc().player.getId() : Integer.MIN_VALUE;
+         this.y = this.isInGame() ? getMc().player.getId() : Integer.MIN_VALUE;
          if (this.isInGame()) {
             var4 = getMc().options.getCameraType().isFirstPerson();
             boolean var2 = false;
@@ -58,33 +58,33 @@ public final class WalkStyleModule extends Module {
          var4 = 0;
       }
 
-      this.s = (boolean)var4;
+      this.c = (boolean)var4;
    }
 
    @Override
    public void onEnable() {
       this.onTick();
-      r4.g("WalkStyle", "Local articulated walking activated");
+      mt.U("WalkStyle", "Local articulated walking activated");
    }
 
    @Override
    public void onDisable() {
-      this.p = Integer.MIN_VALUE;
+      this.y = Integer.MIN_VALUE;
    }
 
-   public float[] z(PlayerModel var1, AvatarRenderState var2) {
+   public float[] h(PlayerModel var1, AvatarRenderState var2) {
       return this.isRuntimeActive()
-            && this.s
-            && var2.id == this.p
+            && this.c
+            && var2.id == this.y
             && !var2.isPassenger
             && !var2.isFallFlying
             && !var2.isVisuallySwimming
-            && !EmotesModule.h(var2)
-         ? f(this.k.getValue(), this.B.getValue().floatValue(), var1, var2)
+            && !EmotesModule.A(var2)
+         ? E(this.K.P(), this.i.P().floatValue(), var1, var2)
          : null;
    }
 
-   public static float[] f(String var0, float var1, PlayerModel var2, AvatarRenderState var3) {
+   public static float[] E(String var0, float var1, PlayerModel var2, AvatarRenderState var3) {
       float var4 = Math.min(1.0F, var3.walkAnimationSpeed) * var1 / 100.0F;
       if (var4 < 0.02F) {
          return null;

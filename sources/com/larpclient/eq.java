@@ -1,85 +1,173 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import java.util.Locale;
+import java.util.function.BiPredicate;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class eq {
-   public static final float q = 0.72F;
-   public static final float k = (float)Math.toRadians(70.0);
+   public static final float q = 1.15F;
+   public static final double O = 0.35;
+   public static final double r = -0.3;
+   public static final double T = 0.1;
+   public static final double S = 16.0;
+   public static final double Z = 1.8;
+   public static final double D = 0.3;
 
-   public static float d(yi var0) {
-      return switch (var0) {
-         case x, s, q -> 7.5F;
-         default -> 8.0F;
-      };
-   }
+   public static int O(eq.w[] var0, boolean var1, boolean var2) {
+      int var3 = -1;
+      int var4 = 0;
+      float var5 = 0.0F;
 
-   public static float j(yi var0) {
-      return 0.0F;
-   }
-
-   public static Quaternionf l(_r var0) {
-      float[] var1 = var0.root().idle()[0];
-      float[] var2 = var0.arm().idle()[0];
-      Quaternionf var3 = new Quaternionf(var2[3], var2[4], var2[5], var2[6]);
-      Quaternionf var4 = new Quaternionf().rotateZ(0.1F);
-      Vector3f var5 = new Quaternionf(var1[3], var1[4], var1[5], var1[6]).transform(new Vector3f(0.0F, 1.0F, 0.0F));
-      Vector3f var6 = var3.transform(var4.transform(new Vector3f(0.0F, 1.0F, 0.0F)));
-      Vector3f var7 = var3.transform(var4.transform(new Vector3f(1.0F, 0.0F, 0.0F)));
-      Vector3f var8 = new Vector3f(var6).cross(var5);
-      Quaternionf var9 = new Quaternionf();
-      if (var8.lengthSquared() > 1.0E-8F) {
-         var9.fromAxisAngleRad(var8.normalize(), (float)Math.acos(Math.clamp(var6.dot(var5), -1.0F, 1.0F)) - k);
+      for (eq.w var9 : var0) {
+         if (var9 != null && var9.mace() && !var9.breaksNextUse() && (var1 || var9.breach() != 0)) {
+            int var10 = var1 && var2 && var9.windBurst() > 0 ? 1 : 0;
+            if (var3 < 0 || (var4 == 0 || var10 != 0) && (var4 != var10 || !(var9.damage() <= var5))) {
+               var3 = var9.slot();
+               var4 = var10;
+               var5 = var9.damage();
+            }
+         }
       }
 
-      var9.transform(var6);
-      var9.transform(var7);
-      Vector3f var10 = new Vector3f(var5).fma(-var5.dot(var6), var6).normalize();
-      if (var7.dot(var10) < 0.0F) {
-         var7.negate();
+      return var3;
+   }
+
+   public static boolean x(boolean var0, float var1, float var2) {
+      return var0 || !(var1 < var2 * 1.15F);
+   }
+
+   public static double N(double var0) {
+      if (var0 <= 3.0) {
+         return 4.0 * var0;
+      } else {
+         return var0 <= 8.0 ? 12.0 + 2.0 * (var0 - 3.0) : 22.0 + var0 - 8.0;
+      }
+   }
+
+   public static float K(float var0, float var1, float var2, int var3) {
+      float var4 = Math.clamp(var1 - var0 / (2.0F + var2 / 4.0F), var1 * 0.2F, 20.0F) / 25.0F;
+      return var0 * (1.0F - Math.clamp(var4 - 0.15F * var3, 0.0F, 1.0F));
+   }
+
+   public static float Y(
+      double var0, float var2, double var3, boolean var5, boolean var6, int var7, boolean var8, int var9, float var10, float var11, int var12
+   ) {
+      float var13 = (float)(1.0 + var0) * (0.2F + 0.8F * var2 * var2);
+      if (var5 && var6) {
+         var13 += (float)(N(var3) + 0.5 * var7 * var3);
       }
 
-      Quaternionf var11 = new Quaternionf().fromAxisAngleRad(var6, (float)Math.atan2(new Vector3f(var7).cross(var10).dot(var6), var7.dot(var10)));
-      return new Quaternionf(var3).conjugate().mul(var11).mul(var9).mul(var3).normalize();
+      if (var8) {
+         var13 *= 1.5F;
+      }
+
+      if (var9 > 0) {
+         var13 += var2 * (0.5F * var9 + 0.5F);
+      }
+
+      return K(var13, var10, var11, var12);
    }
 
-   public static float B(yi var0) {
-      return switch (var0) {
-         case x -> -0.03F;
-         case s -> -0.07F;
-         case q -> -0.09F;
-         default -> 0.0F;
-      };
+   public static boolean n(boolean var0, boolean var1, boolean var2, double var3, double var5, boolean var7, boolean var8, boolean var9) {
+      return var0 && !var1 && var2 && var3 >= var5 && (var7 || var8 && var9);
    }
 
-   public static Vector3f K(_r var0, yi var1, Quaternionf var2, float var3) {
-      float[] var4 = var0.root().idle()[0];
-      float[] var5 = var0.arm().idle()[0];
-      Vector3f var6 = new Quaternionf(var4[3], var4[4], var4[5], var4[6]).transform(new Vector3f(0.0F, B(var1) * var0.scale() * var3, 0.0F));
-      return new Quaternionf(var5[3], var5[4], var5[5], var5[6]).mul(var2).conjugate().transform(var6);
+   public static boolean h(boolean var0, boolean var1, float var2, float var3, int var4, boolean var5) {
+      int var6 = var2 <= 0.9F && var3 > 0.9F ? 1 : 0;
+      return var0 && (var1 || var6 != 0 || var4 > 0 || var5);
    }
 
-   public static void T(PoseStack var0, yi var1, int var2, boolean var3) {
-      double var4 = var3 ? -0.5 : -1.0;
-      double var6 = d(var1);
-      var0.translate(
-         var2 * (5.0 - var4 * Math.cos(0.1) + var6 * Math.sin(0.1)) / 16.0, -(2.0 + var4 * Math.sin(0.1) + var6 * Math.cos(0.1)) / 16.0, -j(var1) / 16.0F
-      );
+   public static eq.n T(String var0, boolean var1, boolean var2, boolean var3, boolean var4) {
+      if (!var1 || var2 || !var3) {
+         return eq.n.R;
+      } else if (var4 && !"Off".equals(var0)) {
+         return "Next Tick".equals(var0) ? eq.n.Q : eq.n.p;
+      } else {
+         return eq.n.c;
+      }
    }
 
-   public static Matrix4f x(Matrix4f var0, yi var1, int var2, boolean var3) {
-      PoseStack var4 = new PoseStack();
-      fx.Z(var4, var0);
-      var4.scale(0.72F, 0.72F, 0.72F);
-      T(var4, var1, var2, var3);
-      var4.translate(var2 * -5 / 16.0F, 0.125F, 0.0F);
-      fx.b(var4, Axis.ZP.rotation(var2 * 0.1F));
-      return new Matrix4f(var4.last().pose());
+   public static String v(
+      boolean var0,
+      boolean var1,
+      boolean var2,
+      boolean var3,
+      boolean var4,
+      boolean var5,
+      boolean var6,
+      double var7,
+      double var9,
+      boolean var11,
+      boolean var12,
+      boolean var13,
+      boolean var14
+   ) {
+      if (var0) {
+         return "another action this tick";
+      } else if (var1) {
+         return "your own click this tick";
+      } else if (var2) {
+         return "an item use this tick";
+      } else if (var3) {
+         return "another rotation owner";
+      } else if (!var4) {
+         return "busy hands";
+      } else if (!var5) {
+         return "not falling";
+      } else if (!var6) {
+         return "fall of 1.5 blocks not reached";
+      } else if (var7 < var9) {
+         return String.format(Locale.ROOT, "fall %.1f under Min Fall %.1f", var7, var9);
+      } else if (var11) {
+         return "smash already landed this fall";
+      } else if (var12) {
+         return "waiting for the server to confirm the last smash";
+      } else if (!var13) {
+         return "no usable mace";
+      } else {
+         return !var14 ? "facing not on the target yet" : null;
+      }
+   }
+
+   public static boolean l(double var0, double var2, int var4, int var5) {
+      return var0 < -0.3 && var2 > -0.1 || var5 > var4;
+   }
+
+   public static int K(int var0) {
+      return Math.max(0, var0) + 3;
+   }
+
+   public static double N(double var0, boolean var2, double var3, int var5, double var6) {
+      return var2 && !(var3 <= 0.0) ? Math.max(var0, Math.min(16.0, var6 + var3 * (Math.max(0, var5) + 1))) : var0;
+   }
+
+   public static double b(double var0, double var2, double var4) {
+      double var6 = Math.max(0.0, var2 - (var4 + 1.8));
+      return !(var0 <= 0.0) && !(var6 >= var0) ? Math.sqrt(var0 * var0 - var6 * var6) + 0.3 : 0.0;
+   }
+
+   public static boolean r(boolean var0, double var1, Vec3 var3, Vec3 var4, AABB var5, Vec3 var6, float var7, Vec3 var8, BiPredicate<Vec3, Vec3> var9) {
+      double var10 = var1 - 0.35;
+      if (var0 && !(var10 <= 0.0)) {
+         Vec3 var12 = var3.add(var4);
+         AABB var13 = var5.move(var6).inflate(var7);
+         return var13.contains(var12) ? true : var13.clip(var12, var12.add(var8.scale(var10))).filter(var2 -> var9.test(var12, var2)).isPresent();
+      } else {
+         return false;
+      }
    }
 
    private eq() {
+   }
+
+   public enum n {
+      R,
+      p,
+      Q,
+      c;
+   }
+
+   public record w(int slot, boolean mace, boolean breaksNextUse, int breach, int windBurst, float damage) {
    }
 }

@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
-import com.larpclient.xq;
+import com.larpclient.mt;
+import com.larpclient.pl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -21,8 +21,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 public final class HitSoundsModule extends Module {
-   private static HitSoundsModule D;
-   public static final String[] J = new String[]{
+   private static HitSoundsModule z;
+   public static final String[] i = new String[]{
       "Attack Crit",
       "Attack Strong",
       "Attack Weak",
@@ -49,10 +49,10 @@ public final class HitSoundsModule extends Module {
       "Water",
       "Rust Headshot"
    };
-   private static final String A = "Impact";
-   private final lp M = this.addSetting(G("Sound", "Choose the hit sound", "Attack Crit", K(false)));
-   private final lc W = this.addSetting(
-      new lc(
+   private static final String t = "Impact";
+   private final d6 q = this.addSetting(V("Sound", "Choose the hit sound", "Attack Crit", p(false)));
+   private final d9 d = this.addSetting(
+      new d9(
          "Volume",
          "Custom hit sound loudness; 0% is silent, 100% is original volume, 200% boosts playback. Players and Master sliders also apply",
          1.0,
@@ -62,7 +62,7 @@ public final class HitSoundsModule extends Module {
       ) {
          @Override
          public String getEditValueAsString() {
-            return Long.toString(Math.round(this.getValue() * 100.0));
+            return Long.toString(Math.round(this.P() * 100.0));
          }
 
          @Override
@@ -72,16 +72,16 @@ public final class HitSoundsModule extends Module {
 
          @Override
          public void setFromEditString(String var1) {
-            this.C(Double.parseDouble(var1.trim().replace("%", "")) / 100.0);
+            this.o(Double.parseDouble(var1.trim().replace("%", "")) / 100.0);
          }
       }
    );
-   private final lc m = this.addSetting(new lc("Pitch", "1 is the original sound; lower is deeper and higher is brighter", 1.0, 0.5, 2.0, 0.05));
-   private final ln I = this.addSetting(new ln("Mob Sounds", "Also play hit sounds for mobs and other non-player entities", true));
-   private final ln i = this.addSetting(
-      new ln("Mute normal hit sounds", "Mute vanilla attack impacts, critical hits and sweeps locally; other sounds stay audible", true)
+   private final d9 H = this.addSetting(new d9("Pitch", "1 is the original sound; lower is deeper and higher is brighter", 1.0, 0.5, 2.0, 0.05));
+   private final dh I = this.addSetting(new dh("Mob Sounds", "Also play hit sounds for mobs and other non-player entities", true));
+   private final dh C = this.addSetting(
+      new dh("Mute normal hit sounds", "Mute vanilla attack impacts, critical hits and sweeps locally; other sounds stay audible", true)
    );
-   private static final Set<Identifier> s = Set.of(
+   private static final Set<Identifier> R = Set.of(
       Identifier.withDefaultNamespace("entity.player.attack.strong"),
       Identifier.withDefaultNamespace("entity.player.attack.weak"),
       Identifier.withDefaultNamespace("entity.player.attack.crit"),
@@ -89,22 +89,22 @@ public final class HitSoundsModule extends Module {
       Identifier.withDefaultNamespace("entity.player.attack.knockback"),
       Identifier.withDefaultNamespace("entity.player.attack.nodamage")
    );
-   private final lc K = this.addSetting(new lc("Pitch Random", "Random pitch variation around the chosen pitch", 0.0, 0.0, 1.0, 0.05));
-   private final ln B = this.addSetting(new ln("Only Players", "Play feedback only for player targets", false));
-   private final ln N = this.addSetting(new ln("Only Crit", "Play feedback only for critical attacks", false));
-   private final ln g = this.addSetting(new ln("Random Sound", "Choose a random sound on each hit", false));
-   private final lp V = this.addSetting(G("Second Sound", "Layer an additional hit sound", "None", K(true)));
+   private final d9 w = this.addSetting(new d9("Pitch Random", "Random pitch variation around the chosen pitch", 0.0, 0.0, 1.0, 0.05));
+   private final dh N = this.addSetting(new dh("Only Players", "Play feedback only for player targets", false));
+   private final dh Z = this.addSetting(new dh("Only Crit", "Play feedback only for critical attacks", false));
+   private final dh s = this.addSetting(new dh("Random Sound", "Choose a random sound on each hit", false));
+   private final d6 x = this.addSetting(V("Second Sound", "Layer an additional hit sound", "None", p(true)));
+   private SimpleSoundInstance O;
+   private long r;
    private SimpleSoundInstance p;
-   private long F;
-   private SimpleSoundInstance H;
-   private ClientLevel E;
-   private LocalPlayer v;
-   private int C = Integer.MIN_VALUE;
-   private boolean n;
-   private boolean x;
+   private ClientLevel v;
+   private LocalPlayer y;
+   private int B = Integer.MIN_VALUE;
+   private boolean E;
+   private boolean j;
 
-   private static String[] K(boolean var0) {
-      ArrayList var1 = new ArrayList<>(List.of(J));
+   private static String[] p(boolean var0) {
+      ArrayList var1 = new ArrayList<>(List.of(i));
       if (var0) {
          var1.addFirst("None");
       } else {
@@ -114,8 +114,8 @@ public final class HitSoundsModule extends Module {
       return var1.toArray(String[]::new);
    }
 
-   private static lp G(String var0, String var1, String var2, String[] var3) {
-      return new lp(var0, var1, var2, var3) {
+   private static d6 V(String var0, String var1, String var2, String[] var3) {
+      return new d6(var0, var1, var2, var3) {
          @Override
          public boolean acceptsValue(String var1) {
             return "Impact".equals(var1) || super.acceptsValue(var1);
@@ -130,42 +130,42 @@ public final class HitSoundsModule extends Module {
 
    public HitSoundsModule() {
       super("Hit Sounds", "Play custom sounds when you hit targets", Category.VISUALS, -1);
-      D = this;
-      this.I.x(() -> !this.B.getValue());
-      this.M.x(() -> !this.g.getValue());
-      this.i.W(var0 -> r4.V("HitSounds", "Vanilla attack sounds muted: {}", var0));
-      this.M.W(var0 -> r4.V("HitSounds", "Sound selected: {}", var0));
+      z = this;
+      this.I.H(() -> !this.N.P());
+      this.q.H(() -> !this.s.P());
+      this.C.h(var0 -> mt.K("HitSounds", "Vanilla attack sounds muted: {}", var0));
+      this.q.h(var0 -> mt.K("HitSounds", "Sound selected: {}", var0));
    }
 
-   public static HitSoundsModule q() {
-      return D;
+   public static HitSoundsModule o() {
+      return z;
    }
 
-   public List<l6<?>> N() {
-      return List.of(this.W, this.M, this.m, this.K, this.g, this.V);
+   public List<df<?>> p() {
+      return List.of(this.d, this.q, this.H, this.w, this.s, this.x);
    }
 
-   public List<l6<?>> x() {
-      return List.of(this.B, this.N, this.i, this.I);
+   public List<df<?>> k() {
+      return List.of(this.N, this.Z, this.C, this.I);
    }
 
-   public boolean H(SoundInstance var1) {
+   public boolean x(SoundInstance var1) {
       return !this.isEnabled()
          ? false
          : this.isRuntimeActive()
-            && this.i.getValue()
+            && this.C.P()
             && var1 != null
-            && var1 != this.H
             && var1 != this.p
-            && (this.x || System.nanoTime() <= this.F)
-            && s.contains(var1.getIdentifier());
+            && var1 != this.O
+            && (this.j || System.nanoTime() <= this.r)
+            && R.contains(var1.getIdentifier());
    }
 
-   public Identifier a() {
-      return F(this.M.getValue());
+   public Identifier B() {
+      return f(this.q.P());
    }
 
-   public static Identifier F(String var0) {
+   public static Identifier f(String var0) {
       String var1 = switch (var0) {
          case "Attack Crit" -> "entity.player.attack.crit";
          case "Attack Strong" -> "entity.player.attack.strong";
@@ -193,46 +193,35 @@ public final class HitSoundsModule extends Module {
       return Identifier.fromNamespaceAndPath("larp-client", "hit." + var5);
    }
 
-   public SimpleSoundInstance j() {
-      return this.j(this.M.getValue());
+   public SimpleSoundInstance R() {
+      return this.c(this.q.P());
    }
 
-   private SimpleSoundInstance j(String var1) {
-      float var2 = (float)Math.clamp(this.m.getValue() + ThreadLocalRandom.current().nextDouble(-1.0, 1.0) * this.K.getValue(), 0.5, 2.0);
+   private SimpleSoundInstance c(String var1) {
+      float var2 = (float)Math.clamp(this.H.P() + ThreadLocalRandom.current().nextDouble(-1.0, 1.0) * this.w.P(), 0.5, 2.0);
       return new SimpleSoundInstance(
-         F(var1),
-         SoundSource.PLAYERS,
-         this.W.getValue().floatValue(),
-         var2,
-         SoundInstance.createUnseededRandom(),
-         false,
-         0,
-         Attenuation.NONE,
-         0.0,
-         0.0,
-         0.0,
-         true
+         f(var1), SoundSource.PLAYERS, this.d.P().floatValue(), var2, SoundInstance.createUnseededRandom(), false, 0, Attenuation.NONE, 0.0, 0.0, 0.0, true
       );
    }
 
-   public void X(Entity var1) {
+   public void G(Entity var1) {
       if (this.isEnabled()) {
          if (this.isRuntimeActive() && this.isInGame() && var1 != null && var1 != this.getPlayer() && var1.isAlive() && !var1.isRemoved()) {
-            if (!this.B.getValue() && this.I.getValue() || var1 instanceof Player) {
-               if (!this.N.getValue() || xq.M(this.getPlayer(), var1)) {
+            if (!this.N.P() && this.I.P() || var1 instanceof Player) {
+               if (!this.Z.P() || pl.A(this.getPlayer(), var1)) {
                   Minecraft var2 = getMc();
-                  this.t();
+                  this.J();
                   int var3 = var2.player.tickCount;
-                  if (this.C != var3) {
-                     this.C = var3;
-                     this.F = System.nanoTime() + 800000000L;
-                     if (this.W.getValue() <= 0.0) {
-                        this.H("Muted by Hit Sounds Volume=0");
+                  if (this.B != var3) {
+                     this.B = var3;
+                     this.r = System.nanoTime() + 800000000L;
+                     if (this.d.P() <= 0.0) {
+                        this.K("Muted by Hit Sounds Volume=0");
                      } else {
                         try {
-                           this.X(false);
+                           this.Q(false);
                         } catch (RuntimeException var5) {
-                           r4.r("HitSounds", "Local sound playback failed; disabling Hit Sounds", var5);
+                           mt.P("HitSounds", "Local sound playback failed; disabling Hit Sounds", var5);
                            this.setEnabled(false);
                         }
                      }
@@ -243,113 +232,113 @@ public final class HitSoundsModule extends Module {
       }
    }
 
-   public void z() {
+   public void h() {
       Minecraft var1 = getMc();
       if (var1 != null) {
          try {
-            this.t();
-            this.X(true);
+            this.J();
+            this.Q(true);
          } catch (RuntimeException var3) {
-            r4.r("HitSounds", "Sound preview failed; reload resources and retry", var3);
+            mt.P("HitSounds", "Sound preview failed; reload resources and retry", var3);
          }
       }
    }
 
-   public void T() {
-      if (this.x) {
-         this.j();
+   public void d() {
+      if (this.j) {
+         this.Y();
       }
    }
 
-   private void X(boolean var1) {
+   private void Q(boolean var1) {
       Minecraft var2 = getMc();
-      if (this.H != null) {
-         var2.getSoundManager().stop(this.H);
-      }
-
       if (this.p != null) {
          var2.getSoundManager().stop(this.p);
       }
 
-      String var3 = this.g.getValue() ? J[ThreadLocalRandom.current().nextInt(J.length)] : this.M.getValue();
-      this.H = this.j(var3);
-      this.x = var1;
-      PlayResult var4 = var2.getSoundManager().play(this.H);
-      this.p = this.V.i("None") ? null : this.j(this.V.getValue());
-      if (this.p != null) {
-         var2.getSoundManager().play(this.p);
+      if (this.O != null) {
+         var2.getSoundManager().stop(this.O);
       }
 
-      Sound var5 = this.H.getSound();
+      String var3 = this.s.P() ? i[ThreadLocalRandom.current().nextInt(i.length)] : this.q.P();
+      this.p = this.c(var3);
+      this.j = var1;
+      PlayResult var4 = var2.getSoundManager().play(this.p);
+      this.O = this.x.S("None") ? null : this.c(this.x.P());
+      if (this.O != null) {
+         var2.getSoundManager().play(this.O);
+      }
+
+      Sound var5 = this.p.getSound();
       String var6 = (var1 ? "Preview" : "Attack received")
          + "; sound="
-         + this.a()
+         + this.B()
          + ", playback="
          + var4
          + ", moduleVolume="
-         + this.W.getValue()
+         + this.d.P()
          + ", Players/Master gain="
          + var2.options.getFinalSoundSourceVolume(SoundSource.PLAYERS)
          + ", resolved sample="
          + (var5 == null ? "unresolved" : var5.getLocation())
          + ", resolved volume="
-         + (var5 == null ? 0.0F : this.H.getVolume())
+         + (var5 == null ? 0.0F : this.p.getVolume())
          + ", resolved pitch="
-         + (var5 == null ? 0.0F : this.H.getPitch());
+         + (var5 == null ? 0.0F : this.p.getPitch());
       if (var1) {
-         r4.V("HitSounds", var6);
+         mt.K("HitSounds", var6);
       } else {
-         this.H(var6);
+         this.K(var6);
       }
    }
 
-   private void H(String var1) {
-      if (!this.n) {
-         this.n = (boolean)1;
-         r4.V("HitSounds", var1);
+   private void K(String var1) {
+      if (!this.E) {
+         this.E = (boolean)1;
+         mt.K("HitSounds", var1);
       }
    }
 
    @Override
    public void onEnable() {
-      this.j();
-      this.n = (boolean)0;
-      r4.V("HitSounds", "Local attack feedback enabled: sound={}, reference sample gain, paired local voices, Minecraft Players volume", this.M.getValue());
+      this.Y();
+      this.E = (boolean)0;
+      mt.K("HitSounds", "Local attack feedback enabled: sound={}, reference sample gain, paired local voices, Minecraft Players volume", this.q.P());
    }
 
    @Override
    public void onTick() {
-      this.t();
+      this.J();
    }
 
    @Override
    public void onDisable() {
-      this.j();
+      this.Y();
    }
 
-   private void t() {
+   private void J() {
       Minecraft var1 = getMc();
-      if (this.E != var1.level || this.v != var1.player) {
-         this.j();
-         this.E = var1.level;
-         this.v = var1.player;
+      if (this.v != var1.level || this.y != var1.player) {
+         this.Y();
+         this.v = var1.level;
+         this.y = var1.player;
       }
    }
 
-   private void j() {
+   private void Y() {
       Minecraft var1 = getMc();
-      SimpleSoundInstance var2 = this.H;
-      if (this.p != null && var1 != null) {
-         var1.getSoundManager().stop(this.p);
+      SimpleSoundInstance var2 = this.p;
+      if (this.O != null && var1 != null) {
+         var1.getSoundManager().stop(this.O);
       }
 
+      this.O = null;
+      this.r = 0L;
       this.p = null;
-      this.F = 0L;
-      this.H = null;
-      this.x = (boolean)0;
-      this.E = null;
+      this.j = (boolean)0;
       this.v = null;
-      this.C = Integer.MIN_VALUE;
+      this.y = null;
+      this.B = Integer.MIN_VALUE;
       if (var2 != null && var1 != null) {
          var1.getSoundManager().stop(var2);
       }

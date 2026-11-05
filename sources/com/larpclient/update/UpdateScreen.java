@@ -2,11 +2,11 @@ package com.larpclient.update;
 
 import com.larp.updater.UpdateManifest;
 import com.larpclient.LarpClient;
-import com.larpclient.fs;
-import com.larpclient.j_;
-import com.larpclient.ll;
-import com.larpclient.ow;
-import com.larpclient.r7;
+import com.larpclient.k6;
+import com.larpclient.mo;
+import com.larpclient.pn;
+import com.larpclient.tl;
+import com.larpclient.xv;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +37,7 @@ public final class UpdateScreen extends Screen {
    }
 
    protected void init() {
-      this.consentKeys.begin(var1x -> r7.r(this.minecraft.getWindow(), var1x));
+      this.consentKeys.begin(var1x -> mo.N(this.minecraft.getWindow(), var1x));
       this.layout = UpdateLayout.dialog(this.width, this.height);
       int var1 = this.layout.x() + 12;
       int var2 = this.layout.width() - 24;
@@ -53,8 +53,8 @@ public final class UpdateScreen extends Screen {
       });
       this.button("Later", var1 + var5 + var4, var3 + 24, Math.max(1, var2 - var5 - var4), 22, this::onClose);
       this.automatic = this.button("Automatic checks", var1, var3 + 48, Math.max(1, var2), 20, () -> {
-         fs var0 = LarpClient.y().v().E();
-         UpdateRuntime.automatic(!var0.h);
+         xv var0 = LarpClient.F().f().t();
+         UpdateRuntime.automatic(!var0.o);
       });
       this.sync();
    }
@@ -71,14 +71,14 @@ public final class UpdateScreen extends Screen {
             protected void extractContents(GuiGraphicsExtractor var1, int var2x, int var3x, float var4x) {
                boolean var5x = this.isHoveredOrFocused();
                int var6x = this.active ? (var5x ? -13224394 : -14474461) : -15132391;
-               ow.P(var1, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 3.0F, var6x);
+               tl.g(var1, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 3.0F, var6x);
                if (this.isFocused()) {
-                  ll.w(var1, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 3);
+                  pn.y(var1, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 3);
                }
 
-               j_.n(
+               k6.M(
                   var1,
-                  j_.x(this.getMessage().getString(), this.getWidth() - 12),
+                  k6.n(this.getMessage().getString(), this.getWidth() - 12),
                   this.getX() + this.getWidth() / 2,
                   this.getY() + (this.getHeight() - 9) / 2,
                   this.active ? -1842205 : -8947849
@@ -161,12 +161,12 @@ public final class UpdateScreen extends Screen {
       this.secondary.active = var2 == null || var2.state() != UpdateService.State.CANCELLING;
       this.skip.visible = var2 != null && var2.state() == UpdateService.State.AVAILABLE;
       this.skip.active = this.skip.visible;
-      boolean var4 = LarpClient.y().v().E().h;
+      boolean var4 = LarpClient.F().f().t().o;
       this.automatic.setMessage(Component.literal("Automatic checks: " + (var4 ? "On" : "Off")));
    }
 
    public void tick() {
-      this.consentKeys.reconcile(var1 -> r7.r(this.minecraft.getWindow(), var1));
+      this.consentKeys.reconcile(var1 -> mo.N(this.minecraft.getWindow(), var1));
       this.sync();
    }
 
@@ -175,20 +175,20 @@ public final class UpdateScreen extends Screen {
       int var5 = this.layout.x();
       int var6 = this.layout.y();
       int var7 = this.layout.width();
-      ow.P(var1, var5, var6, var7, this.layout.height(), 7.0F, -182904551);
-      j_.y(var1, "Client updates", var5 + 14, var6 + 13, -1447447, j_.w.P);
+      tl.g(var1, var5, var6, var7, this.layout.height(), 7.0F, -182904551);
+      k6.r(var1, "Client updates", var5 + 14, var6 + 13, -1447447, k6.v.L);
       UpdateService var8 = UpdateRuntime.service();
       UpdateService.Snapshot var9 = var8 == null ? null : var8.snapshot();
       String var10 = var8 == null
          ? "Larp Client"
          : var8.identity().edition() + " / Minecraft " + var8.identity().minecraft() + " / " + var8.identity().channel();
-      j_.c(var1, j_.x(var10, var7 - 28), var5 + 14, var6 + 29, -5592406);
+      k6.G(var1, k6.n(var10, var7 - 28), var5 + 14, var6 + 29, -5592406);
       String var11 = var8 == null ? "" : "Installed " + var8.identity().version() + (var9.release() == null ? "" : "  |  Release " + var9.release().version());
-      j_.c(var1, j_.x(var11, var7 - 28), var5 + 14, var6 + 45, -3487030);
+      k6.G(var1, k6.n(var11, var7 - 28), var5 + 14, var6 + 45, -3487030);
       String var12 = this.notes(var8, var9);
       if (!var12.equals(this.renderedNotes)) {
          this.renderedNotes = var12;
-         this.lines = this.minecraft.font.split(j_.v(var12, j_.w.H), Math.max(1, var7 - 36));
+         this.lines = this.minecraft.font.split(k6.X(var12, k6.v.K), Math.max(1, var7 - 36));
          this.scroll = 0;
       }
 
@@ -281,7 +281,7 @@ public final class UpdateScreen extends Screen {
    }
 
    public boolean keyPressed(KeyEvent var1) {
-      int var2 = r7.g(var1);
+      int var2 = mo.O(var1);
       if (var2 == 256) {
          this.onClose();
          return true;
@@ -296,7 +296,7 @@ public final class UpdateScreen extends Screen {
    }
 
    public boolean keyReleased(KeyEvent var1) {
-      this.consentKeys.release(r7.g(var1));
+      this.consentKeys.release(mo.O(var1));
       return super.keyReleased(var1);
    }
 

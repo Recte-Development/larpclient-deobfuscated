@@ -1,94 +1,184 @@
 package com.larpclient;
 
-import net.minecraft.world.phys.AABB;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public final class md {
-   public static void C(r6 var0, boolean var1, d4 var2, AABB var3, double var4, int var6, double var7, double var9, double var11, double var13) {
-      var0.blend(fk.h.u);
-      AABB var15 = var3;
+   public static String M(JsonObject var0, String var1) {
+      String var2 = p_.Q(var0, var1, 128);
+      if (!var2.matches("[A-Za-z0-9_-]{1,128}")) {
+         throw pe.e();
+      } else {
+         return var2;
+      }
+   }
 
-      for (d4.n var17 : var2.edges()) {
-         double var18 = i(var17.ax(), var15.minX, var15.maxX);
-         double var20 = i(var17.ay(), var15.minY, var15.maxY);
-         double var22 = i(var17.az(), var15.minZ, var15.maxZ);
-         double var24 = i(var17.bx(), var15.minX, var15.maxX);
-         double var26 = i(var17.by(), var15.minY, var15.maxY);
-         double var28 = i(var17.bz(), var15.minZ, var15.maxZ);
-         double var30 = var4 * var7;
-         if (var13 > 0.0) {
-            int var32 = oh.S(var6, var30 * var13 * (var1 ? 0.25 : 0.09));
-            var0.p(var18, var20, var22, var24, var26, var28, var9 * 3.0, var9 * 3.0, var32, var32);
+   public static String L(String var0) {
+      var0 = var0.trim().toUpperCase(Locale.ROOT);
+      if (!var0.matches("(?:LARP-)?[A-F0-9]{16}")) {
+         throw new IllegalArgumentException("Enter a LARP share code with 16 hexadecimal characters.");
+      } else {
+         return var0.startsWith("LARP-") ? var0 : "LARP-" + var0;
+      }
+   }
+
+   public static String a(JsonObject var0) {
+      String var1 = p_.Q(var0, "shareCode", 21);
+      if (!var1.matches("LARP-[A-F0-9]{16}")) {
+         throw pe.e();
+      } else {
+         return var1;
+      }
+   }
+
+   public static String x(JsonObject var0) {
+      String var1 = p_.Q(var0, "id", 16);
+      if (!var1.matches("LRP-[A-F0-9]{12}")) {
+         throw pe.e();
+      } else {
+         return var1;
+      }
+   }
+
+   public static String U(JsonObject var0) {
+      return switch (p_.U(var0.get("marketplaceState"), "private", "submitted", "approved", "rejected", "removed")) {
+         case "private" -> "Private (unlisted)";
+         case "submitted" -> "Pending review";
+         case "approved" -> "Approved";
+         case "rejected" -> "Rejected";
+         default -> "Removed";
+      };
+   }
+
+   public static boolean n(JsonObject var0) {
+      return var0.has("discordSharing") && p_.v(var0.get("discordSharing"));
+   }
+
+   public static String q(JsonObject var0) {
+      if (!n(var0)) {
+         return "";
+      }
+
+      String var1 = p_.U(var0.get("marketplaceState"), "private", "submitted", "approved", "rejected", "removed");
+      return var1.equals("removed") ? "Taken off Discord by staff" : "Posted in Discord";
+   }
+
+   public static List<JsonObject> B(JsonObject var0, boolean var1) {
+      if (var0.has("items") && var0.get("items").isJsonArray() && var0.getAsJsonArray("items").size() <= 100) {
+         ArrayList var2 = new ArrayList();
+
+         for (JsonElement var4 : var0.getAsJsonArray("items")) {
+            JsonObject var5 = p_.S(var4);
+            M(var5, "id");
+            M(var5, "revision");
+            p_.g(p_.Q(var5, "name", 32));
+            p_.Q(var5, "updatedAt", 40);
             if (!var1) {
-               var0.p(var18, var20, var22, var24, var26, var28, var9 * 5.0, var9 * 5.0, oh.S(var32, 0.35), oh.S(var32, 0.35));
+               a(var5);
+               U(var5);
+               p_.Q(var5, "rejectionReason", 500);
+               q(var5);
+            }
+
+            var2.add(var5.deepCopy());
+         }
+
+         return List.copyOf(var2);
+      } else {
+         throw pe.e();
+      }
+   }
+
+   public static md.m D(JsonObject var0) {
+      try {
+         String var1 = p_.Q(var0, "version", 40);
+         if (!var1.matches("[A-Za-z0-9][A-Za-z0-9.+_-]*")) {
+            throw pe.e();
+         }
+
+         if (!var0.has("updateAvailable")) {
+            throw pe.e();
+         }
+
+         Boolean var2 = var0.get("updateAvailable").isJsonNull() ? null : p_.v(var0.get("updateAvailable"));
+         if (Boolean.TRUE.equals(var2) && var1.matches("\\d+(?:\\.\\d+){0,3}") && zq.x.matches("\\d+(?:\\.\\d+){0,3}")) {
+            String[] var3 = var1.split("\\.");
+            String[] var4 = zq.x.split("\\.");
+            int var5 = 0;
+
+            for (int var6 = 0; var6 < Math.max(var3.length, var4.length) && var5 == 0; var6++) {
+               var5 = new BigInteger(var6 < var3.length ? var3[var6] : "0").compareTo(new BigInteger(var6 < var4.length ? var4[var6] : "0"));
+            }
+
+            if (var5 <= 0) {
+               var2 = false;
             }
          }
 
-         if (!var1) {
-            int var35 = oh.S(var6, var30);
-            var0.p(var18, var20, var22, var24, var26, var28, var9, var9, var35, var35);
+         ArrayList var8 = new ArrayList();
+         var8.add("Larp " + var1 + " — " + p_.Q(var0, "title", 120));
+         var8.add(
+            p_.Q(var0, "releaseDate", 10)
+               + " / Minecraft "
+               + p_.Q(var0, "minecraftVersion", 40)
+               + " / "
+               + p_.U(var0.get("status"), "stable", "beta", "experimental")
+         );
+         var8.add(p_.Q(var0, "summary", 500));
+         if (var0.has("notice") && !var0.get("notice").isJsonNull()) {
+            var8.add(p_.Q(var0, "notice", 1000));
          }
-      }
 
-      var0.blend(fk.h.z);
-      if (!var1 && var11 > 0.0) {
-         for (AABB var34 : var2.boxes()) {
-            c(
-               var0,
-               new AABB(
-                  i(var34.minX, var15.minX, var15.maxX),
-                  i(var34.minY, var15.minY, var15.maxY),
-                  i(var34.minZ, var15.minZ, var15.maxZ),
-                  i(var34.maxX, var15.minX, var15.maxX),
-                  i(var34.maxY, var15.minY, var15.maxY),
-                  i(var34.maxZ, var15.minZ, var15.maxZ)
-               ),
-               oh.S(var6, var4 * var11)
-            );
+         if (var0.has("notes") && var0.get("notes").isJsonArray() && var0.getAsJsonArray("notes").size() <= 100) {
+            for (JsonElement var10 : var0.getAsJsonArray("notes")) {
+               JsonObject var11 = p_.S(var10);
+               var8.add(p_.U(var11.get("category"), "Added", "Changed", "Fixed", "Visuals", "Performance", "Notes") + ": " + p_.Q(var11, "text", 2000));
+            }
+
+            return new md.m(var1, var2, List.copyOf(var8));
+         } else {
+            throw pe.e();
          }
+      } catch (RuntimeException var7) {
+         throw pe.e();
       }
    }
 
-   private static double i(double var0, double var2, double var4) {
-      return d4.map(var0, var2, var4);
+   public static md.g D(JsonObject var0) {
+      try {
+         String var1 = p_.U(var0.get("state"), "Operational", "Degraded", "Unavailable");
+         if (var0.has("services") && var0.get("services").isJsonArray() && var0.getAsJsonArray("services").size() <= 20) {
+            byte var2 = 0;
+            ArrayList var3 = new ArrayList();
+
+            for (JsonElement var5 : var0.getAsJsonArray("services")) {
+               JsonObject var6 = p_.S(var5);
+               String var7 = M(var6, "id");
+               String var8 = p_.U(var6.get("state"), "Operational", "Degraded", "Unavailable");
+               if (Set.of("authentication", "client-session").contains(var7) && !var8.equals("Operational")) {
+                  var2 = 1;
+               }
+
+               var3.add(p_.Q(var6, "name", 120) + ": " + var8);
+            }
+
+            return new md.g(var1, (boolean)var2, List.copyOf(var3));
+         } else {
+            throw pe.e();
+         }
+      } catch (RuntimeException var9) {
+         throw pe.e();
+      }
    }
 
-   private static void c(r6 var0, AABB var1, int var2) {
-      double var3 = var1.minX;
-      double var5 = var1.minY;
-      double var7 = var1.minZ;
-      double var9 = var1.maxX;
-      double var11 = var1.maxY;
-      double var13 = var1.maxZ;
-      s(var0, var2, var3, var5, var7, var9, var5, var7, var9, var11, var7, var3, var11, var7);
-      s(var0, var2, var3, var5, var13, var3, var11, var13, var9, var11, var13, var9, var5, var13);
-      s(var0, var2, var3, var5, var7, var3, var11, var7, var3, var11, var13, var3, var5, var13);
-      s(var0, var2, var9, var5, var7, var9, var5, var13, var9, var11, var13, var9, var11, var7);
-      s(var0, var2, var3, var5, var7, var3, var5, var13, var9, var5, var13, var9, var5, var7);
-      s(var0, var2, var3, var11, var7, var9, var11, var7, var9, var11, var13, var3, var11, var13);
+   public record g(String state, boolean authIssue, List<String> lines) {
    }
 
-   private static void s(
-      r6 var0,
-      int var1,
-      double var2,
-      double var4,
-      double var6,
-      double var8,
-      double var10,
-      double var12,
-      double var14,
-      double var16,
-      double var18,
-      double var20,
-      double var22,
-      double var24
-   ) {
-      var0.vertex(var2, var4, var6, var1);
-      var0.vertex(var8, var10, var12, var1);
-      var0.vertex(var14, var16, var18, var1);
-      var0.vertex(var20, var22, var24, var1);
-   }
-
-   private md() {
+   public record m(String version, Boolean updateAvailable, List<String> lines) {
    }
 }

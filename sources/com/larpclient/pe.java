@@ -1,57 +1,57 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.platform.InputConstants.Type;
+public final class pe extends RuntimeException {
+   private final int T;
+   private final String G;
 
-public final class pe {
-   public static final int s = -1;
-   private static final int J = 1;
-   private static final int z = 8;
-
-   public static boolean o(int var0) {
-      return var0 >= 1 && var0 < 9;
+   public pe(int var1, String var2) {
+      super(J(var1, var2));
+      this.T = var1;
+      this.G = var2;
    }
 
-   public static boolean E(int var0) {
-      return var0 >= 32 && var0 <= 348;
+   public int F() {
+      return this.T;
    }
 
-   public static boolean F(int var0) {
-      return o(var0) || E(var0);
+   public String l() {
+      return this.G;
    }
 
-   public static int h(int var0) {
-      return var0 >= 0 && var0 < 8 ? 1 + var0 : -1;
-   }
+   private static String J(int var0, String var1) {
+      if (var1.equals("TIMEOUT")) {
+         return "Larp took too long to respond. Try again shortly.";
+      }
 
-   public static int H(int var0) {
-      return o(var0) ? var0 - 1 : -1;
-   }
+      if (var1.equals("NETWORK")) {
+         return "Could not reach Larp. Check your connection and try again.";
+      }
 
-   public static boolean Y(int var0) {
-      return var0 >= 2 && var0 < 8;
-   }
+      if (var1.equals("INVALID_RESPONSE")) {
+         return "Larp returned an invalid response. No changes were applied.";
+      }
 
-   public static boolean A(long var0, int var2) {
-      return o(var2) ? eo.Y(var0, H(var2)) == 1 : E(var2) && eo.F(var0, var2) == 1;
-   }
-
-   public static String B(int var0) {
-      return switch (H(var0)) {
-         case 0 -> "Left Mouse";
-         case 1 -> "Right Mouse";
-         case 2 -> "Middle Mouse";
-         default -> "Mouse " + (H(var0) + 1);
+      return switch (var0) {
+         case 400 -> "This data is not supported by the platform. Its module manifest or profile schema may need updating.";
+         case 401 -> "Your Larp session is no longer valid. Re-authenticate from the Larp login screen.";
+         case 403 -> "You do not have access to this feature.";
+         case 404 -> "No item was found. The share code may be invalid or revoked.";
+         case 409 -> var1.equals("REVISION_CONFLICT")
+            ? "This cloud item changed. It has been refreshed; review it before trying again."
+            : (
+               var1.equals("DISCORD_LIMIT")
+                  ? "You already have the most configs posted in Discord. Turn one off first, or use Share to just copy the code."
+                  : "The operation conflicts with a server limit or the item's current state."
+            );
+         case 413 -> "The config or report is too large.";
+         case 429 -> "Too many requests. Try again shortly.";
+         case 503 -> "Larp authentication is temporarily unavailable.";
+         case 507 -> "Larp's storage is full. Try again later.";
+         default -> "Larp's service could not complete the request.";
       };
    }
 
-   public static String A(int var0) {
-      if (o(var0)) {
-         return B(var0);
-      } else {
-         return !E(var0) ? "Unbound" : Type.KEYBOARD.getOrCreate(r7.e(var0)).getDisplayName().getString();
-      }
-   }
-
-   private pe() {
+   public static pe e() {
+      return new pe(0, "INVALID_RESPONSE");
    }
 }

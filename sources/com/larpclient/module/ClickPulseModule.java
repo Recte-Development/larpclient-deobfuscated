@@ -1,10 +1,9 @@
 package com.larpclient.module;
 
-import com.larpclient.o8;
-import com.larpclient.ow;
-import com.larpclient.r4;
-import com.larpclient.rv;
-import com.larpclient.y8;
+import com.larpclient.mq;
+import com.larpclient.mt;
+import com.larpclient.tl;
+import com.larpclient.zo;
 import java.util.ArrayDeque;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Minecraft;
@@ -14,34 +13,34 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
 public final class ClickPulseModule extends Module {
-   private static final int w = 12;
-   private static ClickPulseModule j;
-   private final lp n = this.addSetting(new lp("Trigger", "Which clicks start a pulse", "Both", "Both", "Left", "Right", "On Hit"));
-   private final lc N = this.addSetting(new lc("Size", "Final ring radius", 14.0, 6.0, 40.0, 1.0));
-   private final lc b = this.addSetting(new lc("Duration", "Milliseconds until the ring fades out", 350.0, 120.0, 1000.0, 10.0));
-   private final lc J = this.addSetting(new lc("Thickness", "Ring width in screen pixels", 2.0, 2.0, 8.0, 2.0));
-   private final ln z = this.addSetting(new ln("Theme Color", "Follow the interface accent color", true));
-   private final lv i = this.addSetting(new lv("Color", "Ring color and opacity", -1));
-   private final ArrayDeque<Long> E = new ArrayDeque<>();
+   private static final int u = 12;
+   private static ClickPulseModule L;
+   private final d6 F = this.addSetting(new d6("Trigger", "Which clicks start a pulse", "Both", "Both", "Left", "Right", "On Hit"));
+   private final d9 Z = this.addSetting(new d9("Size", "Final ring radius", 14.0, 6.0, 40.0, 1.0));
+   private final d9 y = this.addSetting(new d9("Duration", "Milliseconds until the ring fades out", 350.0, 120.0, 1000.0, 10.0));
+   private final d9 S = this.addSetting(new d9("Thickness", "Ring width in screen pixels", 2.0, 2.0, 8.0, 2.0));
+   private final dh R = this.addSetting(new dh("Theme Color", "Follow the interface accent color", true));
+   private final dk G = this.addSetting(new dk("Color", "Ring color and opacity", -1));
+   private final ArrayDeque<Long> O = new ArrayDeque<>();
 
    public ClickPulseModule() {
       super("Click Pulse", "A ring pulses out of the crosshair when you click", Category.RENDER, -1);
-      j = this;
-      this.i.x(() -> !this.z.getValue());
-      this.n.W(var1 -> {
-         this.E.clear();
-         r4.V("ClickPulse", "Trigger selected: {}", var1);
+      L = this;
+      this.G.H(() -> !this.R.P());
+      this.F.h(var1 -> {
+         this.O.clear();
+         mt.K("ClickPulse", "Trigger selected: {}", var1);
       });
       HudElementRegistry.addLast(
          Identifier.fromNamespaceAndPath("larp-client", "clickpulse"),
          (var1, var2) -> {
-            if (!this.E.isEmpty()) {
+            if (!this.O.isEmpty()) {
                Minecraft var3 = getMc();
-               var1 = y8.U(var1, false, false);
+               var1 = zo.R(var1, false, false);
                if (var1 == null) {
-                  this.E.clear();
+                  this.O.clear();
                } else {
-                  o8.e(var1);
+                  mq.x(var1);
                   if (this.isOperational()
                      && this.isInGame()
                      && !var3.gameRenderer.gameRenderState().guiRenderState.isHudHidden
@@ -49,21 +48,21 @@ public final class ClickPulseModule extends Module {
                      && (var3.gui.screen() == null || var3.gui.screen().getClass() == ChatScreen.class)) {
                      int var4 = var3.getWindow().getGuiScaledWidth();
                      int var5 = var3.getWindow().getGuiScaledHeight();
-                     o8.a var6 = o8.q("crosshair");
-                     if (CustomCrosshairModule.S() && !var6.z()) {
-                        var6.q(var4, var5);
-                        var6.J(var1, var6.b(var4), var6.M(var5));
+                     mq.s var6 = mq.B("crosshair");
+                     if (CustomCrosshairModule.I() && !var6.N()) {
+                        var6.P(var4, var5);
+                        var6.v(var1, var6.W(var4), var6.i(var5));
 
                         try {
-                           this.M(var1, var6.b(var4) + var6.N / 2, var6.M(var5) + var6.F / 2);
+                           this.N(var1, var6.W(var4) + var6.W / 2, var6.i(var5) + var6.n / 2);
                         } finally {
-                           var6.z(var1);
+                           var6.i(var1);
                         }
                      } else {
-                        this.M(var1, (var4 - 15) / 2 + 7.5, (var5 - 15) / 2 + 7.5);
+                        this.N(var1, (var4 - 15) / 2 + 7.5, (var5 - 15) / 2 + 7.5);
                      }
                   } else {
-                     this.E.clear();
+                     this.O.clear();
                   }
                }
             }
@@ -72,74 +71,74 @@ public final class ClickPulseModule extends Module {
    }
 
    public static ClickPulseModule J() {
-      return j;
+      return L;
    }
 
    @Override
    public void onEnable() {
-      this.E.clear();
+      this.O.clear();
    }
 
    @Override
    public void onDisable() {
-      this.E.clear();
+      this.O.clear();
    }
 
-   public static void j(int var0) {
-      if (j != null && j.isEnabled()) {
-         ClickPulseModule var1 = j;
-         if (var1 != null && var0 <= 1 && !var1.n.i("On Hit")) {
-            if ((!var1.n.i("Left") || var0 == 0) && (!var1.n.i("Right") || var0 == 1)) {
-               var1.r();
+   public static void J(int var0) {
+      if (L != null && L.isEnabled()) {
+         ClickPulseModule var1 = L;
+         if (var1 != null && var0 <= 1 && !var1.F.S("On Hit")) {
+            if ((!var1.F.S("Left") || var0 == 0) && (!var1.F.S("Right") || var0 == 1)) {
+               var1.p();
             }
          }
       }
    }
 
-   public void Y(Entity var1) {
+   public void C(Entity var1) {
       if (this.isEnabled()) {
-         if (var1 != null && this.n.i("On Hit")) {
-            this.r();
+         if (var1 != null && this.F.S("On Hit")) {
+            this.p();
          }
       }
    }
 
-   private void r() {
+   private void p() {
       if (this.isOperational() && getMc().player != null && getMc().gui.screen() == null) {
-         if (this.E.size() >= 12) {
-            this.E.removeFirst();
+         if (this.O.size() >= 12) {
+            this.O.removeFirst();
          }
 
-         this.E.addLast(System.nanoTime());
+         this.O.addLast(System.nanoTime());
       }
    }
 
-   private int p() {
-      return this.z.getValue() ? rv.e | 0xFF000000 : this.i.getValue();
+   private int u() {
+      return this.R.P() ? com.larpclient.f.C | 0xFF000000 : this.G.P();
    }
 
-   private void M(GuiGraphicsExtractor var1, double var2, double var4) {
+   private void N(GuiGraphicsExtractor var1, double var2, double var4) {
       long var6 = System.nanoTime();
-      double var8 = this.b.getValue() * 1000000.0;
+      double var8 = this.y.P() * 1000000.0;
 
-      while (!this.E.isEmpty() && var6 - this.E.peekFirst() >= var8) {
-         this.E.removeFirst();
+      while (!this.O.isEmpty() && var6 - this.O.peekFirst() >= var8) {
+         this.O.removeFirst();
       }
 
-      int var10 = this.p();
+      int var10 = this.u();
       int var11 = var10 >>> 24;
-      if (!this.E.isEmpty() && var11 != 0) {
+      if (!this.O.isEmpty() && var11 != 0) {
          double var12 = Math.hypot(var1.pose().m00(), var1.pose().m01()) * getMc().getWindow().getGuiScale();
-         int var14 = Math.max(1, this.J.getValue().intValue() / 2);
+         int var14 = Math.max(1, this.S.P().intValue() / 2);
          double var15 = 3.0 * var12;
-         double var17 = this.N.getValue() * var12;
+         double var17 = this.Z.P() * var12;
          var1.pose().pushMatrix();
 
          try {
             var1.pose().translate((float)var2, (float)var4);
             var1.pose().scale((float)(1.0 / var12));
 
-            for (long var20 : this.E) {
+            for (long var20 : this.O) {
                double var22 = Math.clamp((var6 - var20) / var8, 0.0, 1.0);
                double var24 = 1.0 - Math.pow(1.0 - var22, 3.0);
                int var26 = (int)Math.round(var11 * (1.0 - var22) * (1.0 - var22));
@@ -153,7 +152,7 @@ public final class ClickPulseModule extends Module {
                         break;
                      }
 
-                     ow.A(var1, -var30, -var30, 2 * var30, 2 * var30, var30, var27);
+                     tl.M(var1, -var30, -var30, 2 * var30, 2 * var30, var30, var27);
                   }
                }
             }

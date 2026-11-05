@@ -1,59 +1,68 @@
 package com.larpclient;
 
-import com.larpclient.module.CustomSkyModule;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.renderpearl.api.textures.FilterMode;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.resources.Identifier;
+import java.util.Locale;
+import java.util.function.BooleanSupplier;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public final class us extends ux {
-   private static final Identifier x = Identifier.fromNamespaceAndPath("larp-client", "textures/sky/nebula/nebula_clouds.png");
-   private SimpleTexture s;
+public final class us extends b {
+   private final String E;
+   private final BooleanSupplier S;
+   private final boolean O;
+   private final boolean d;
 
-   public us() {
-      super("nebula", "NebulaClouds");
+   public us(String var1) {
+      this(var1, () -> true);
+   }
+
+   public us(String var1, BooleanSupplier var2) {
+      this(var1, var2, false);
+   }
+
+   public us(String var1, BooleanSupplier var2, boolean var3) {
+      this(var1, var2, var3, false);
+   }
+
+   private us(String var1, BooleanSupplier var2, boolean var3, boolean var4) {
+      this.E = var1;
+      this.S = var2;
+      this.O = var3;
+      this.d = var4;
+      this.W = var3 ? 16 : (var4 ? 26 : 22);
+      this.X = (boolean)0;
+   }
+
+   public static us R(String var0) {
+      return new us(var0, () -> true, false, true);
+   }
+
+   public boolean D() {
+      return this.S.getAsBoolean();
    }
 
    @Override
-   protected void load(lb var1) throws IOException {
-      this.s = new SimpleTexture(x);
-      this.s.apply(this.s.loadContents(Minecraft.getInstance().getResourceManager()));
-   }
-
-   @Override
-   protected void advance(lb var1) {
-      this.E = this.E + var1.N * var1.o.b();
-      this.y = (this.y + var1.N * Math.toRadians(var1.o.u())) % (Math.PI * 2);
-   }
-
-   @Override
-   protected void write(lb var1, ByteBuffer var2) {
-      CustomSkyModule var3 = var1.o;
-      f5 var4 = var3.p();
-      y(var2, var4.zenith());
-      y(var2, var4.horizon());
-      K(var2, var3.x(), 0.0F, var3.p(), 0.0F);
-      K(var2, var3.f(), var3.T(), var3.i(), var3.c());
-      K(var2, (float)this.E, (float)this.y, 0.0F, 0.0F);
-      K(var2, var3.M() ? 1.0F : 0.0F, var3.G(), var3.A(), 0.0F);
-      y(var2, var3.f());
-   }
-
-   @Override
-   public void bindTextures(RenderPass var1) {
-      of.h(var1, "NebulaClouds", this.s.getTextureView(), RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
-   }
-
-   @Override
-   public void close() {
-      super.close();
-      if (this.s != null) {
-         this.s.close();
-         this.s = null;
+   public void render(GuiGraphicsExtractor var1, int var2, int var3) {
+      if (this.D) {
+         if (this.d) {
+            k6.d var9 = k6.d.F;
+            String var10 = k6.o(this.E.toUpperCase(Locale.ROOT), this.A - 48, var9);
+            int var11 = k6.a(var10, var9);
+            int var12 = this.q + (this.A - var11) / 2;
+            int var8 = this.J + 11;
+            k6.T(var1, var10, var12, var8 - var9.q() / 2, f.G, var9);
+            c7.Q(var1, this.q + 4, var8, var12 - 8 - (this.q + 4), false, f.H);
+            c7.Q(var1, var12 + var11 + 8, var8, this.q + this.A - 4 - (var12 + var11 + 8), false, f.H);
+         } else if (this.O) {
+            k6.T(var1, k6.o(this.E, this.A, k6.d.X), this.q, this.J + 3, f.J, k6.d.X);
+         } else {
+            k6.d var4 = k6.d.q;
+            String var5 = k6.o(this.E.toUpperCase(Locale.ROOT), this.A - 8, var4);
+            int var6 = this.J + this.W - var4.q() - 2;
+            k6.T(var1, var5, this.q + 4, var6, f.G, var4);
+            if (f.Y()) {
+               int var7 = this.q + 4 + k6.a(var5, var4) + 6;
+               c7.Q(var1, var7, var6 + var4.q() / 2, this.q + this.A - 4 - var7, false, f.H);
+            }
+         }
       }
    }
 }

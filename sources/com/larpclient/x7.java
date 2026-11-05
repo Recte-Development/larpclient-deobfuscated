@@ -1,68 +1,54 @@
 package com.larpclient;
 
-import java.math.BigDecimal;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 
 public final class x7 {
-   private static final Pattern J = Pattern.compile(
-      "(?i)(?:\\$\\s*|(?:worth|price|cost)\\s*[:~≈]?\\s*\\$?\\s*)([0-9][0-9,]*(?:\\.[0-9]+)?)\\s*+([kmbt]?)(?![a-z0-9.,])"
-   );
-   private static final Pattern i = Pattern.compile("^[^\\p{L}\\p{N}]*([0-9][0-9,]*(?:\\.[0-9]+)?)\\s*([kmbt])(?:\\s*/\\s*[0-9]+)?\\s*$");
+   private static Object Z;
+   private static final Map<BlockPos, Long> J = new HashMap<>();
 
-   public static int H(int var0) {
-      return var0 <= 0 ? 0 : 1 + (var0 - 1) / 64;
-   }
-
-   public static boolean C(Iterable<String> var0) {
-      return A(var0) == x7.y.N;
-   }
-
-   public static x7.y A(Iterable<String> var0) {
-      byte var1 = 0;
-      byte var2 = 0;
-
-      for (String var4 : var0) {
-         String var5 = Normalizer.normalize(var4, Form.NFKC).replaceAll("§.", "").replaceAll("[\\p{Z}\\u200B\\uFEFF]", " ").toLowerCase(Locale.ROOT);
-         Matcher var6 = J.matcher(var5);
-         if (!var6.find()) {
-            var6 = i.matcher(var5);
-         }
-
-         var6.reset();
-
-         while (var6.find()) {
-            var1 = 1;
-
-            byte var7 = switch (var6.group(2)) {
-               case "k" -> 3;
-               case "m" -> 6;
-               case "b" -> 9;
-               case "t" -> 12;
-               default -> 0;
-            };
-            BigDecimal var10 = new BigDecimal(var6.group(1).replace(",", "")).scaleByPowerOfTen(var7);
-            if (var10.compareTo(BigDecimal.valueOf(3000000L)) > 0) {
-               return x7.y.X;
-            }
-         }
-
-         if ((var5.contains("worth") || var5.contains("price") || var5.contains("cost") || var5.contains("$"))
-            && !J.matcher(var5).find()
-            && !i.matcher(var5).matches()) {
-            var2 = 1;
-         }
+   private static void x() {
+      ClientLevel var0 = Minecraft.getInstance().level;
+      if (var0 != Z) {
+         Z = var0;
+         J.clear();
       }
 
-      return var1 != 0 && var2 == 0 ? x7.y.N : x7.y.S;
+      long var1 = System.currentTimeMillis();
+      J.values().removeIf(var2 -> var2 < var1);
    }
 
-   public enum y {
-      N,
-      X,
-      S;
+   public static void W(BlockPos var0) {
+      x();
+      J.put(var0.immutable(), System.currentTimeMillis() + 10000L);
+   }
+
+   public static void t() {
+      x();
+      Minecraft var0 = Minecraft.getInstance();
+      if (var0.level != null && !J.isEmpty()) {
+         for (Entity var2 : var0.level.entitiesForRendering()) {
+            if (var2 instanceof ItemEntity var3) {
+               P(var3);
+            }
+         }
+      }
+   }
+
+   public static void P(ItemEntity var0) {
+      x();
+      if (var0 != null && dr.z().x(var0.getItem().getItem()) != null) {
+         for (BlockPos var2 : J.keySet()) {
+            if (var0.distanceToSqr(var2.getX() + 0.5, var2.getY() + 0.5, var2.getZ() + 0.5) < 4.0) {
+               h2.f(var0.getItem(), true);
+               return;
+            }
+         }
+      }
    }
 }

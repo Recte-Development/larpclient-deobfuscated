@@ -1,11 +1,11 @@
 package com.larpclient.module;
 
 import com.larpclient.LarpClient;
-import com.larpclient.ej;
-import com.larpclient.jw;
-import com.larpclient.ph;
-import com.larpclient.r4;
-import com.larpclient.r8;
+import com.larpclient.ch;
+import com.larpclient.hi;
+import com.larpclient.k7;
+import com.larpclient.mr;
+import com.larpclient.mt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,129 +31,129 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 public final class AutoSellModule extends Module {
-   private static final int u = 100;
-   private static AutoSellModule z;
-   private final li R = this.addSetting(new li("Menu Title", "Exact sell-menu title, ignoring case and surrounding spaces", "Sell"));
-   private final lc c = this.E("Min Cycle Delay", "Minimum ticks between inventory cycles", 1);
-   private final lc p = this.E("Max Cycle Delay", "Maximum ticks between inventory cycles", 3);
-   private final lc Z = this.E("Min Click Delay", "Archived reference preference; transfers wait for server acknowledgment", 1);
-   private final lc r = this.E("Max Click Delay", "Archived reference preference; transfers wait for server acknowledgment", 3);
-   private final lc m = this.E("Menu Open Wait", "Ticks before the additional 20-tick server-response grace period", 3);
-   private final ln H = this.y("Randomize Delays", "Random cycle range and source pause jitter", true);
-   private final ln V = this.y("Show Messages", "Report menu opening, transfers, sell clicks and recovery", true);
-   private final ln P = this.y("Show Stats", "Report attempted confirmations and acknowledged transfers when stopped", true);
-   private final ln N = this.y("Background Mode", "Archived source preference", true);
-   private final lp f = this.addSetting(
-      new lp("Item Mode", "Choose selected items or explicitly allow all inventory items; exclusions always win", ej.R.getFirst(), ej.R.toArray(String[]::new))
+   private static final int D = 100;
+   private static AutoSellModule B;
+   private final ds X = this.addSetting(new ds("Menu Title", "Exact sell-menu title, ignoring case and surrounding spaces", "Sell"));
+   private final d9 o = this.M("Min Cycle Delay", "Minimum ticks between inventory cycles", 1);
+   private final d9 H = this.M("Max Cycle Delay", "Maximum ticks between inventory cycles", 3);
+   private final d9 S = this.M("Min Click Delay", "Archived reference preference; transfers wait for server acknowledgment", 1);
+   private final d9 r = this.M("Max Click Delay", "Archived reference preference; transfers wait for server acknowledgment", 3);
+   private final d9 L = this.M("Menu Open Wait", "Ticks before the additional 20-tick server-response grace period", 3);
+   private final dh j = this.O("Randomize Delays", "Random cycle range and source pause jitter", true);
+   private final dh k = this.O("Show Messages", "Report menu opening, transfers, sell clicks and recovery", true);
+   private final dh i = this.O("Show Stats", "Report attempted confirmations and acknowledged transfers when stopped", true);
+   private final dh J = this.O("Background Mode", "Archived source preference", true);
+   private final d6 A = this.addSetting(
+      new d6("Item Mode", "Choose selected items or explicitly allow all inventory items; exclusions always win", ch.V.getFirst(), ch.V.toArray(String[]::new))
    );
-   private final ln X = this.y("Protect Hotbar", "Keep items in the nine hotbar slots", true);
-   private final ln I = this.y("Protect Named Items", "Keep items with a custom name", true);
-   private final ln Y = this.y("Protect Enchanted Items", "Keep enchanted items and enchanted books", true);
-   private final ln A = this.y("Protect Filled Containers", "Keep containers and bundles that contain items", true);
-   private final li x = this.b("Selection Version", "1");
-   private final li Q = this.b("Selection Error", "");
-   private final List<li> D = new ArrayList<>();
-   private final List<li> G = new ArrayList<>();
-   private final r8 s = new r8();
-   private Object a;
-   private Object w;
-   private Object o;
-   private ChestMenu J;
-   private final Map<Integer, ItemStack> y = new LinkedHashMap<>();
-   private Map<jw.k, Integer> O = Map.of();
-   private Map<jw.k, Integer> q = Map.of();
-   private jw.o h;
-   private ItemStack v = ItemStack.EMPTY;
-   private int k;
-   private int d = -1;
-   private int i;
-   private int T;
-   private int g;
-   private int W;
-   private int j;
-   private int b;
-   private long e;
-   private long S;
-   private long L;
-   private boolean B;
-   private boolean U;
-   private boolean K;
-   private ej.q t;
+   private final dh f = this.O("Protect Hotbar", "Keep items in the nine hotbar slots", true);
+   private final dh x = this.O("Protect Named Items", "Keep items with a custom name", true);
+   private final dh e = this.O("Protect Enchanted Items", "Keep enchanted items and enchanted books", true);
+   private final dh n = this.O("Protect Filled Containers", "Keep containers and bundles that contain items", true);
+   private final ds E = this.I("Selection Version", "1");
+   private final ds h = this.I("Selection Error", "");
+   private final List<ds> s = new ArrayList<>();
+   private final List<ds> g = new ArrayList<>();
+   private final k7 V = new k7();
+   private Object t;
+   private Object p;
+   private Object I;
+   private ChestMenu G;
+   private final Map<Integer, ItemStack> c = new LinkedHashMap<>();
+   private Map<mr.h, Integer> K = Map.of();
+   private Map<mr.h, Integer> w = Map.of();
+   private mr.l N;
+   private ItemStack U = ItemStack.EMPTY;
+   private int Z;
+   private int Q = -1;
+   private int F;
+   private int Y;
+   private int z;
+   private int P;
+   private int R;
+   private int m;
+   private long T;
+   private long C;
+   private long q;
+   private boolean M;
+   private boolean b;
+   private boolean W;
+   private ch.z l;
 
    public AutoSellModule() {
       super("Auto Sell", "Sell chosen inventory items through a validated server sell menu", Category.PLAYER, -1);
-      z = this;
-      this.Z.x(() -> false);
-      this.r.x(() -> false);
-      this.N.x(() -> false);
+      B = this;
+      this.S.H(() -> false);
+      this.r.H(() -> false);
+      this.J.H(() -> false);
 
       for (int var1 = 0; var1 < 32; var1++) {
-         this.D.add(this.b(ej.W(var1), ""));
-         this.G.add(this.b(ej.Y(var1), ""));
+         this.s.add(this.I(ch.o(var1), ""));
+         this.g.add(this.I(ch.Q(var1), ""));
       }
 
-      for (l6 var2 : this.getSettings()) {
-         if (ej.b().contains(var2.k())) {
-            this.y(var2);
+      for (df var2 : this.getSettings()) {
+         if (ch.G().contains(var2.D())) {
+            this.n(var2);
          }
       }
    }
 
-   private void y(l6 var1) {
-      var1.W(var1x -> {
-         this.t = null;
-         this.S++;
+   private void n(df var1) {
+      var1.h(var1x -> {
+         this.l = null;
+         this.C++;
       });
    }
 
-   private li b(String var1, String var2) {
-      li var3 = this.addSetting(new li(var1, "Auto Sell item selection data", var2));
-      var3.x(() -> false);
+   private ds I(String var1, String var2) {
+      ds var3 = this.addSetting(new ds(var1, "Auto Sell item selection data", var2));
+      var3.H(() -> false);
       return var3;
    }
 
-   private lc E(String var1, String var2, int var3) {
-      return this.addSetting(new lc(var1, var2, var3, 0.0, 20.0, 1.0));
+   private d9 M(String var1, String var2, int var3) {
+      return this.addSetting(new d9(var1, var2, var3, 0.0, 20.0, 1.0));
    }
 
-   private ln y(String var1, String var2, boolean var3) {
-      return this.addSetting(new ln(var1, var2, var3));
+   private dh O(String var1, String var2, boolean var3) {
+      return this.addSetting(new dh(var1, var2, var3));
    }
 
-   public List<l6<?>> E() {
-      return List.of(this.R, this.m);
+   public List<df<?>> i() {
+      return List.of(this.X, this.L);
    }
 
-   public List<l6<?>> L() {
-      return List.of(this.c, this.p, this.Z, this.r, this.H);
+   public List<df<?>> M() {
+      return List.of(this.o, this.H, this.S, this.r, this.j);
    }
 
-   public List<l6<?>> s() {
-      return List.of(this.V, this.P, this.N);
+   public List<df<?>> p() {
+      return List.of(this.k, this.i, this.J);
    }
 
-   public List<l6<?>> O() {
-      return List.of(this.f, this.X, this.I, this.Y, this.A);
+   public List<df<?>> L() {
+      return List.of(this.A, this.f, this.x, this.e, this.n);
    }
 
-   public ej.q l() {
-      if (this.t == null) {
+   public ch.z K() {
+      if (this.l == null) {
          LinkedHashMap var1 = new LinkedHashMap();
 
-         for (l6 var3 : this.getSettings()) {
-            if (ej.b().contains(var3.k())) {
-               var1.put(var3.k(), var3.getValue());
+         for (df var3 : this.getSettings()) {
+            if (ch.G().contains(var3.D())) {
+               var1.put(var3.D(), var3.P());
             }
          }
 
-         this.t = ej.e(var1);
+         this.l = ch.o(var1);
       }
 
-      return this.t;
+      return this.l;
    }
 
-   public String T() {
-      ej.q var1 = this.l();
+   public String h() {
+      ch.z var1 = this.K();
       if (!var1.error().isEmpty()) {
          return var1.error();
       }
@@ -169,68 +169,68 @@ public final class AutoSellModule extends Module {
          + (var1.needsSelection() ? ". Choose items to begin." : "");
    }
 
-   public Set<String> W(boolean var1) {
-      return var1 ? this.l().excluded() : this.l().selected();
+   public Set<String> r(boolean var1) {
+      return var1 ? this.K().excluded() : this.K().selected();
    }
 
-   public void U(boolean var1, Collection<String> var2) {
-      List var3 = ej.V(var2);
-      List var4 = var1 ? this.G : this.D;
-      if (!this.l().error().isEmpty()) {
-         this.f.setValue(ej.R.getFirst());
+   public void P(boolean var1, Collection<String> var2) {
+      List var3 = ch.U(var2);
+      List var4 = var1 ? this.g : this.s;
+      if (!this.K().error().isEmpty()) {
+         this.A.setValue(ch.V.getFirst());
 
-         for (li var6 : this.D) {
-            var6.i("");
+         for (ds var6 : this.s) {
+            var6.v("");
          }
 
-         for (li var9 : this.G) {
-            var9.i("");
+         for (ds var9 : this.g) {
+            var9.v("");
          }
 
-         this.X.setValue(true);
-         this.I.setValue(true);
-         this.Y.setValue(true);
-         this.A.setValue(true);
+         this.f.setValue(true);
+         this.x.setValue(true);
+         this.e.setValue(true);
+         this.n.setValue(true);
       }
 
       for (int var8 = 0; var8 < var4.size(); var8++) {
-         ((li)var4.get(var8)).i(var8 < var3.size() ? (String)var3.get(var8) : "");
+         ((ds)var4.get(var8)).v(var8 < var3.size() ? (String)var3.get(var8) : "");
       }
 
-      this.x.i("1");
-      this.Q.i("");
+      this.E.v("1");
+      this.h.v("");
    }
 
-   public void w(Screen var1, boolean var2) {
-      getMc().gui.setScreen(new ph(var1, this, var2));
+   public void N(Screen var1, boolean var2) {
+      getMc().gui.setScreen(new hi(var1, this, var2));
    }
 
-   public void O(boolean var1) {
+   public void j(boolean var1) {
       if (this.isInGame() && !mc.player.getMainHandItem().isEmpty()) {
-         LinkedHashSet var2 = new LinkedHashSet<>(this.W(var1));
-         var2.add(x(mc.player.getMainHandItem()));
-         this.U(var1, var2);
-         this.V();
+         LinkedHashSet var2 = new LinkedHashSet<>(this.r(var1));
+         var2.add(F(mc.player.getMainHandItem()));
+         this.P(var1, var2);
+         this.A();
       } else {
          throw new IllegalArgumentException("Hold an item first.");
       }
    }
 
-   public void S(boolean var1) {
-      this.U(var1, Set.of());
-      this.V();
+   public void w(boolean var1) {
+      this.P(var1, Set.of());
+      this.A();
    }
 
-   public void V() {
-      LarpClient var1 = LarpClient.y();
-      if (var1 != null && var1.v() != null) {
-         var1.v().A();
+   public void A() {
+      LarpClient var1 = LarpClient.F();
+      if (var1 != null && var1.f() != null) {
+         var1.f().f();
       }
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
@@ -239,7 +239,7 @@ public final class AutoSellModule extends Module {
          return "Idle";
       }
 
-      ej.q var1 = this.l();
+      ch.z var1 = this.K();
       if (!var1.error().isEmpty()) {
          return "Repair item selection";
       }
@@ -248,227 +248,227 @@ public final class AutoSellModule extends Module {
          return "Choose items to begin";
       }
 
-      if (this.h != null) {
+      if (this.N != null) {
          return "Waiting for item transfer";
       }
 
-      if (this.U) {
+      if (this.b) {
          return "Waiting for sale response";
       }
 
-      return switch (this.s.I()) {
-         case V -> "Waiting for Sell menu";
-         case e, S -> "Filling Sell menu";
-         case Z, Q -> "Confirming selected items";
+      return switch (this.V.R()) {
+         case u -> "Waiting for Sell menu";
+         case l, q -> "Filling Sell menu";
+         case n, M -> "Confirming selected items";
          default -> "Waiting for eligible items";
       };
    }
 
    @Override
    public void onEnable() {
-      this.M();
+      this.Y();
       if (this.isInGame() && mc.player.connection != null) {
-         this.a = mc.player;
-         this.w = mc.level;
-         this.o = mc.player.connection;
-         this.e = System.nanoTime();
-         this.L = this.S;
-         this.Y(this.l().needsSelection() ? "Choose items to begin; no /sell command will be sent." : "Auto Sell activated.");
-         r4.g("AutoSell", "Activated with policy={}, selected={}, excluded={}", this.f.getValue(), this.W(false).size(), this.W(true).size());
+         this.t = mc.player;
+         this.p = mc.level;
+         this.I = mc.player.connection;
+         this.T = System.nanoTime();
+         this.q = this.C;
+         this.n(this.K().needsSelection() ? "Choose items to begin; no /sell command will be sent." : "Auto Sell activated.");
+         mt.U("AutoSell", "Activated with policy={}, selected={}, excluded={}", this.A.P(), this.r(false).size(), this.r(true).size());
       }
    }
 
    @Override
    public void onDisable() {
-      if (this.e != 0L && this.P.getValue() && this.isInGame()) {
-         this.d(
-            "Auto Sell stopped: " + this.g + " confirmation attempts, " + this.W + " empty-menu acknowledgments, " + this.T + " acknowledged stack transfers."
+      if (this.T != 0L && this.i.P() && this.isInGame()) {
+         this.l(
+            "Auto Sell stopped: " + this.z + " confirmation attempts, " + this.P + " empty-menu acknowledgments, " + this.Y + " acknowledged stack transfers."
          );
       }
 
-      if (this.O.isEmpty() && this.h == null && !this.U && (this.J == null || this.S(this.J).isEmpty())) {
-         this.e();
+      if (this.K.isEmpty() && this.N == null && !this.b && (this.G == null || this.u(this.G).isEmpty())) {
+         this.B();
       }
 
-      this.M();
+      this.Y();
    }
 
-   private void M() {
-      this.s.b();
-      this.a = this.w = this.o = null;
-      this.J = null;
-      this.y.clear();
-      this.O = this.q = Map.of();
-      this.h = null;
-      this.v = ItemStack.EMPTY;
-      this.d = -1;
-      this.i = this.T = this.g = this.W = this.j = this.b = 0;
-      this.B = this.U = this.K = (boolean)0;
-      this.e = 0L;
+   private void Y() {
+      this.V.T();
+      this.t = this.p = this.I = null;
+      this.G = null;
+      this.c.clear();
+      this.K = this.w = Map.of();
+      this.N = null;
+      this.U = ItemStack.EMPTY;
+      this.Q = -1;
+      this.F = this.Y = this.z = this.P = this.R = this.m = 0;
+      this.M = this.b = this.W = (boolean)0;
+      this.T = 0L;
    }
 
    @Override
    public void onTick() {
       if (this.isInGame() && mc.player.connection != null) {
-         if (mc.player != this.a || mc.level != this.w || mc.player.connection != this.o) {
-            this.M();
+         if (mc.player != this.t || mc.level != this.p || mc.player.connection != this.I) {
+            this.Y();
             this.onEnable();
          } else if (!mc.player.isAlive()) {
-            this.D("Player is no longer alive; sale cancelled.");
+            this.h("Player is no longer alive; sale cancelled.");
          } else {
-            ej.q var1 = this.l();
+            ch.z var1 = this.K();
             if (!var1.error().isEmpty()) {
-               this.D(var1.error());
+               this.h(var1.error());
             } else {
-               if (this.S != this.L) {
-                  if (this.J != null || this.B) {
-                     this.D("Item selection changed during a sale. Review the menu before restarting.");
+               if (this.C != this.q) {
+                  if (this.G != null || this.M) {
+                     this.h("Item selection changed during a sale. Review the menu before restarting.");
                      return;
                   }
 
-                  this.L = this.S;
+                  this.q = this.C;
                }
 
-               ChestMenu var2 = this.S();
-               if (this.J != null && var2 != this.J) {
-                  if (this.U && this.K && var2 == null && mc.player.containerMenu == mc.player.inventoryMenu) {
-                     jw.v var12 = jw.P(true, ++this.b, mc.player.containerMenu.getCarried().isEmpty(), this.q, this.K());
-                     if (var12 != jw.v.Y) {
-                        if (var12 == jw.v.c) {
-                           this.O = Map.of();
-                           this.U = this.K = (boolean)0;
-                           this.b = 0;
-                           this.J = null;
-                           this.y.clear();
-                           this.d = -1;
-                           this.Y("Server closed the menu after confirmation. Checking remaining eligible items.");
-                           r4.g("AutoSell", "Native close settled after confirmation; sale revenue/outcome not measured");
-                           this.q(r8.v.G, this.Z());
+               ChestMenu var2 = this.Z();
+               if (this.G != null && var2 != this.G) {
+                  if (this.b && this.W && var2 == null && mc.player.containerMenu == mc.player.inventoryMenu) {
+                     mr.a var12 = mr.F(true, ++this.m, mc.player.containerMenu.getCarried().isEmpty(), this.w, this.s());
+                     if (var12 != mr.a.g) {
+                        if (var12 == mr.a.L) {
+                           this.K = Map.of();
+                           this.b = this.W = (boolean)0;
+                           this.m = 0;
+                           this.G = null;
+                           this.c.clear();
+                           this.Q = -1;
+                           this.n("Server closed the menu after confirmation. Checking remaining eligible items.");
+                           mt.U("AutoSell", "Native close settled after confirmation; sale revenue/outcome not measured");
+                           this.K(k7.y.K, this.w());
                         } else {
-                           this.D("Sell menu closed with returned or changed inventory. Review the result before restarting.");
+                           this.h("Sell menu closed with returned or changed inventory. Review the result before restarting.");
                         }
                      }
                   } else {
-                     this.D(
-                        this.U
+                     this.h(
+                        this.b
                            ? "Sell menu closed or changed after confirmation; check the sale result before restarting."
                            : "Sell menu closed or changed; pending sale cancelled."
                      );
                   }
                } else if (!mc.player.containerMenu.getCarried().isEmpty()) {
-                  if (this.h != null || this.U) {
-                     this.s.H();
-                     int var14 = this.s.v();
-                     byte var9 = 100;
-                     int var8 = var14;
-                     if (Integer.compare(var8, var9) >>> 31 == 0) {
-                        this.D("Cursor did not clear after the server response; no further click was sent.");
+                  if (this.N != null || this.b) {
+                     this.V.b();
+                     int var14 = this.V.y();
+                     byte var11 = 100;
+                     int var10 = var14;
+                     if (Integer.compare(var10, var11) >>> 31 == 0) {
+                        this.h("Cursor did not clear after the server response; no further click was sent.");
                      }
-                  } else if (this.J != null || this.B) {
-                     this.D("Cursor holds an item; sale cancelled without another click.");
+                  } else if (this.G != null || this.M) {
+                     this.h("Cursor holds an item; sale cancelled without another click.");
                   }
-               } else if (mc.gui.screen() == null || var2 != null || this.B) {
-                  this.s.H();
-                  if (this.J != null && !this.U && !this.D(var2)) {
-                     this.D("Sell menu controls changed; review the menu before restarting.");
+               } else if (mc.gui.screen() == null || var2 != null || this.M) {
+                  this.V.b();
+                  if (this.G != null && !this.b && !this.C(var2)) {
+                     this.h("Sell menu controls changed; review the menu before restarting.");
                   } else {
-                     switch (this.s.I()) {
-                        case V:
+                     switch (this.V.R()) {
+                        case u:
                            if (var2 != null) {
-                              this.B = (boolean)0;
-                              this.j = 0;
-                              if (this.v(var2)) {
-                                 this.q(r8.v.e, 1);
+                              this.M = (boolean)0;
+                              this.R = 0;
+                              if (this.r(var2)) {
+                                 this.K(k7.y.l, 1);
                               }
-                           } else if (this.s.G()) {
-                              this.B = (boolean)0;
-                              int var13 = ++this.j;
+                           } else if (this.V.p()) {
+                              this.M = (boolean)0;
+                              int var13 = ++this.R;
                               byte var5 = 3;
                               int var4 = var13;
                               if (Integer.compare(var4, var5) >>> 31 == 0) {
-                                 this.D("Sell menu did not open after three requests.");
+                                 this.h("Sell menu did not open after three requests.");
                                  return;
                               }
 
-                              this.q(r8.v.G, this.Q(3));
+                              this.K(k7.y.K, this.p(3));
                            }
                            break;
-                        case e:
-                           this.z(var2);
+                        case l:
+                           this.f(var2);
                            break;
-                        case S:
-                           if (this.s.L()) {
-                              this.q(r8.v.Z, 0);
+                        case q:
+                           if (this.V.o()) {
+                              this.K(k7.y.n, 0);
                            }
                            break;
-                        case Z:
-                           this.g(var2);
+                        case n:
+                           this.Q(var2);
                            break;
-                        case Q:
-                           if (!this.s.L()) {
+                        case M:
+                           if (!this.V.o()) {
                               return;
                            }
 
-                           Map var3 = this.S(var2);
-                           if (jw.r(this.i, var2.getStateId(), var3, this.q, this.K())) {
-                              if (!this.D(var2)) {
-                                 this.D("Sell response changed the menu controls; inspect this server layout before restarting.");
+                           Map var3 = this.u(var2);
+                           if (mr.b(this.F, var2.getStateId(), var3, this.w, this.s())) {
+                              if (!this.C(var2)) {
+                                 this.h("Sell response changed the menu controls; inspect this server layout before restarting.");
                                  return;
                               }
 
-                              this.U = (boolean)0;
-                              byte var7 = 1;
-                              int var6 = this.W;
-                              this.W = var6 + var7;
-                              this.O = Map.of();
-                              this.Y("Server cleared the selected sell items.");
-                              if (this.J()) {
-                                 this.q(r8.v.e, this.Q(1));
+                              this.b = (boolean)0;
+                              byte var9 = 1;
+                              int var8 = this.P;
+                              this.P = var8 + var9;
+                              this.K = Map.of();
+                              this.n("Server cleared the selected sell items.");
+                              if (this.T()) {
+                                 this.K(k7.y.l, this.p(1));
                               } else {
-                                 this.e();
-                                 this.q(r8.v.G, this.Z());
+                                 this.B();
+                                 this.K(k7.y.K, this.w());
                               }
                            } else {
-                              int var10000 = this.s.v();
-                              byte var11 = 100;
-                              int var10 = var10000;
-                              if (Integer.compare(var10, var11) >>> 31 == 0) {
-                                 this.D("Sale was rejected, returned items, or did not finish. No duplicate confirmation was sent.");
+                              int var10000 = this.V.y();
+                              byte var7 = 100;
+                              int var6 = var10000;
+                              if (Integer.compare(var6, var7) >>> 31 == 0) {
+                                 this.h("Sale was rejected, returned items, or did not finish. No duplicate confirmation was sent.");
                               }
                            }
                            break;
-                        case G:
-                           if (this.s.L() && !var1.needsSelection()) {
-                              if (var2 != null && this.J()) {
-                                 if (this.v(var2)) {
-                                    this.q(r8.v.e, 1);
-                                 }
-                              } else if (var2 == null && this.J()) {
-                                 this.q(r8.v.g, 0);
-                              } else {
-                                 this.q(r8.v.G, this.Z());
+                        case K:
+                           if (!this.V.o() || var1.needsSelection()) {
+                              return;
+                           }
+
+                           if (var2 != null && this.T()) {
+                              if (this.r(var2)) {
+                                 this.K(k7.y.l, 1);
                               }
+                           } else if (var2 == null && this.T()) {
+                              this.K(k7.y.g, 0);
+                           } else {
+                              this.K(k7.y.K, this.w());
+                           }
+                           break;
+                        case g:
+                           if (!this.T()) {
+                              this.K(k7.y.K, this.w());
+                              return;
+                           }
+
+                           if (mc.gui.screen() == null && mc.player.containerMenu == mc.player.inventoryMenu) {
+                              this.M = (boolean)1;
+                              mc.player.connection.sendCommand("sell");
+                              this.n("Sent /sell command.");
+                              this.K(k7.y.u, this.p(this.L.P().intValue()));
                               break;
                            }
 
                            return;
-                        case g:
-                           if (!this.J()) {
-                              this.q(r8.v.G, this.Z());
-                              return;
-                           }
-
-                           if (mc.gui.screen() != null || mc.player.containerMenu != mc.player.inventoryMenu) {
-                              return;
-                           }
-
-                           this.B = (boolean)1;
-                           mc.player.connection.sendCommand("sell");
-                           this.Y("Sent /sell command.");
-                           this.q(r8.v.V, this.Q(this.m.getValue().intValue()));
-                           break;
                         default:
-                           this.q(r8.v.G, this.Z());
+                           this.K(k7.y.K, this.w());
                      }
                   }
                }
@@ -477,72 +477,72 @@ public final class AutoSellModule extends Module {
       }
    }
 
-   private boolean v(ChestMenu var1) {
-      this.J = var1;
-      this.y.clear();
-      this.d = -1;
+   private boolean r(ChestMenu var1) {
+      this.G = var1;
+      this.c.clear();
+      this.Q = -1;
       int var2 = var1.getRowCount() * 9;
 
       for (int var3 = var2 - 9; var3 < var2; var3++) {
          ItemStack var4 = var1.getSlot(var3).getItem();
          if (!var4.isEmpty() && var4.has(DataComponents.CUSTOM_NAME) && var4.getCount() == 1) {
-            if (jw.T(x(var4), var4.getHoverName().getString(), var3, var2)) {
-               if (this.d != -1) {
-                  this.D("Multiple sell controls found. This menu layout needs review.");
+            if (mr.G(F(var4), var4.getHoverName().getString(), var3, var2)) {
+               if (this.Q != -1) {
+                  this.h("Multiple sell controls found. This menu layout needs review.");
                   return false;
                }
 
-               this.d = var3;
-               this.y.put(var3, var4.copy());
-            } else if (jw.e(x(var4), var4.getHoverName().getString(), var3, var2)) {
-               this.y.put(var3, var4.copy());
+               this.Q = var3;
+               this.c.put(var3, var4.copy());
+            } else if (mr.D(F(var4), var4.getHoverName().getString(), var3, var2)) {
+               this.c.put(var3, var4.copy());
             }
          }
       }
 
-      if (this.d < 0) {
-         this.D("Unsupported Sell menu. Expected one named Sell or Confirm pane in its bottom row.");
+      if (this.Q < 0) {
+         this.h("Unsupported Sell menu. Expected one named Sell or Confirm pane in its bottom row.");
          return false;
-      } else if (!this.S(var1).isEmpty()) {
-         this.D("Sell menu already contains items. Empty it manually before starting Auto Sell.");
+      } else if (!this.u(var1).isEmpty()) {
+         this.h("Sell menu already contains items. Empty it manually before starting Auto Sell.");
          return false;
       } else {
-         this.O = Map.of();
-         this.L = this.S;
-         r4.g("AutoSell", "Validated {}-row menu, confirm slot={}, controls={}", var1.getRowCount(), this.d + 1, this.y.size());
+         this.K = Map.of();
+         this.q = this.C;
+         mt.U("AutoSell", "Validated {}-row menu, confirm slot={}, controls={}", var1.getRowCount(), this.Q + 1, this.c.size());
          return true;
       }
    }
 
-   private void z(ChestMenu var1) {
+   private void f(ChestMenu var1) {
       if (var1 != null && mc.gameMode != null) {
-         if (this.h != null) {
-            ItemStack var5 = var1.getSlot(this.k).getItem();
-            int var6 = var5.isEmpty() ? 0 : (ItemStack.isSameItemSameComponents(var5, this.v) ? var5.getCount() : -1);
-            int var4 = this.h.accepted(var1.getStateId(), var6, this.S(var1), this.K());
+         if (this.N != null) {
+            ItemStack var5 = var1.getSlot(this.Z).getItem();
+            int var6 = var5.isEmpty() ? 0 : (ItemStack.isSameItemSameComponents(var5, this.U) ? var5.getCount() : -1);
+            int var4 = this.N.accepted(var1.getStateId(), var6, this.u(var1), this.s());
             if (var4 > 0) {
-               this.O = jw.e(this.O, this.h.key(), var4);
-               this.T++;
-               this.h = null;
-               this.v = ItemStack.EMPTY;
-               if (!this.U(var1)) {
+               this.K = mr.x(this.K, this.N.key(), var4);
+               this.Y++;
+               this.N = null;
+               this.U = ItemStack.EMPTY;
+               if (!this.H(var1)) {
                   return;
                }
 
-               this.q(r8.v.e, this.Q(1));
-            } else if (this.s.v() >= 100) {
-               this.D("Item transfer was rejected, the menu is full, or the server did not respond. No repeat click was sent.");
+               this.K(k7.y.l, this.p(1));
+            } else if (this.V.y() >= 100) {
+               this.h("Item transfer was rejected, the menu is full, or the server did not respond. No repeat click was sent.");
             }
-         } else if (this.s.L() && this.U(var1)) {
+         } else if (this.V.o() && this.H(var1)) {
             for (int var2 = var1.getRowCount() * 9; var2 < var1.slots.size(); var2++) {
                Slot var3 = var1.getSlot(var2);
-               if (var3.container == mc.player.getInventory() && this.N(var3.getItem(), var3.getContainerSlot()) && this.L(var1, var3.getItem())) {
-                  if (this.S() == var1 && mc.player.containerMenu == var1 && var1.getCarried().isEmpty() && this.S == this.L && this.D(var1)) {
-                     this.k = var2;
-                     this.v = var3.getItem().copy();
-                     this.h = new jw.o(var1.getStateId(), W(this.v), this.v.getCount(), this.S(var1), this.K());
+               if (var3.container == mc.player.getInventory() && this.x(var3.getItem(), var3.getContainerSlot()) && this.K(var1, var3.getItem())) {
+                  if (this.Z() == var1 && mc.player.containerMenu == var1 && var1.getCarried().isEmpty() && this.C == this.q && this.C(var1)) {
+                     this.Z = var2;
+                     this.U = var3.getItem().copy();
+                     this.N = new mr.l(var1.getStateId(), z(this.U), this.U.getCount(), this.u(var1), this.s());
                      mc.gameMode.handleContainerInput(var1.containerId, var2, 0, ContainerInput.QUICK_MOVE, mc.player);
-                     this.q(r8.v.e, 1);
+                     this.K(k7.y.l, 1);
                      return;
                   }
 
@@ -550,27 +550,27 @@ public final class AutoSellModule extends Module {
                }
             }
 
-            if (this.O.isEmpty()) {
-               this.e();
-               this.q(r8.v.G, this.Z());
+            if (this.K.isEmpty()) {
+               this.B();
+               this.K(k7.y.K, this.w());
             } else {
-               this.q(r8.v.S, this.Q(1));
+               this.K(k7.y.q, this.p(1));
             }
          }
       }
    }
 
-   private boolean U(ChestMenu var1) {
-      if (!this.S(var1).equals(this.O)) {
-         this.D("Unexplained or returned items in the sell menu. Review them manually; no confirmation was sent.");
+   private boolean H(ChestMenu var1) {
+      if (!this.u(var1).equals(this.K)) {
+         this.h("Unexplained or returned items in the sell menu. Review them manually; no confirmation was sent.");
          return false;
       }
 
       for (int var2 = 0; var2 < var1.getRowCount() * 9; var2++) {
-         if (!this.y.containsKey(var2)) {
+         if (!this.c.containsKey(var2)) {
             ItemStack var3 = var1.getSlot(var2).getItem();
-            if (!var3.isEmpty() && !this.N(var3, -1)) {
-               this.D("Protected or excluded item in sell slot " + (var2 + 1) + ". No confirmation was sent.");
+            if (!var3.isEmpty() && !this.x(var3, -1)) {
+               this.h("Protected or excluded item in sell slot " + (var2 + 1) + ". No confirmation was sent.");
                return false;
             }
          }
@@ -579,12 +579,12 @@ public final class AutoSellModule extends Module {
       return true;
    }
 
-   private boolean L(ChestMenu var1, ItemStack var2) {
+   private boolean K(ChestMenu var1, ItemStack var2) {
       for (int var3 = 0; var3 < var1.getRowCount() * 9; var3++) {
-         if (!this.y.containsKey(var3)) {
+         if (!this.c.containsKey(var3)) {
             Slot var4 = var1.getSlot(var3);
             ItemStack var5 = var4.getItem();
-            if (jw.u(var5.isEmpty(), ItemStack.isSameItemSameComponents(var2, var5), var4.mayPlace(var2), var5.getCount(), var4.getMaxStackSize(var2))) {
+            if (mr.x(var5.isEmpty(), ItemStack.isSameItemSameComponents(var2, var5), var4.mayPlace(var2), var5.getCount(), var4.getMaxStackSize(var2))) {
                return true;
             }
          }
@@ -593,23 +593,23 @@ public final class AutoSellModule extends Module {
       return false;
    }
 
-   private void g(ChestMenu var1) {
-      if (var1 != null && mc.gameMode != null && !this.U && !this.O.isEmpty()) {
-         if (this.U(var1) && this.D(var1) && this.S() == var1 && var1.getCarried().isEmpty() && mc.player.containerMenu == var1 && this.S == this.L) {
-            this.i = var1.getStateId();
-            this.q = this.K();
-            this.U = (boolean)1;
-            mc.gameMode.handleContainerInput(var1.containerId, this.d, 0, ContainerInput.PICKUP, mc.player);
-            this.g++;
-            this.Y("Sent one confirmation for the selected items.");
-            this.q(r8.v.Q, this.Q(1));
+   private void Q(ChestMenu var1) {
+      if (var1 != null && mc.gameMode != null && !this.b && !this.K.isEmpty()) {
+         if (this.H(var1) && this.C(var1) && this.Z() == var1 && var1.getCarried().isEmpty() && mc.player.containerMenu == var1 && this.C == this.q) {
+            this.F = var1.getStateId();
+            this.w = this.s();
+            this.b = (boolean)1;
+            mc.gameMode.handleContainerInput(var1.containerId, this.Q, 0, ContainerInput.PICKUP, mc.player);
+            this.z++;
+            this.n("Sent one confirmation for the selected items.");
+            this.K(k7.y.M, this.p(1));
          }
       }
    }
 
-   private boolean D(ChestMenu var1) {
-      if (var1 != null && var1 == this.J && this.d >= 0) {
-         for (Entry var3 : this.y.entrySet()) {
+   private boolean C(ChestMenu var1) {
+      if (var1 != null && var1 == this.G && this.Q >= 0) {
+         for (Entry var3 : this.c.entrySet()) {
             if (!ItemStack.matches((ItemStack)var3.getValue(), var1.getSlot((Integer)var3.getKey()).getItem())) {
                return false;
             }
@@ -621,9 +621,9 @@ public final class AutoSellModule extends Module {
       }
    }
 
-   private boolean J() {
+   private boolean T() {
       for (int var1 = 0; var1 < 36; var1++) {
-         if (this.N(mc.player.getInventory().getItem(var1), var1)) {
+         if (this.x(mc.player.getInventory().getItem(var1), var1)) {
             return true;
          }
       }
@@ -631,113 +631,113 @@ public final class AutoSellModule extends Module {
       return false;
    }
 
-   private boolean N(ItemStack var1, int var2) {
-      return this.l().eligible(r(var1, var2));
+   private boolean x(ItemStack var1, int var2) {
+      return this.K().eligible(n(var1, var2));
    }
 
-   public static ej.v r(ItemStack var0, int var1) {
+   public static ch.t n(ItemStack var0, int var1) {
       ItemContainerContents var2 = (ItemContainerContents)var0.get(DataComponents.CONTAINER);
       BundleContents var3 = (BundleContents)var0.get(DataComponents.BUNDLE_CONTENTS);
       ItemEnchantments var4 = (ItemEnchantments)var0.get(DataComponents.STORED_ENCHANTMENTS);
       int var5 = (var2 == null || !var2.nonEmptyItems().iterator().hasNext()) && (var3 == null || var3.isEmpty()) ? 0 : 1;
-      return new ej.v(
-         x(var0), var0.getCount(), var1, var0.has(DataComponents.CUSTOM_NAME), var0.isEnchanted() || var4 != null && !var4.isEmpty(), (boolean)var5
+      return new ch.t(
+         F(var0), var0.getCount(), var1, var0.has(DataComponents.CUSTOM_NAME), var0.isEnchanted() || var4 != null && !var4.isEmpty(), (boolean)var5
       );
    }
 
-   private Map<jw.k, Integer> S(ChestMenu var1) {
+   private Map<mr.h, Integer> u(ChestMenu var1) {
       HashMap var2 = new HashMap();
 
       for (int var3 = 0; var3 < var1.getRowCount() * 9; var3++) {
-         if (!this.y.containsKey(var3)) {
-            M(var2, var1.getSlot(var3).getItem());
+         if (!this.c.containsKey(var3)) {
+            r(var2, var1.getSlot(var3).getItem());
          }
       }
 
       return Map.copyOf(var2);
    }
 
-   private Map<jw.k, Integer> K() {
+   private Map<mr.h, Integer> s() {
       HashMap var1 = new HashMap();
 
       for (int var2 = 0; var2 < 36; var2++) {
-         M(var1, mc.player.getInventory().getItem(var2));
+         r(var1, mc.player.getInventory().getItem(var2));
       }
 
       return Map.copyOf(var1);
    }
 
-   private static void M(Map<jw.k, Integer> var0, ItemStack var1) {
+   private static void r(Map<mr.h, Integer> var0, ItemStack var1) {
       if (!var1.isEmpty()) {
-         var0.merge(W(var1), var1.getCount(), Integer::sum);
+         var0.merge(z(var1), var1.getCount(), Integer::sum);
       }
    }
 
-   private static jw.k W(ItemStack var0) {
-      return new jw.k(x(var0), var0.copy().getComponents());
+   private static mr.h z(ItemStack var0) {
+      return new mr.h(F(var0), var0.copy().getComponents());
    }
 
-   private static String x(ItemStack var0) {
+   private static String F(ItemStack var0) {
       return BuiltInRegistries.ITEM.getKey(var0.getItem()).toString();
    }
 
-   private ChestMenu S() {
+   private ChestMenu Z() {
       return mc.gui.screen() instanceof ContainerScreen var1
             && mc.player.containerMenu instanceof ChestMenu var2
             && var1.getMenu() == var2
-            && r8.F(var1.getTitle().getString(), this.R.getValue())
+            && k7.P(var1.getTitle().getString(), this.X.P())
          ? var2
          : null;
    }
 
-   public static boolean Q(ChestMenu var0) {
-      return z != null && z.isEnabled() ? z != null && z.isRuntimeActive() && z.isInGame() && z.S() == var0 : false;
+   public static boolean U(ChestMenu var0) {
+      return B != null && B.isEnabled() ? B != null && B.isRuntimeActive() && B.isInGame() && B.Z() == var0 : false;
    }
 
-   public static void O(int var0) {
-      AutoSellModule var1 = z;
-      if (var1 != null && var1.isRuntimeActive() && var1.J != null && var1.U && var1.J.containerId == var0) {
-         var1.K = (boolean)1;
-         var1.b = 0;
+   public static void T(int var0) {
+      AutoSellModule var1 = B;
+      if (var1 != null && var1.isRuntimeActive() && var1.G != null && var1.b && var1.G.containerId == var0) {
+         var1.W = (boolean)1;
+         var1.m = 0;
       }
    }
 
-   private void q(r8.v var1, int var2) {
-      this.s.U(var1, var2);
+   private void K(k7.y var1, int var2) {
+      this.V.R(var1, var2);
    }
 
-   private int Q(int var1) {
-      return r8.k(var1, this.H.getValue(), ThreadLocalRandom.current());
+   private int p(int var1) {
+      return k7.u(var1, this.j.P(), ThreadLocalRandom.current());
    }
 
-   private int Z() {
-      return r8.b(this.c.getValue().intValue(), this.p.getValue().intValue(), this.H.getValue(), ThreadLocalRandom.current());
+   private int w() {
+      return k7.b(this.o.P().intValue(), this.H.P().intValue(), this.j.P(), ThreadLocalRandom.current());
    }
 
-   private void e() {
-      if (this.J != null && this.isInGame() && mc.player == this.a && mc.level == this.w && mc.player.containerMenu == this.J) {
+   private void B() {
+      if (this.G != null && this.isInGame() && mc.player == this.t && mc.level == this.p && mc.player.containerMenu == this.G) {
          mc.player.closeContainer();
       }
 
-      this.J = null;
-      this.y.clear();
-      this.d = -1;
-      this.B = this.U = (boolean)0;
+      this.G = null;
+      this.c.clear();
+      this.Q = -1;
+      this.M = this.b = (boolean)0;
    }
 
-   private void D(String var1) {
-      r4.m("AutoSell", "{} Stopped; enable again to retry.", var1);
-      this.d(var1);
+   private void h(String var1) {
+      mt.T("AutoSell", "{} Stopped; enable again to retry.", var1);
+      this.l(var1);
       this.disable();
    }
 
-   private void Y(String var1) {
-      if (this.V.getValue()) {
-         this.d(var1);
+   private void n(String var1) {
+      if (this.k.P()) {
+         this.l(var1);
       }
    }
 
-   private void d(String var1) {
+   private void l(String var1) {
       if (this.isInGame()) {
          mc.gui.chatListener().handleSystemMessage(Component.literal("[Auto Sell] " + var1), false);
       }

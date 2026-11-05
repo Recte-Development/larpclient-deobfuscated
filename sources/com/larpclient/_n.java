@@ -1,117 +1,37 @@
 package com.larpclient;
 
-import java.util.BitSet;
+final class _n {
+   private int X = -1;
+   private int O = -1;
+   private int m = 1;
+   private boolean V;
 
-public final class _n {
-   public static final int h = 15;
-   public static final int q = 7;
-   private static final int M = 225;
-   private static final int v = 57;
-   public static final _n T = new _n(new BitSet(225));
-   public static final _n x;
-   private final BitSet i;
-
-   private _n(BitSet var1) {
-      this.i = var1;
+   boolean c(int var1) {
+      return !this.V && var1 >= this.m && (this.X < 0 || this.Z());
    }
 
-   private static int O(int var0, int var1) {
-      if (var0 >= 0 && var1 >= 0 && var0 < 15 && var1 < 15) {
-         return var1 * 15 + var0;
-      } else {
-         throw new IndexOutOfBoundsException("Cell outside the drawing");
-      }
+   void j(int var1, int var2) {
+      this.X = var1;
+      this.m = var2 + 1;
    }
 
-   public boolean F(int var1, int var2) {
-      return this.i.get(O(var1, var2));
+   void n(int var1) {
+      this.O = Math.max(this.O, var1);
    }
 
-   public boolean p() {
-      return this.i.isEmpty();
+   void z() {
+      this.V = (boolean)1;
    }
 
-   public int f() {
-      return this.i.cardinality();
+   boolean N() {
+      return this.X >= 0;
    }
 
-   public _n i(int var1, int var2, boolean var3) {
-      int var4 = O(var1, var2);
-      if (this.i.get(var4) == var3) {
-         return this;
-      }
-
-      BitSet var5 = (BitSet)this.i.clone();
-      var5.set(var4, var3);
-      return new _n(var5);
+   boolean Z() {
+      return this.N() && (this.V || this.O >= this.X);
    }
 
-   public String t() {
-      StringBuilder var1 = new StringBuilder(57);
-
-      for (int var2 = 0; var2 < 57; var2++) {
-         int var3 = 0;
-
-         for (int var4 = 0; var4 < 4; var4++) {
-            if (this.i.get(var2 * 4 + var4)) {
-               var3 |= 8 >> var4;
-            }
-         }
-
-         var1.append(Character.forDigit(var3, 16));
-      }
-
-      return var1.toString();
-   }
-
-   public static _n e(String var0) {
-      if (var0 != null && var0.length() == 57) {
-         BitSet var1 = new BitSet(225);
-
-         for (int var2 = 0; var2 < 57; var2++) {
-            int var3 = Character.digit(var0.charAt(var2), 16);
-            if (var3 < 0) {
-               throw new IllegalArgumentException("Expected hex digits");
-            }
-
-            for (int var4 = 0; var4 < 4; var4++) {
-               if ((var3 & 8 >> var4) != 0) {
-                  if (var2 * 4 + var4 >= 225) {
-                     throw new IllegalArgumentException("Cell outside the drawing");
-                  }
-
-                  var1.set(var2 * 4 + var4);
-               }
-            }
-         }
-
-         return new _n(var1);
-      } else {
-         throw new IllegalArgumentException("Expected 57 hex digits");
-      }
-   }
-
-   @Override
-   public boolean equals(Object var1) {
-      return var1 instanceof _n var2 && this.i.equals(var2.i);
-   }
-
-   @Override
-   public int hashCode() {
-      return this.i.hashCode();
-   }
-
-   static {
-      BitSet var0 = new BitSet(225);
-      var0.set(O(7, 7));
-
-      for (int var1 = 2; var1 <= 4; var1++) {
-         var0.set(O(7 - var1, 7));
-         var0.set(O(7 + var1, 7));
-         var0.set(O(7, 7 - var1));
-         var0.set(O(7, 7 + var1));
-      }
-
-      x = new _n(var0);
+   String m() {
+      return "sequence=" + this.X + " acknowledged=" + this.O;
    }
 }

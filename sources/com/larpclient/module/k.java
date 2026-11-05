@@ -1,240 +1,162 @@
 package com.larpclient.module;
 
-import com.larpclient.ep;
-import com.larpclient.hy;
-import com.larpclient.m;
-import com.larpclient.rr;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Optional;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Direction.Plane;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.ClipContext.Block;
+import net.minecraft.world.level.ClipContext.Fluid;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SignBlock;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.HitResult.Type;
 
-public final class k extends m.o implements hy.c {
-   private final hy W = new hy(this, var1 -> this.addSetting(var1));
-   private static k C;
-   private Object N;
-   private Object e;
-   private int n;
-   private final ln u = this.h("Legs", "Place webs at the opponent's feet", true);
-   private final ln o = this.h("Head", "Place webs at the opponent's head", true);
-   private final ln F = this.h("Surround", "Web the lower perimeter", false);
-   private final ln R = this.h("Upper Surround", "Web the upper perimeter", false);
-   private final ln a = this.h("Web Predict", "Predict movement unless the target is already in webs", false);
-   private final lc j = this.z("Predict Ticks", "Ticks of displacement prediction", 2.0, 0.0, 10.0, 0.5);
-   private final ln P = this.h("Integrate With Trap", "Choose the footprint used by the active AutoTrap", false);
-   private final ln f = this.h("Auto Sign", "Use ordinary hotbar signs at head positions instead of head webs", false);
-
-   @Override
-   public hy placementHighlight() {
-      return this.W;
+public final class k {
+   private k() {
    }
 
-   @Override
-   public void onEnable() {
-      super.onEnable();
-      this.W.S();
+   public static double L(LocalPlayer var0, AABB var1) {
+      Vec3 var2 = var0.getEyePosition();
+      Vec3 var3 = new Vec3(Mth.clamp(var2.x, var1.minX, var1.maxX), Mth.clamp(var2.y, var1.minY, var1.maxY), Mth.clamp(var2.z, var1.minZ, var1.maxZ));
+      return var3.subtract(var2).length();
    }
 
-   @Override
-   public void onDisable() {
-      super.onDisable();
-      this.W.C();
-      this.G();
+   public static boolean a(LocalPlayer var0) {
+      return var0 != null && var0.level() != null
+         ? !var0.hasEffect(MobEffects.LEVITATION)
+            && !var0.hasEffect(MobEffects.BLINDNESS)
+            && !var0.isInWater()
+            && !var0.isInLava()
+            && !var0.getAbilities().flying
+            && !var0.isFallFlying()
+            && !var0.onClimbable()
+            && !var0.isPassenger()
+         : false;
    }
 
-   public k() {
-      super("AutoWeb", "Place cobwebs around opponents");
-      C = this;
-      this.j.x(this.a::getValue);
-      this.Y.W(var1 -> {
-         m.g(this);
-         this.G();
-      });
+   public static boolean G(LocalPlayer var0) {
+      if (!a(var0)) {
+         return false;
+      } else {
+         return S() ? !var0.onGround() : var0.fallDistance > 0.0 && !var0.onGround();
+      }
    }
 
-   public static k v() {
-      return C;
+   public static boolean I(LocalPlayer var0, AABB var1, float var2, float var3, double var4, boolean var6) {
+      Vec3 var7 = var0.getEyePosition();
+      Vec3 var8 = dj.v(var2, var3);
+      Vec3 var9 = var7.add(var8.scale(var4 + 1.0));
+      double var10 = var4;
+      if (!var6) {
+         BlockHitResult var12 = var0.level().clip(new ClipContext(var7, var9, Block.COLLIDER, Fluid.NONE, var0));
+         if (var12.getType() != Type.MISS) {
+            var10 = var7.distanceTo(var12.getLocation());
+         }
+      }
+
+      Vec3 var13 = var7.add(var8.scale(var10));
+      return var1.clip(var7, var13).isPresent() || var1.contains(var7);
    }
 
-   @Override
-   protected void aim(float var1, float var2) {
-      if (this.isEnabled()) {
-         if (rr.j(rr.f.L)) {
-            super.aim(var1, var2);
-            if (ep.W(ep.z.d)) {
-               this.N = mc.player;
-               this.e = mc.level;
-               this.n = mc.player.tickCount;
-               rr.W(rr.f.L);
-            } else {
-               this.G();
+   public static EntityHitResult s(LocalPlayer var0, float var1, float var2, double var3, boolean var5) {
+      if (var0 != null && var0.level() != null && !(var3 <= 0.0)) {
+         Vec3 var6 = var0.getEyePosition();
+         Vec3 var7 = dj.v(var1, var2);
+         Vec3 var8 = var6.add(var7.scale(var3));
+         double var9 = var3 * var3;
+         if (!var5) {
+            BlockHitResult var11 = var0.level().clip(new ClipContext(var6, var8, Block.COLLIDER, Fluid.NONE, var0));
+            if (var11.getType() != Type.MISS) {
+               var9 = var6.distanceToSqr(var11.getLocation());
             }
          }
-      }
-   }
 
-   private void G() {
-      this.N = this.e = null;
-      rr.N(rr.f.L);
-   }
-
-   public boolean g() {
-      return !this.isEnabled()
-         ? false
-         : this.isRuntimeActive()
-            && this.Y.i("Visible")
-            && mc.player != null
-            && this.N == mc.player
-            && this.e == mc.level
-            && mc.player.tickCount >= this.n
-            && mc.player.tickCount - this.n <= 1
-            && (!this.w.getValue() || !mc.player.isUsingItem())
-            && (!this.d.getValue() || !mc.options.keyAttack.isDown());
-   }
-
-   public float A(float var1) {
-      if (this.isEnabled()) {
-         if (this.isRuntimeActive() && rr.u() == rr.f.L && ep.W(ep.z.d)) {
-            mc.player.setYHeadRot(mc.player.getYRot());
-            return mc.player.getYRot();
-         } else {
-            return var1;
-         }
+         AABB var12 = var0.getBoundingBox().expandTowards(var7.scale(var3)).inflate(1.0);
+         return ProjectileUtil.getEntityHitResult(
+            var0, var6, var8, var12, var1x -> var1x != var0 && var1x.isPickable() && var1x.isAlive() && !var1x.isSpectator(), var9
+         );
       } else {
-         return var1;
+         return null;
       }
    }
 
-   private boolean r(Player var1) {
-      for (BlockPos var3 : t.S(var1, var1.position())) {
-         if (mc.level.getBlockState(var3).is(Blocks.COBWEB)) {
+   public static boolean L(Vec3 var0, double var1, AABB var3) {
+      LocalPlayer var4 = Minecraft.getInstance().player;
+      if (var4 == null) {
+         return false;
+      }
+
+      Vec3 var5 = var4.getEyePosition();
+      if (var3.contains(var5)) {
+         return true;
+      }
+
+      Optional var6 = var3.clip(var5, var5.add(var0.scale(var1)));
+      return var6.isPresent();
+   }
+
+   public static boolean Q() {
+      LocalPlayer var0 = Minecraft.getInstance().player;
+      if (var0 != null && var0.isUsingItem()) {
+         ItemStack var1 = var0.getUseItem();
+         if (var1.isEmpty()) {
+            return false;
+         }
+
+         if (var1.has(DataComponents.FOOD)) {
             return true;
          }
-      }
 
-      return false;
+         ItemUseAnimation var2 = var1.getUseAnimation();
+         return var2 == ItemUseAnimation.EAT || var2 == ItemUseAnimation.DRINK;
+      } else {
+         return false;
+      }
    }
 
-   private Item O() {
-      for (int var1 = 0; var1 < 9; var1++) {
-         Item var2 = mc.player.getInventory().getItem(var1).getItem();
-         if (var2 instanceof BlockItem var3 && var3.getBlock() instanceof SignBlock) {
-            return var2;
-         }
-      }
+   public static boolean S() {
+      Minecraft var0 = Minecraft.getInstance();
+      if (var0.player != null && var0.level != null) {
+         BlockPos var1 = var0.player.blockPosition();
+         if (!var0.level.getBlockState(var1).is(Blocks.COBWEB)
+            && !var0.level.getBlockState(var1.above()).is(Blocks.COBWEB)
+            && !var0.level.getBlockState(BlockPos.containing(var0.player.getX(), var0.player.getY() + 0.5, var0.player.getZ())).is(Blocks.COBWEB)
+            && !var0.level.getBlockState(BlockPos.containing(var0.player.getX(), var0.player.getY() + 1.2F, var0.player.getZ())).is(Blocks.COBWEB)) {
+            AABB var2 = var0.player.getBoundingBox();
 
-      return null;
-   }
+            for (int var3 = var1.getX() - 2; var3 <= var1.getX() + 2; var3++) {
+               for (int var4 = var1.getY() - 1; var4 <= var1.getY() + 4; var4++) {
+                  for (int var5 = var1.getZ() - 2; var5 <= var1.getZ() + 2; var5++) {
+                     BlockPos var6 = new BlockPos(var3, var4, var5);
+                     if (var2.intersects(new AABB(var6)) && var0.level.getBlockState(var6).is(Blocks.COBWEB)) {
+                        return true;
+                     }
+                  }
+               }
+            }
 
-   @Override
-   public void onTick() {
-      this.W.i(null);
-      m.g(this);
-      boolean var1 = this.K();
-      if (var1 || this.W.z() && this.i()) {
-         Player var2 = this.o();
-         if (var2 == null) {
-            this.H("Waiting for a target");
+            return false;
          } else {
-            int var10001 = this.a.getValue();
-            boolean var19 = false;
-            byte var18 = (byte)var10001;
-            var10001 = Integer.signum(var18);
-            Vec3 var3 = t.X(var2, ((var10001 | -var10001) >>> 31 ^ 1) == 0 && !this.r(var2) ? this.j.getValue() : 0.0);
-            List var4 = t.S(var2, var3);
-            t var5 = t.d();
-            int var10000 = this.P.getValue();
-            boolean var21 = false;
-            byte var20 = (byte)var10000;
-            var10000 = Integer.signum(var20);
-            if (((var10000 | -var10000) >>> 31 ^ 1) == 0 && var5 != null && var5.isRuntimeActive()) {
-               LinkedHashSet var6 = new LinkedHashSet();
-
-               for (BlockPos var8 : var5.Z(var2)) {
-                  if (var8.getY() == ((BlockPos)var4.getFirst()).getY() - 1) {
-                     var6.add(var8.above());
-                  }
-               }
-
-               if (!var6.isEmpty()) {
-                  var4 = new ArrayList(var6);
-               }
-            }
-
-            Item var22 = this.f.getValue() ? this.O() : null;
-            LinkedHashSet var23 = new LinkedHashSet();
-            LinkedHashSet var24 = new LinkedHashSet();
-
-            for (BlockPos var10 : var4) {
-               if (this.u.getValue()) {
-                  var23.add(var10);
-               }
-
-               if (var22 != null) {
-                  var24.add(var10.above());
-               } else if (this.o.getValue()) {
-                  var23.add(var10.above());
-               }
-
-               for (Direction var12 : Plane.HORIZONTAL) {
-                  BlockPos var13 = var10.relative(var12);
-                  if (!var4.contains(var13)) {
-                     if (this.F.getValue()) {
-                        var23.add(var13);
-                     }
-
-                     if (this.R.getValue()) {
-                        var23.add(var13.above());
-                     }
-                  }
-               }
-            }
-
-            var10000 = m.Q(Items.COBWEB, this.x.getValue());
-            byte var17 = -1;
-            int var16 = var10000;
-            var10000 = Integer.compare(var16, var17);
-            if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
-               for (BlockPos var27 : var23) {
-                  if (var1 ? this.H(var27, Items.COBWEB, var2) : this.f(var27, Items.COBWEB)) {
-                     this.W.i(var27);
-                     if (var1) {
-                        this.H("Preparing web placement");
-                     }
-
-                     return;
-                  }
-               }
-            }
-
-            if (var22 != null) {
-               for (BlockPos var28 : var24) {
-                  if (var1 ? this.H(var28, var22, var2) : this.f(var28, var22)) {
-                     this.W.i(var28);
-                     if (var1) {
-                        this.H("Preparing sign placement");
-                     }
-
-                     return;
-                  }
-               }
-            }
-
-            var10001 = m.Q(Items.COBWEB, this.x.getValue());
-            byte var15 = -1;
-            int var14 = var10001;
-            var10001 = Integer.compare(var14, var15);
-            this.H((var10001 | -var10001) >>> 31 == 0 ? "Cobwebs missing from hotbar" : "No reachable empty web position: " + m.N(this));
+            return true;
          }
+      } else {
+         return false;
       }
+   }
+
+   public static Vec3 v(Entity var0) {
+      Vec3 var1 = Minecraft.getInstance().player.getEyePosition();
+      AABB var2 = var0.getBoundingBox();
+      return new Vec3(Mth.clamp(var1.x, var2.minX, var2.maxX), Mth.clamp(var1.y, var2.minY, var2.maxY), Mth.clamp(var1.z, var2.minZ, var2.maxZ));
    }
 }

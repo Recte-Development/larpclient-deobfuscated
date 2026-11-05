@@ -1,53 +1,35 @@
 package com.larpclient;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
+public record hm(hm.u state, c9 account) {
+   private static volatile hm current = new hm(hm.u.f, null);
 
-@Environment(EnvType.CLIENT)
-public class hm {
-   private static final hm M = new hm();
-   public boolean T;
-
-   private hm() {
+   public static hm current() {
+      return current;
    }
 
-   public static hm O() {
-      return M;
+   static void publish(hm.u var0, c9 var1) {
+      current = new hm(var0, var0 == hm.u.D ? var1 : null);
    }
 
-   public void k(int var1) {
-      u3.H().queueForce(var1);
-   }
+   public enum u {
+      f("Discord activity off", -8354674),
+      L("Discord offline", -8354674),
+      D("Online", -14441126);
 
-   public void d(int... var1) {
-      u3.H().queueForceSequence(var1);
-   }
+      private final String h;
+      private final int Z;
 
-   public void P() {
-      u3.H().clearQueue();
-   }
+      u(String var3, int var4) {
+         this.h = var3;
+         this.Z = var4;
+      }
 
-   public boolean S() {
-      return u3.H().getPendingValue() != -1;
-   }
+      public String H() {
+         return this.h;
+      }
 
-   public int A() {
-      return u3.H().getPendingValue();
-   }
-
-   public String v() {
-      return u3.H().pendingLabel();
-   }
-
-   public void Y(Minecraft var1) {
-      if (!this.T) {
-         u3.H().clearQueue();
-         if (u3.H().isSwapActive()) {
-            u3.H().tick(var1);
-         }
-      } else {
-         u3.H().tick(var1);
+      public int o() {
+         return this.Z;
       }
    }
 }

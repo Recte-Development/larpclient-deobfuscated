@@ -1,79 +1,79 @@
 package com.larpclient.module;
 
 import com.larpclient.LarpClient;
-import com.larpclient.pe;
-import com.larpclient.pk;
-import com.larpclient.r4;
+import com.larpclient.cc;
+import com.larpclient.mt;
+import com.larpclient.xz;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 
 public final class ZoomModule extends Module {
-   private static ZoomModule d;
-   public final la I = this.addSetting(new la("Zoom Key", "Key used while this module is enabled", 67));
-   public final lp r = this.addSetting(new lp("Activation", "Hold the zoom key or press it to toggle the zoom", "Hold", "Hold", "Toggle"));
-   public final lc h = this.addSetting(new lc("Magnification", "Optical magnification before scroll adjustment", 4.0, 1.25, 16.0, 0.25));
-   public final ln z = this.addSetting(new ln("Scroll Zoom", "Adjust magnification with the mouse wheel while zoomed", true));
-   public final ln H = this.addSetting(new ln("Remember Magnification", "Keep the last wheel adjustment for the next zoom", false));
-   public final ln O = this.addSetting(new ln("Reduce Sensitivity", "Scale mouse motion with optical magnification", true));
-   public final ln x = this.addSetting(new ln("Smooth Transition", "Ease into and out of zoom without delaying input", true));
-   public final lc v = this.addSetting(new lc("Transition Time", "Seconds to reach approximately 99 percent of a new zoom", 0.15, 0.0, 0.5, 0.01));
-   private final pk p = new pk();
-   private Object a;
-   private Object D;
-   private boolean j;
+   private static ZoomModule H;
+   public final dv x = this.addSetting(new dv("Zoom Key", "Key used while this module is enabled", 67));
+   public final d6 j = this.addSetting(new d6("Activation", "Hold the zoom key or press it to toggle the zoom", "Hold", "Hold", "Toggle"));
+   public final d9 Q = this.addSetting(new d9("Magnification", "Optical magnification before scroll adjustment", 4.0, 1.25, 16.0, 0.25));
+   public final dh P = this.addSetting(new dh("Scroll Zoom", "Adjust magnification with the mouse wheel while zoomed", true));
+   public final dh i = this.addSetting(new dh("Remember Magnification", "Keep the last wheel adjustment for the next zoom", false));
+   public final dh E = this.addSetting(new dh("Reduce Sensitivity", "Scale mouse motion with optical magnification", true));
+   public final dh Z = this.addSetting(new dh("Smooth Transition", "Ease into and out of zoom without delaying input", true));
+   public final d9 K = this.addSetting(new d9("Transition Time", "Seconds to reach approximately 99 percent of a new zoom", 0.15, 0.0, 0.5, 0.01));
+   private final xz S = new xz();
+   private Object F;
+   private Object o;
+   private boolean m;
 
    public ZoomModule() {
       super("Zoom", "Hold a key to zoom smoothly, with wheel adjustment and precise mouse control", Category.RENDER, -1);
-      d = this;
-      this.v.x(this.x::getValue);
-      this.H.x(this.z::getValue);
-      this.I.W(var1 -> this.Y());
-      this.r.W(var1 -> this.Y());
-      this.h.W(var1 -> this.Y());
+      H = this;
+      this.K.H(this.Z::P);
+      this.i.H(this.P::P);
+      this.x.h(var1 -> this.h());
+      this.j.h(var1 -> this.h());
+      this.Q.h(var1 -> this.h());
    }
 
-   public static ZoomModule l() {
-      return d;
+   public static ZoomModule x() {
+      return H;
    }
 
-   public List<l6<?>> x() {
-      return List.of(this.I, this.r, this.z, this.H);
+   public List<df<?>> U() {
+      return List.of(this.x, this.j, this.P, this.i);
    }
 
-   public List<l6<?>> m() {
-      return List.of(this.h, this.O, this.x, this.v);
+   public List<df<?>> G() {
+      return List.of(this.Q, this.E, this.Z, this.K);
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.k);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.m);
    }
 
    @Override
    public void onEnable() {
-      this.Y();
-      r4.g("Zoom", "Ready; activation={}, key={}", this.r.getValue(), this.I.getValue());
+      this.h();
+      mt.U("Zoom", "Ready; activation={}, key={}", this.j.P(), this.x.P());
    }
 
    @Override
    public void onDisable() {
-      this.Y();
+      this.h();
    }
 
    @Override
    public void onTick() {
-      this.n();
+      this.t();
    }
 
-   private void Y() {
-      this.p.x(true);
-      this.a = this.D = null;
-      this.j = (boolean)0;
+   private void h() {
+      this.S.I(true);
+      this.F = this.o = null;
+      this.m = (boolean)0;
    }
 
-   private boolean k() {
+   private boolean I() {
       Minecraft var1 = getMc();
       return this.isRuntimeActive()
          && var1 != null
@@ -87,40 +87,40 @@ public final class ZoomModule extends Module {
          && var1.isWindowActive();
    }
 
-   private void n() {
+   private void t() {
       Minecraft var1 = getMc();
-      if (!this.k()) {
-         this.Y();
+      if (!this.I()) {
+         this.h();
       } else {
-         if (this.a != var1.player || this.D != var1.level) {
-            this.p.x(true);
-            this.a = var1.player;
-            this.D = var1.level;
+         if (this.F != var1.player || this.o != var1.level) {
+            this.S.I(true);
+            this.F = var1.player;
+            this.o = var1.level;
          }
 
-         boolean var2 = pe.A(var1.getWindow().handle(), this.I.getValue());
-         this.p.W(true, var2, this.r.i("Hold"), this.h.getValue(), this.H.getValue());
-         if (this.j != this.p.F()) {
-            this.j = this.p.F();
-            r4.g("Zoom", "{}; magnification={}", this.j ? "Engaged" : "Released", this.p.y());
+         boolean var2 = cc.N(var1.getWindow().handle(), this.x.P());
+         this.S.E(true, var2, this.j.S("Hold"), this.Q.P(), this.i.P());
+         if (this.m != this.S.k()) {
+            this.m = this.S.k();
+            mt.U("Zoom", "{}; magnification={}", this.m ? "Engaged" : "Released", this.S.L());
          }
 
-         boolean var3 = this.x.getValue();
-         LarpClient var4 = LarpClient.y();
-         if (var4 != null && var4.v() != null) {
-            var3 &= var4.v().E().o;
+         boolean var3 = this.Z.P();
+         LarpClient var4 = LarpClient.F();
+         if (var4 != null && var4.f() != null) {
+            var3 &= var4.f().t().V;
          }
 
-         this.p.i(System.nanoTime(), this.v.getValue(), var3);
+         this.S.t(System.nanoTime(), this.K.P(), var3);
       }
    }
 
-   public static float u(float var0, boolean var1) {
-      if (d != null && d.isEnabled()) {
-         ZoomModule var2 = d;
+   public static float w(float var0, boolean var1) {
+      if (H != null && H.isEnabled()) {
+         ZoomModule var2 = H;
          if (var2 != null && !var1) {
-            var2.n();
-            return pk.e(var0, var2.p.D());
+            var2.t();
+            return xz.K(var0, var2.S.H());
          } else {
             return var0;
          }
@@ -129,29 +129,29 @@ public final class ZoomModule extends Module {
       }
    }
 
-   public static double d() {
-      if (d != null && d.isEnabled()) {
-         ZoomModule var0 = d;
+   public static double q() {
+      if (H != null && H.isEnabled()) {
+         ZoomModule var0 = H;
          if (var0 == null) {
             return 1.0;
          }
 
-         var0.n();
-         return var0.O.getValue() ? var0.p.D() : 1.0;
+         var0.t();
+         return var0.E.P() ? var0.S.H() : 1.0;
       } else {
          return 1.0;
       }
    }
 
-   public static boolean D(double var0) {
-      if (d != null && d.isEnabled()) {
-         ZoomModule var2 = d;
+   public static boolean r(double var0) {
+      if (H != null && H.isEnabled()) {
+         ZoomModule var2 = H;
          if (var2 == null) {
             return false;
          }
 
-         var2.n();
-         return var2.z.getValue() && var2.p.c(var0);
+         var2.t();
+         return var2.P.P() && var2.S.z(var0);
       } else {
          return false;
       }
@@ -162,7 +162,7 @@ public final class ZoomModule extends Module {
       if (!this.isRuntimeActive()) {
          return "Idle";
       } else {
-         return this.p.F() ? String.format(Locale.ROOT, "%.2fx", this.p.y()) : "Waiting for zoom key";
+         return this.S.k() ? String.format(Locale.ROOT, "%.2fx", this.S.L()) : "Waiting for zoom key";
       }
    }
 }

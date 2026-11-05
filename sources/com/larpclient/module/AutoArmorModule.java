@@ -13,16 +13,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.Equippable;
 
 public class AutoArmorModule extends Module {
-   private int v = 0;
-   private final ln w = new ln("Diamond", "Equip diamond armor upgrades", true);
-   private final ln T = new ln("Netherite", "Equip netherite armor upgrades", true);
-   private final ln H = new ln("Gold", "Equip gold armor upgrades", true);
-   private final ln f = new ln("Iron", "Equip iron armor upgrades", true);
-   private static final Set<Item> O = Set.of(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS);
-   private static final Set<Item> E = Set.of(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS);
-   private static final Set<Item> l = Set.of(Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS);
+   private int Y = 0;
+   private final dh n = new dh("Diamond", "Equip diamond armor upgrades", true);
+   private final dh u = new dh("Netherite", "Equip netherite armor upgrades", true);
+   private final dh J = new dh("Gold", "Equip gold armor upgrades", true);
+   private final dh R = new dh("Iron", "Equip iron armor upgrades", true);
+   private static final Set<Item> A = Set.of(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS);
+   private static final Set<Item> D = Set.of(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS);
+   private static final Set<Item> P = Set.of(Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS);
    private static final Set<Item> W = Set.of(Items.IRON_HELMET, Items.IRON_CHESTPLATE, Items.IRON_LEGGINGS, Items.IRON_BOOTS);
-   private static final Set<Item> b = Set.of(
+   private static final Set<Item> M = Set.of(
       Items.CHAINMAIL_HELMET,
       Items.CHAINMAIL_CHESTPLATE,
       Items.CHAINMAIL_LEGGINGS,
@@ -36,36 +36,36 @@ public class AutoArmorModule extends Module {
 
    public AutoArmorModule() {
       super("AutoArmor", "Automatically equip better allowed armor", Category.PLAYER, -1);
-      this.addSetting(this.w);
-      this.addSetting(this.T);
-      this.addSetting(this.H);
-      this.addSetting(this.f);
+      this.addSetting(this.n);
+      this.addSetting(this.u);
+      this.addSetting(this.J);
+      this.addSetting(this.R);
    }
 
-   public List<l6<?>> U() {
-      return List.of(this.w, this.T, this.H, this.f);
+   public List<df<?>> s() {
+      return List.of(this.n, this.u, this.J, this.R);
    }
 
-   public boolean p(ItemStack var1, EquipmentSlot var2) {
-      if (!l(var1, var2)) {
+   public boolean m(ItemStack var1, EquipmentSlot var2) {
+      if (!h(var1, var2)) {
          return false;
       } else {
          Item var3 = var1.getItem();
-         if (O.contains(var3)) {
-            return this.w.getValue();
-         } else if (E.contains(var3)) {
-            return this.T.getValue();
-         } else if (l.contains(var3)) {
-            return this.H.getValue();
+         if (A.contains(var3)) {
+            return this.n.P();
+         } else if (D.contains(var3)) {
+            return this.u.P();
+         } else if (P.contains(var3)) {
+            return this.J.P();
          } else {
-            return W.contains(var3) ? this.f.getValue() : b.contains(var3);
+            return W.contains(var3) ? this.R.P() : M.contains(var3);
          }
       }
    }
 
    @Override
    public void onDisable() {
-      this.v = 0;
+      this.Y = 0;
    }
 
    @Override
@@ -73,23 +73,23 @@ public class AutoArmorModule extends Module {
       if (this.isInGame()) {
          if (mc.gui.screen() == null) {
             boolean var14 = false;
-            int var13 = this.v;
+            int var13 = this.Y;
             if ((-Integer.signum(var13) >>> 31 ^ 1) == 0) {
                byte var16 = 1;
-               int var15 = this.v;
-               this.v = var15 - var16;
+               int var15 = this.Y;
+               this.Y = var15 - var16;
             } else {
                for (EquipmentSlot var4 : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
-                  int var5 = this.q(var4);
+                  int var5 = this.y(var4);
                   ItemStack var6 = mc.player.getItemBySlot(var4);
-                  int var7 = I(var6, var4);
+                  int var7 = Z(var6, var4);
                   int var8 = -1;
                   int var9 = var7;
 
                   for (int var10 = 0; var10 < 36; var10++) {
                      ItemStack var11 = mc.player.getInventory().getItem(var10);
-                     if (this.p(var11, var4)) {
-                        int var12 = I(var11, var4);
+                     if (this.m(var11, var4)) {
+                        int var12 = Z(var11, var4);
                         if (var12 > var9) {
                            var9 = var12;
                            var8 = var10;
@@ -106,7 +106,7 @@ public class AutoArmorModule extends Module {
                         mc.gameMode.handleContainerInput(var17, var18, 0, ContainerInput.PICKUP, mc.player);
                      }
 
-                     this.v = 3;
+                     this.Y = 3;
                      return;
                   }
                }
@@ -115,13 +115,13 @@ public class AutoArmorModule extends Module {
       }
    }
 
-   private static boolean l(ItemStack var0, EquipmentSlot var1) {
+   private static boolean h(ItemStack var0, EquipmentSlot var1) {
       if (var0.isEmpty()) {
          return false;
       }
 
       Item var2 = var0.getItem();
-      if (!O.contains(var2) && !E.contains(var2) && !l.contains(var2) && !W.contains(var2) && !b.contains(var2)) {
+      if (!A.contains(var2) && !D.contains(var2) && !P.contains(var2) && !W.contains(var2) && !M.contains(var2)) {
          return false;
       }
 
@@ -129,8 +129,8 @@ public class AutoArmorModule extends Module {
       return var3 != null && var3.slot() == var1;
    }
 
-   private static int I(ItemStack var0, EquipmentSlot var1) {
-      if (!var0.isEmpty() && l(var0, var1)) {
+   private static int Z(ItemStack var0, EquipmentSlot var1) {
+      if (!var0.isEmpty() && h(var0, var1)) {
          double[] var2 = new double[]{0.0};
          var0.forEachModifier(var1, (var1x, var2x) -> {
             if (var1x.is(Attributes.ARMOR) && var2x.operation() == Operation.ADD_VALUE) {
@@ -143,7 +143,7 @@ public class AutoArmorModule extends Module {
       }
    }
 
-   private int q(EquipmentSlot var1) {
+   private int y(EquipmentSlot var1) {
       return switch (var1) {
          case HEAD -> 5;
          case CHEST -> 6;

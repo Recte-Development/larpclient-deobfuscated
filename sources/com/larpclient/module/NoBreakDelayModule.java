@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larp.obf.q5682c6a8aca9b6ec.q143ef5d8ac4bd5b8;
-import com.larpclient.r4;
+import com.larp.obf.qbac0b262827a15ac.q099a584e4baa1bb9;
+import com.larpclient.mt;
 import java.util.Set;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 
@@ -11,8 +11,8 @@ public final class NoBreakDelayModule extends Module {
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
@@ -22,18 +22,18 @@ public final class NoBreakDelayModule extends Module {
 
    @Override
    public void onEnable() {
-      r4.g("NoBreakDelay", "Enabled; the native post-break delay is cleared each tick");
+      mt.U("NoBreakDelay", "Enabled; the native post-break delay is cleared each tick");
    }
 
    @Override
    public void onTick() {
       MultiPlayerGameMode var2 = mc.gameMode;
-      int var10000 = var2 instanceof q143ef5d8ac4bd5b8;
+      int var10000 = var2 instanceof q099a584e4baa1bb9;
       boolean var4 = false;
       byte var3 = (byte)var10000;
       var10000 = Integer.signum(var3);
       if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
-         q143ef5d8ac4bd5b8 var1 = (q143ef5d8ac4bd5b8)var2;
+         q099a584e4baa1bb9 var1 = (q099a584e4baa1bb9)var2;
          var10000 = var1.larpDestroyDelay();
          boolean var6 = false;
          int var5 = var10000;

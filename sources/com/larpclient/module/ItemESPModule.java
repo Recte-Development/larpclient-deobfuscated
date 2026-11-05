@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larpclient.mi;
-import com.larpclient.r4;
+import com.larpclient.dq;
+import com.larpclient.mt;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
@@ -13,20 +13,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
 public class ItemESPModule extends Module {
-   private final lc V = this.addSetting(new lc("Range", "Max render range", 48.0, 8.0, 128.0, 8.0));
-   private final lc D = this.addSetting(new lc("Max Items", "Nearest drops drawn", 128.0, 16.0, 512.0, 16.0));
-   private final lp u = this.addSetting(new lp("Mode", "Drop highlight style", "Corners", "Box", "Corners", "Filled"));
-   private final ln Z = this.addSetting(new ln("XP Orbs", "Include experience orbs", false));
-   private final ln f = this.addSetting(new ln("Labels", "Item name, count and distance within 24 blocks", true));
-   private final mi B = new mi(var1 -> this.addSetting(var1));
+   private final d9 g = this.addSetting(new d9("Range", "Max render range", 48.0, 8.0, 128.0, 8.0));
+   private final d9 C = this.addSetting(new d9("Max Items", "Nearest drops drawn", 128.0, 16.0, 512.0, 16.0));
+   private final d6 z = this.addSetting(new d6("Mode", "Drop highlight style", "Corners", "Box", "Corners", "Filled"));
+   private final dh i = this.addSetting(new dh("XP Orbs", "Include experience orbs", false));
+   private final dh E = this.addSetting(new dh("Labels", "Item name, count and distance within 24 blocks", true));
+   private final dq B = new dq(var1 -> this.addSetting(var1));
 
    public ItemESPModule() {
       super("ItemESP", "Highlight dropped items and experience orbs", Category.RENDER, -1);
-      this.B.J(() -> true, () -> true, () -> true, () -> this.u.i("Filled"));
-      LevelRenderEvents.BEFORE_GIZMOS.register((BeforeGizmos)var1 -> this.w());
+      this.B.o(() -> true, () -> true, () -> true, () -> this.z.S("Filled"));
+      LevelRenderEvents.BEFORE_GIZMOS.register((BeforeGizmos)var1 -> this.p());
    }
 
-   private void w() {
+   private void p() {
       if (this.isEnabled()) {
          if (this.isOperational() && this.isInGame()) {
             float var1 = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
@@ -34,21 +34,21 @@ public class ItemESPModule extends Module {
             try {
                int var2 = 0;
 
-               for (Entity var4 : mi.T(
+               for (Entity var4 : dq.y(
                   mc.level.entitiesForRendering(),
                   mc.player,
-                  this.V.getValue(),
-                  this.D.getValue().intValue(),
-                  var1x -> var1x instanceof ItemEntity || this.Z.getValue() && var1x instanceof ExperienceOrb
+                  this.g.P(),
+                  this.C.P().intValue(),
+                  var1x -> var1x instanceof ItemEntity || this.i.P() && var1x instanceof ExperienceOrb
                )) {
                   double var5 = mc.player.distanceTo(var4);
-                  int var7 = this.B.k(var4 instanceof ItemEntity ? -3627265 : -7677757, var5, this.V.getValue(), 1.0, var4.getId());
-                  AABB var8 = mi.R(var4, var1);
-                  this.B.I(var8, this.u.getValue(), var7);
-                  if (this.f.getValue() && var5 <= 24.0 && var4 instanceof ItemEntity var9 && var2++ < 24) {
+                  int var7 = this.B.w(var4 instanceof ItemEntity ? -3627265 : -7677757, var5, this.g.P(), 1.0, var4.getId());
+                  AABB var8 = dq.k(var4, var1);
+                  this.B.O(var8, this.z.P(), var7);
+                  if (this.E.P() && var5 <= 24.0 && var4 instanceof ItemEntity var9 && var2++ < 24) {
                      ItemStack var10 = var9.getItem();
                      this.B
-                        .t(
+                        .d(
                            var8.getCenter().add(0.0, var8.getYsize() * 0.5 + 0.18, 0.0),
                            var10.getHoverName().getString() + " ×" + var10.getCount() + " · " + (int)var5 + "m",
                            var7
@@ -56,24 +56,24 @@ public class ItemESPModule extends Module {
                   }
                }
             } catch (RuntimeException var11) {
-               r4.T("ESP", "Item overlay failed", var11);
+               mt.B("ESP", "Item overlay failed", var11);
             }
          }
       }
    }
 
-   public List<l6<?>> y() {
-      return List.of(this.u, this.V, this.Z, this.f);
+   public List<df<?>> h() {
+      return List.of(this.z, this.g, this.i, this.E);
    }
 
-   public List<l6<?>> K() {
-      ArrayList var1 = new ArrayList<>(this.B.t());
-      var1.addAll(this.B.J());
-      var1.addAll(this.B.Q());
+   public List<df<?>> F() {
+      ArrayList var1 = new ArrayList<>(this.B.q());
+      var1.addAll(this.B.g());
+      var1.addAll(this.B.L());
       return List.copyOf(var1);
    }
 
-   public List<l6<?>> x() {
-      return List.of(this.D);
+   public List<df<?>> N() {
+      return List.of(this.C);
    }
 }

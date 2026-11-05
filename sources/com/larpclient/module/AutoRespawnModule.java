@@ -1,12 +1,12 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
+import com.larpclient.mt;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AutoRespawnModule extends Module {
-   private LocalPlayer m;
-   private ClientLevel W;
+   private LocalPlayer y;
+   private ClientLevel q;
 
    public AutoRespawnModule() {
       super("AutoRespawn", "Respawn automatically", Category.PLAYER, -1);
@@ -19,42 +19,42 @@ public class AutoRespawnModule extends Module {
 
    @Override
    public void onEnable() {
-      this.i();
-      r4.V("AutoRespawn", "Active; waiting for death or respawn confirmation");
+      this.e();
+      mt.K("AutoRespawn", "Active; waiting for death or respawn confirmation");
    }
 
    @Override
    public void onDisable() {
-      this.i();
+      this.e();
    }
 
    @Override
    public void suspendForDisconnect() {
-      this.i();
+      this.e();
       super.suspendForDisconnect();
    }
 
-   private void i() {
-      if (!this.isInGame() || mc.player != this.m || mc.level != this.W || mc.player.isAlive()) {
-         this.m = null;
-         this.W = null;
+   private void e() {
+      if (!this.isInGame() || mc.player != this.y || mc.level != this.q || mc.player.isAlive()) {
+         this.y = null;
+         this.q = null;
       }
    }
 
    @Override
    public void onTick() {
-      this.i();
+      this.e();
       if (this.isInGame()) {
          int var10000 = mc.player.isDeadOrDying();
          boolean var2 = false;
          byte var1 = (byte)var10000;
          var10000 = Integer.signum(var1);
-         if (((var10000 | -var10000) >>> 31 ^ 1) == 0 && this.m == null) {
-            this.m = mc.player;
-            this.W = mc.level;
+         if (((var10000 | -var10000) >>> 31 ^ 1) == 0 && this.y == null) {
+            this.y = mc.player;
+            this.q = mc.level;
             mc.player.respawn();
             mc.gui.setScreen(null);
-            r4.V("AutoRespawn", "Requested respawn; waiting for server confirmation");
+            mt.K("AutoRespawn", "Requested respawn; waiting for server confirmation");
             return;
          }
       }

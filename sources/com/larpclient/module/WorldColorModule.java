@@ -1,43 +1,38 @@
 package com.larpclient.module;
 
-import com.larpclient.mu;
-import com.larpclient.r4;
+import com.larpclient.eb;
+import com.larpclient.mt;
 
 public final class WorldColorModule extends Module {
-   private static WorldColorModule Q;
-   public final lc H = this.addSetting(new lc("Saturation", "Color intensity", 1.0, 0.0, 2.0, 0.05));
-   public final lc S = this.addSetting(new lc("Contrast", "Mid-tone contrast", 1.0, 0.5, 1.5, 0.025));
-   public final lc A = this.addSetting(new lc("Exposure", "Exposure stops", 0.0, -2.0, 2.0, 0.05));
-   public final lc j = this.addSetting(new lc("Gamma", "Display gamma adjustment", 1.0, 0.5, 2.0, 0.05));
-   public final lv R = this.addSetting(new lv("Tint", "Overall multiplicative tint", -1));
-   public final lv q = this.addSetting(new lv("Shadow Tint", "Dark-region tint", -1));
-   public final lv v = this.addSetting(new lv("Highlight Tint", "Bright-region tint", -1));
-   public final lc a = this.addSetting(new lc("Vignette", "Subtle edge darkening", 0.0, 0.0, 0.4, 0.01));
-   public final lv z = this.addSetting(new lv("Ambient Color", "Flat tint of native world lighting", -5342721));
-   public final lc g = this.addSetting(new lc("Ambient Strength", "Lighting tint strength; zero keeps native lighting", 0.0, 0.0, 1.0, 0.05));
+   private static WorldColorModule L;
+   public final d9 w = this.addSetting(new d9("Saturation", "Color intensity", 1.0, 0.0, 2.0, 0.05));
+   public final d9 A = this.addSetting(new d9("Contrast", "Mid-tone contrast", 1.0, 0.5, 1.5, 0.025));
+   public final d9 Q = this.addSetting(new d9("Exposure", "Exposure stops", 0.0, -2.0, 2.0, 0.05));
+   public final d9 K = this.addSetting(new d9("Gamma", "Display gamma adjustment", 1.0, 0.5, 2.0, 0.05));
+   public final dk S = this.addSetting(new dk("Tint", "Overall multiplicative tint", -1));
+   public final dk G = this.addSetting(new dk("Shadow Tint", "Dark-region tint", -1));
+   public final dk i = this.addSetting(new dk("Highlight Tint", "Bright-region tint", -1));
+   public final d9 D = this.addSetting(new d9("Vignette", "Subtle edge darkening", 0.0, 0.0, 0.4, 0.01));
+   public final dk T = this.addSetting(new dk("Ambient Color", "Flat tint of native world lighting", -5342721));
+   public final d9 B = this.addSetting(new d9("Ambient Strength", "Lighting tint strength; zero keeps native lighting", 0.0, 0.0, 1.0, 0.05));
 
    public WorldColorModule() {
       super("WorldColor", "Adjust world colors", Category.RENDER, -1);
-      Q = this;
-      this.z.x(() -> this.g.getValue() > 0.0);
+      L = this;
+      this.T.H(() -> this.B.P() > 0.0);
    }
 
-   public static WorldColorModule S() {
-      return Q;
+   public static WorldColorModule N() {
+      return L;
    }
 
    @Override
    public void onEnable() {
-      r4.V(
-         "WorldColor",
-         "Native lighting tint enabled; color={}; strength={}; grading controls retained",
-         Integer.toHexString(this.z.getValue()),
-         this.g.getValue()
-      );
+      mt.K("WorldColor", "Native lighting tint enabled; color={}; strength={}; grading controls retained", Integer.toHexString(this.T.P()), this.B.P());
    }
 
    @Override
    public void onDisable() {
-      mu.s();
+      eb.f();
    }
 }

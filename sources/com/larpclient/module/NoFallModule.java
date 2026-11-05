@@ -7,25 +7,25 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.level.ServerPlayer;
 
 public class NoFallModule extends Module {
-   private static NoFallModule y;
-   private volatile int C;
+   private static NoFallModule d;
+   private volatile int J;
 
    public NoFallModule() {
       super("NoFall", "Try to reduce fall damage", Category.MOVEMENT, -1);
-      y = this;
+      d = this;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
-   public static boolean H(boolean var0) {
-      if (y != null && y.isEnabled()) {
+   public static boolean M(boolean var0) {
+      if (d != null && d.isEnabled()) {
          LocalPlayer var1 = getMc().player;
          return var0
-            || y != null
-               && y.isRuntimeActive()
+            || d != null
+               && d.isRuntimeActive()
                && var1 != null
                && var1.isAlive()
                && var1.fallDistance > 2.0
@@ -47,12 +47,12 @@ public class NoFallModule extends Module {
 
    @Override
    public void onEnable() {
-      this.C++;
+      this.J++;
    }
 
    @Override
    public void onDisable() {
-      this.C++;
+      this.J++;
    }
 
    @Override
@@ -61,10 +61,10 @@ public class NoFallModule extends Module {
          IntegratedServer var1 = mc.getSingleplayerServer();
          if (var1 != null) {
             UUID var2 = mc.player.getUUID();
-            int var3 = this.C;
+            int var3 = this.J;
             var1.execute(() -> {
                ServerPlayer var4 = var1.getPlayerList().getPlayer(var2);
-               if (this.C == var3 && var4 != null && var4.isAlive()) {
+               if (this.J == var3 && var4 != null && var4.isAlive()) {
                   var4.fallDistance = 0.0;
                }
             });

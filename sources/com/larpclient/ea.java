@@ -1,38 +1,48 @@
 package com.larpclient;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout.Builder;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+
 public final class ea {
-   private static long k;
-   private static double L;
-   private static double o;
-   private static float c;
+   public static final RenderPipeline U = RenderPipeline.builder(new Snippet[]{RenderPipelines.DEBUG_FILLED_SNIPPET})
+      .withLocation(Identifier.fromNamespaceAndPath("larp-client", "world"))
+      .build();
+   public static final RenderPipeline X = B("horizontal", "blur_h", false);
+   public static final RenderPipeline y = B("vertical", "blur_v", false);
+   public static final RenderPipeline m = B("copy", "copy", false);
+   public static final RenderPipeline C = B("composite", "bloom", true);
 
-   public static void g() {
-      k++;
+   private static RenderPipeline B(String var0, String var1, boolean var2) {
+      Builder var3 = BindGroupLayout.builder().withUniform("Source", hj.G);
+      if (!var1.equals("copy")) {
+         var3.withUniform("PostParameters", UniformType.UNIFORM_BUFFER);
+      }
+
+      return RenderPipeline.builder(new Snippet[0])
+         .withLocation(Identifier.fromNamespaceAndPath("larp-client", var0))
+         .withVertexShader(Identifier.fromNamespaceAndPath("larp-client", "post/fullscreen"))
+         .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "post/" + var1))
+         .withBindGroupLayout(var3.build())
+         .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
+         .withColorTargetState(var2 ? new ColorTargetState(BlendFunction.ADDITIVE) : ColorTargetState.DEFAULT)
+         .withCull(false)
+         .build();
    }
 
-   public static void r(float var0) {
-      c = Math.clamp(var0, 0.0F, 1.0F);
-      double var1 = ((float)k + c) * 0.05;
-      o = Math.clamp(var1 - L, 0.0, 0.1);
-      L = var1;
-   }
-
-   public static double y() {
-      return L;
-   }
-
-   public static double X() {
-      return o;
-   }
-
-   public static float Z() {
-      return c;
-   }
-
-   public static double t() {
-      return k * 0.05;
-   }
-
-   private ea() {
+   public static void z(RenderPipeline var0) {
+      if (!hj.O(var0, null)) {
+         throw new IllegalStateException(
+            "Pipeline " + var0.getLocation() + " failed; shader=" + hj.q(var0) + "; diagnostics=" + RenderSystem.getDevice().getLastDebugMessages()
+         );
+      }
    }
 }

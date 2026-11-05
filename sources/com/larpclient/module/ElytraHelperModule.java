@@ -1,10 +1,10 @@
 package com.larpclient.module;
 
-import com.larpclient.d8;
-import com.larpclient.hp;
-import com.larpclient.pe;
-import com.larpclient.r4;
-import com.larpclient.yu;
+import com.larpclient._8;
+import com.larpclient._m;
+import com.larpclient.cc;
+import com.larpclient.mt;
+import com.larpclient.te;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.KeyMapping;
@@ -21,203 +21,213 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
 
 public final class ElytraHelperModule extends Module {
-   private final la D = this.addSetting(new la("Firework Key", "Hold this key to use hotbar fireworks while gliding", -1));
-   private final ln Z = this.addSetting(new ln("Auto Start", "Start gliding when falling with an elytra equipped", true));
-   private final ln V = this.addSetting(new ln("Fast Start", "Use a firework on the first automatic takeoff", true));
-   private final ln y = this.addSetting(new ln("Combat Relaunch", "Jump and relaunch when landing with an elytra equipped", true));
-   private final lc d = this.addSetting(new lc("Relaunch Delay", "Delay after the relaunch jump in milliseconds", 175.0, 0.0, 1000.0, 25.0));
-   private final ln K = this.addSetting(new ln("Relaunch Firework", "Use a firework after the relaunch", true));
-   private final ln E = this.addSetting(new ln("Auto Firework", "Use hotbar fireworks when flight speed drops", false));
-   private final lc h = this.addSetting(new lc("Delay", "Minimum time between fireworks in milliseconds", 650.0, 100.0, 2000.0, 25.0));
-   private final ln N = this.addSetting(new ln("Only With Target", "Automatic fireworks require the current Kill Aura target", false));
-   private final ln a = this.addSetting(new ln("Only While Gliding", "Automatic fireworks require active gliding", true));
-   private LocalPlayer H;
-   private ClientLevel w;
-   private KeyMapping Q;
-   private boolean X;
-   private long p;
-   private long l;
-   private static boolean n;
-   private int s;
-   private int C;
-   private boolean O;
-   private boolean J;
-   private boolean u;
-   private boolean F;
+   private final dv D = this.addSetting(new dv("Firework Key", "Hold this key to use hotbar fireworks while gliding", -1));
+   private final dh A = this.addSetting(new dh("Auto Start", "Start gliding when falling with an elytra equipped", true));
+   private final dh Q = this.addSetting(new dh("Fast Start", "Use a firework on the first automatic takeoff", true));
+   private final dh e = this.addSetting(new dh("Combat Relaunch", "Jump and relaunch when landing with an elytra equipped", true));
+   private final d9 P = this.addSetting(new d9("Relaunch Delay", "Delay after the relaunch jump in milliseconds", 175.0, 0.0, 1000.0, 25.0));
+   private final dh M = this.addSetting(new dh("Relaunch Firework", "Use a firework after the relaunch", true));
+   private final dh G = this.addSetting(new dh("Auto Firework", "Use hotbar fireworks when flight speed drops", false));
+   private final d9 N = this.addSetting(new d9("Delay", "Minimum time between fireworks in milliseconds", 650.0, 100.0, 2000.0, 25.0));
+   private final dh x = this.addSetting(new dh("Only With Target", "Automatic fireworks require the current Kill Aura target", false));
+   private final dh C = this.addSetting(new dh("Only While Gliding", "Automatic fireworks require active gliding", true));
+   private LocalPlayer V;
+   private ClientLevel k;
+   private KeyMapping s;
+   private boolean n;
+   private long a;
+   private long r;
+   private static boolean S;
+   private int y;
+   private int i;
+   private boolean t;
+   private boolean E;
+   private boolean q;
+   private boolean K;
 
    public ElytraHelperModule() {
       super("ElytraHelper", "Automate elytra takeoff and fireworks", Category.MOVEMENT, -1);
-      this.V.x(this.Z::getValue);
-      this.d.x(this.y::getValue);
-      this.K.x(this.y::getValue);
-      this.h.x(this.E::getValue);
-      this.N.x(this.E::getValue);
-      this.a.x(this.E::getValue);
+      this.Q.H(this.A::P);
+      this.P.H(this.e::P);
+      this.M.H(this.e::P);
+      this.N.H(this.G::P);
+      this.x.H(this.G::P);
+      this.C.H(this.G::P);
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
    public void onEnable() {
-      this.b();
-      this.H = mc.player;
-      this.w = mc.level;
-      this.p = System.nanoTime();
+      this.t();
+      this.V = mc.player;
+      this.k = mc.level;
+      this.a = System.nanoTime();
    }
 
    @Override
    public void onDisable() {
-      d8.K(this);
-      this.b();
-      this.H = null;
-      this.w = null;
+      _m.w(this);
+      this.t();
+      this.V = null;
+      this.k = null;
    }
 
-   private void b() {
-      this.z();
-      this.s = 0;
-      this.O = (boolean)0;
-      this.J = (boolean)0;
-      this.u = (boolean)0;
+   private void t() {
+      this.k();
+      this.y = 0;
+      this.t = (boolean)0;
+      this.E = (boolean)0;
+      this.q = (boolean)0;
    }
 
-   private void z() {
-      if (this.F && this.Q != null && this.Q.isDown() == this.X) {
-         this.Q.setDown(yu.X(this.Q));
+   private void k() {
+      if (this.K && this.s != null && this.s.isDown() == this.n) {
+         this.s.setDown(te.e(this.s));
       }
 
-      this.F = (boolean)0;
-      this.Q = null;
+      this.K = (boolean)0;
+      this.s = null;
    }
 
-   private boolean o() {
+   private boolean M() {
       return this.isInGame()
-         && mc.player == this.H
-         && mc.level == this.w
-         && yu.r()
-         && d8.a()
+         && mc.player == this.V
+         && mc.level == this.k
+         && te.i()
+         && _m.z()
          && !mc.player.getAbilities().flying
          && !mc.player.isPassenger()
          && !mc.player.isInWater()
          && !mc.player.isInLava()
          && mc.player.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA)
-         && !this.K();
+         && !this.S();
    }
 
-   private boolean K() {
-      AirStuckModule var1 = AirStuckModule.H();
-      ElytraMotionModule var2 = ElytraMotionModule.S();
-      return var1 != null && var1.D() || var2 != null && var2.m();
+   private boolean S() {
+      AirStuckModule var1 = AirStuckModule.X();
+      ElytraMotionModule var2 = ElytraMotionModule.d();
+      return var1 != null && var1.U() || var2 != null && var2.z();
    }
 
    @Override
    public void onTick() {
-      if (!this.o()) {
-         d8.K(this);
-         this.b();
+      if (!this.M()) {
+         _m.w(this);
+         this.t();
       } else {
          long var1 = System.nanoTime();
-         boolean var7 = false;
-         int var6 = this.s;
-         int var10000 = Integer.signum(var6);
-         if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
-            int var9 = this.C;
+         if (this.y != 0) {
+            int var9 = this.i;
             int var8 = mc.player.tickCount;
             if ((-Integer.compare(var8, var9) >>> 31 ^ 1) == 0) {
-               d8.K(this);
-               this.b();
-               r4.g("ElytraHelper", "Takeoff timed out; released jump input");
+               _m.w(this);
+               this.t();
+               mt.U("ElytraHelper", "Takeoff timed out; released jump input");
             } else {
-               byte var5 = 1;
-               int var4 = this.s;
-               var10000 = Integer.compare(var4, var5);
-               if ((var10000 | -var10000) >>> 31 == 0) {
+               byte var11 = 1;
+               int var10 = this.y;
+               int var12 = Integer.compare(var10, var11);
+               if ((var12 | -var12) >>> 31 == 0) {
                   if (mc.player.onGround()) {
-                     this.b();
+                     this.t();
                      return;
                   }
 
-                  d8.A(this, () -> {
-                     if (this.s == 1 && this.o() && !mc.player.onGround()) {
-                        j();
-                        this.E(true);
-                        this.s = 2;
-                        if (this.u) {
-                           k(() -> this.p = System.nanoTime());
+                  _m.F(this, () -> {
+                     if (this.y == 1 && this.M() && !mc.player.onGround()) {
+                        q();
+                        this.c(true);
+                        this.y = 2;
+                        if (this.q) {
+                           E(() -> this.a = System.nanoTime());
                         }
 
-                        r4.g("ElytraHelper", "Takeoff requested; firework={}", this.u);
+                        mt.U("ElytraHelper", "Takeoff requested; firework={}", this.q);
                      }
-                  }, () -> this.s == 1 && this.o() && !mc.player.onGround());
+                  }, () -> this.y == 1 && this.M() && !mc.player.onGround());
                } else {
-                  this.z();
-                  this.s = 0;
-                  this.u = (boolean)0;
+                  this.k();
+                  this.y = 0;
+                  this.q = (boolean)0;
                }
             }
          } else if (mc.player.onGround()) {
-            this.O = (boolean)0;
-            if (this.y.getValue()) {
-               boolean var11 = false;
-               byte var10 = this.J;
-               var10000 = Integer.signum(var10);
-               if ((var10000 | -var10000) >>> 31 == 0) {
-                  mc.player.jumpFromGround();
-                  this.l = var1;
-                  this.J = (boolean)1;
-                  r4.g("ElytraHelper", "Relaunch jump; waiting {} ms", this.d.getValue());
-               }
+            this.t = (boolean)0;
+            if (this.e.P() && !this.E) {
+               mc.player.jumpFromGround();
+               this.r = var1;
+               this.E = (boolean)1;
+               mt.U("ElytraHelper", "Relaunch jump; waiting {} ms", this.P.P());
             }
          } else {
-            if (this.J && !this.y.getValue()) {
-               this.J = (boolean)0;
+            if (this.E && !this.e.P()) {
+               this.E = (boolean)0;
             }
 
-            if (this.J) {
-               if (var1 - this.l >= (long)(this.d.getValue() * 1000000.0)) {
-                  this.K(this.K.getValue());
-                  this.J = (boolean)0;
-                  this.O = (boolean)1;
+            boolean var5 = false;
+            byte var4 = this.E;
+            int var10000 = Integer.signum(var4);
+            if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
+               if (var1 - this.r >= (long)(this.P.P() * 1000000.0)) {
+                  this.v(this.M.P());
+                  this.E = (boolean)0;
+                  this.t = (boolean)1;
                }
-            } else if (this.Z.getValue() && !mc.player.isFallFlying() && mc.player.fallDistance > 0.0) {
-               this.K(this.V.getValue() && !this.O);
-               this.O = (boolean)1;
+            } else if (this.A.P() && !mc.player.isFallFlying() && mc.player.fallDistance > 0.0) {
+               int var13;
+               label69: {
+                  if (this.Q.P()) {
+                     boolean var7 = false;
+                     byte var6 = this.t;
+                     var13 = Integer.signum(var6);
+                     if ((var13 | -var13) >>> 31 == 0) {
+                        var13 = 1;
+                        break label69;
+                     }
+                  }
+
+                  var13 = 0;
+               }
+
+               this.v((boolean)var13);
+               this.t = (boolean)1;
             } else {
-               int var3 = mc.player.isFallFlying() && pe.A(mc.getWindow().handle(), this.D.getValue()) ? 1 : 0;
-               if (var3 != 0 && var1 - this.p >= 180000000L) {
-                  A(this, () -> this.o() && mc.player.isFallFlying() && pe.A(mc.getWindow().handle(), this.D.getValue()), () -> this.p = System.nanoTime());
-               } else if (this.E.getValue() && this.q() && var1 - this.p >= (long)(this.h.getValue() * 1000000.0)) {
-                  A(this, () -> this.o() && this.q(), () -> this.p = System.nanoTime());
+               int var3 = mc.player.isFallFlying() && cc.N(mc.getWindow().handle(), this.D.P()) ? 1 : 0;
+               if (var3 != 0 && var1 - this.a >= 180000000L) {
+                  r(this, () -> this.M() && mc.player.isFallFlying() && cc.N(mc.getWindow().handle(), this.D.P()), () -> this.a = System.nanoTime());
+               } else if (this.G.P() && this.t() && var1 - this.a >= (long)(this.N.P() * 1000000.0)) {
+                  r(this, () -> this.M() && this.t(), () -> this.a = System.nanoTime());
                }
             }
          }
       }
    }
 
-   private void E(boolean var1) {
-      this.Q = mc.options.keyJump;
-      this.Q.setDown(var1);
-      this.X = var1;
-      this.F = (boolean)1;
+   private void c(boolean var1) {
+      this.s = mc.options.keyJump;
+      this.s.setDown(var1);
+      this.n = var1;
+      this.K = (boolean)1;
    }
 
-   private void K(boolean var1) {
-      this.E(false);
-      this.u = var1;
-      this.s = 1;
-      this.C = mc.player.tickCount + 3;
+   private void v(boolean var1) {
+      this.c(false);
+      this.q = var1;
+      this.y = 1;
+      this.i = mc.player.tickCount + 3;
    }
 
-   private boolean q() {
-      if (this.a.getValue() && !mc.player.isFallFlying()) {
+   private boolean t() {
+      if (this.C.P() && !mc.player.isFallFlying()) {
          return false;
       }
 
-      LivingEntity var1 = V();
-      if (this.N.getValue() && var1 == null) {
+      LivingEntity var1 = Y();
+      if (this.x.P() && var1 == null) {
          return false;
       }
 
@@ -225,24 +235,24 @@ public final class ElytraHelperModule extends Module {
       return var1 == null ? var2 <= 22.0 : !(mc.player.distanceTo(var1) < 5.0F) || !(var2 > var1.getDeltaMovement().horizontalDistance() * 20.0 * 0.9);
    }
 
-   static LivingEntity V() {
-      AuraModule var0 = AuraModule.G();
-      LivingEntity var1 = var0 == null ? null : var0.G();
+   static LivingEntity Y() {
+      AuraModule var0 = AuraModule.S();
+      LivingEntity var1 = var0 == null ? null : var0.l();
       return var1 != null && var1.isAlive() && !var1.isRemoved() && var1.level() == getMc().level ? var1 : null;
    }
 
-   static void j() {
+   static void q() {
       getMc().player.startFallFlying();
       getMc().player.connection.send(new ServerboundPlayerCommandPacket(getMc().player, Action.START_FALL_FLYING));
    }
 
-   static void A(Module var0, BooleanSupplier var1, Runnable var2) {
-      d8.A(var0, () -> k(var2), var1);
+   static void r(Module var0, BooleanSupplier var1, Runnable var2) {
+      _m.F(var0, () -> E(var2), var1);
    }
 
-   static void k(Runnable var0) {
+   static void E(Runnable var0) {
       Minecraft var1 = getMc();
-      if (d8.a() && !var1.player.isUsingItem()) {
+      if (_m.z() && !var1.player.isUsingItem()) {
          Inventory var2 = var1.player.getInventory();
          int var3 = -1;
 
@@ -254,20 +264,20 @@ public final class ElytraHelperModule extends Module {
          }
 
          if (var3 < 0) {
-            if (!n) {
-               r4.g("ElytraHelper", "Firework unavailable in hotbar");
+            if (!S) {
+               mt.U("ElytraHelper", "Firework unavailable in hotbar");
             }
 
-            n = (boolean)1;
+            S = (boolean)1;
          } else {
-            n = (boolean)0;
+            S = (boolean)0;
             int var9 = var2.getSelectedSlot();
             var2.setSelectedSlot(var3);
 
             try {
                InteractionResult var5 = var1.gameMode.useItem(var1.player, InteractionHand.MAIN_HAND);
                if (var5.consumesAction()) {
-                  hp.Q(var1.player, InteractionHand.MAIN_HAND);
+                  _8.G(var1.player, InteractionHand.MAIN_HAND);
                   var0.run();
                }
             } finally {
@@ -279,6 +289,6 @@ public final class ElytraHelperModule extends Module {
 
    @Override
    public String getStatus() {
-      return this.s != 0 ? "Takeoff" : (this.J ? "Relaunch" : "");
+      return this.y != 0 ? "Takeoff" : (this.E ? "Relaunch" : "");
    }
 }

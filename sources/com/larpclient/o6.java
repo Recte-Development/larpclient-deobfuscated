@@ -1,34 +1,65 @@
 package com.larpclient;
 
-public record o6(int width, int height, int dockX, int dockY, int cell, int columns, int cardY, int cardWidth, int clockY, float clockScale) {
-   public static o6 calculate(int var0, int var1) {
-      int var2 = var0 < 280 ? 26 : 30;
-      int var3 = Math.min(7, Math.max(1, (var0 - 24) / var2));
-      int var4 = (7 + var3 - 1) / var3;
-      int var5 = var1 - 22 - var4 * var2;
-      int var6 = Math.min(170, Math.max(76, (var0 - 32) / 2));
-      int var7 = var0 >= var3 * var2 + 2 * var6 + 48 ? 1 : 0;
-      int var8 = var7 != 0 ? var5 : var5 - 42;
-      int var9 = Math.max(24, Math.min((int)(var1 * 0.35), var8 - 80));
-      float var10 = (float)Math.clamp(Math.min(var0 / 110.0, var1 / 68.0), 1.7, 4.0);
-      return new o6(var0, var1, (var0 - var3 * var2) / 2, var5, var2, var3, var8, var6, var9, var10);
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+
+public final class o6 {
+   private o6() {
    }
 
-   public o6.b dock(int var1) {
-      return new o6.b(this.dockX + var1 % this.columns * this.cell, this.dockY + var1 / this.columns * this.cell, this.cell, this.cell);
+   public static void I(HumanoidModel<?> var0, float[] var1, float var2) {
+      N(var0.head, var1, uy.q.S, var2);
+      N(var0.body, var1, uy.q.W, var2);
+      N(var0.rightArm, var1, uy.q.x, var2);
+      N(var0.leftArm, var1, uy.q.J, var2);
+      N(var0.rightLeg, var1, uy.q.G, var2);
+      N(var0.leftLeg, var1, uy.q.C, var2);
    }
 
-   public o6.b backgroundCard() {
-      return new o6.b(12, this.cardY, this.cardWidth, 34);
-   }
+   public static float[] k(float[] var0, float var1) {
+      uy.q[] var2 = new uy.q[]{uy.q.x, uy.q.J, uy.q.G, uy.q.C};
+      float[] var3 = null;
 
-   public o6.b identityCard() {
-      return new o6.b(this.width - 12 - this.cardWidth, this.cardY, this.cardWidth, 34);
-   }
+      for (int var4 = 0; var4 < var2.length; var4++) {
+         float var5 = var0[var2[var4].ordinal() * 10 + 6];
+         if (!Float.isNaN(var5)) {
+            if (var3 == null) {
+               var3 = new float[4];
+            }
 
-   public record b(int x, int y, int width, int height) {
-      public boolean intersects(o6.b var1) {
-         return this.x < var1.x + var1.width && this.x + this.width > var1.x && this.y < var1.y + var1.height && this.y + this.height > var1.y;
+            var3[var4] = var5 * var1;
+         }
       }
+
+      return var3;
+   }
+
+   public static void M(PoseStack var0, float[] var1, float var2) {
+      int var3 = uy.q.f.ordinal() * 10;
+      var0.translate(N(var1[var3], var2), N(var1[var3 + 1], var2) + 0.7F, N(var1[var3 + 2], var2));
+      u.v(var0, Axis.ZP.rotation(N(var1[var3 + 5], var2)));
+      u.v(var0, Axis.YP.rotation(N(var1[var3 + 4], var2)));
+      u.v(var0, Axis.XP.rotation(N(var1[var3 + 3], var2)));
+      var0.translate(0.0F, -0.7F, 0.0F);
+   }
+
+   private static void N(ModelPart var0, float[] var1, uy.q var2, float var3) {
+      int var4 = var2.ordinal() * 10;
+      var0.x = K(var0.x, var1[var4], var3);
+      var0.y = K(var0.y, var1[var4 + 1], var3);
+      var0.z = K(var0.z, var1[var4 + 2], var3);
+      var0.xRot = K(var0.xRot, var1[var4 + 3], var3);
+      var0.yRot = K(var0.yRot, var1[var4 + 4], var3);
+      var0.zRot = K(var0.zRot, var1[var4 + 5], var3);
+   }
+
+   static float K(float var0, float var1, float var2) {
+      return Float.isNaN(var1) ? var0 : var0 + (var1 - var0) * var2;
+   }
+
+   private static float N(float var0, float var1) {
+      return Float.isNaN(var0) ? 0.0F : var0 * var1;
    }
 }

@@ -1,25 +1,25 @@
 package com.larpclient.module;
 
-import com.larpclient.d8;
-import com.larpclient.j5;
-import com.larpclient.o_;
-import com.larpclient.r4;
+import com.larpclient._m;
+import com.larpclient.mt;
+import com.larpclient.ti;
+import com.larpclient.w7;
 import java.util.Set;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 public final class ShieldBreakerModule extends Module {
-   private static ShieldBreakerModule X;
-   private final ln Y = this.addSetting(new ln("Swap Back", "Return to your previous hotbar slot on the tick after the hit", true));
-   private final o_ W = new o_(this);
-   private String y = "Ready";
-   private Player I;
-   private int S;
+   private static ShieldBreakerModule Q;
+   private final dh N = this.addSetting(new dh("Swap Back", "Return to your previous hotbar slot on the tick after the hit", true));
+   private final ti D = new ti(this);
+   private String I = "Ready";
+   private Player S;
+   private int a;
 
    public ShieldBreakerModule() {
       super("Shield Breaker", "Axe hit swap: your hits on a raised shield go out with your best axe, then your slot returns", Category.COMBAT, -1);
-      X = this;
+      Q = this;
    }
 
    @Override
@@ -27,32 +27,32 @@ public final class ShieldBreakerModule extends Module {
       return "Axe Shield Breaker";
    }
 
-   public static void H(LocalPlayer var0, Entity var1) {
-      if (X != null && X.isEnabled()) {
-         ShieldBreakerModule var2 = X;
-         if (var2 != null && var2.isRuntimeActive() && !d8.E() && var1 instanceof Player var3) {
-            if (var0 == getMc().player && !var2.W.K() && j5.X(var3, var0) && !j5.F(var3)) {
-               MaceModule var4 = MaceModule.Q();
-               if (var4 != null && var4.Y(var0, var3)) {
-                  var2.y = "Stun Slam by Auto Mace";
+   public static void X(LocalPlayer var0, Entity var1) {
+      if (Q != null && Q.isEnabled()) {
+         ShieldBreakerModule var2 = Q;
+         if (var2 != null && var2.isRuntimeActive() && !_m.w() && var1 instanceof Player var3) {
+            if (var0 == getMc().player && !var2.D.k() && w7.o(var3, var0) && !w7.p(var3)) {
+               MaceModule var4 = MaceModule.c();
+               if (var4 != null && var4.D(var0, var3)) {
+                  var2.I = "Stun Slam by Auto Mace";
                } else {
-                  int var5 = j5.X(var0);
+                  int var5 = w7.W(var0);
                   if (var5 < 0) {
-                     var2.y = "No axe in hotbar";
-                  } else if (!var2.W.s(var0, var5)) {
-                     var2.y = "Hotbar busy";
+                     var2.I = "No axe in hotbar";
+                  } else if (!var2.D.e(var0, var5)) {
+                     var2.I = "Hotbar busy";
                   } else {
-                     j5.h(var3);
-                     var2.I = var3;
-                     var2.S = var3.tickCount;
-                     var2.y = "Shield break hit";
-                     r4.g(
+                     w7.l(var3);
+                     var2.S = var3;
+                     var2.a = var3.tickCount;
+                     var2.I = "Shield break hit";
+                     mt.U(
                         "ShieldBreaker",
                         "Hit {} through a raised shield with hotbar slot {}, shield used {} ticks, ping {} ticks",
                         var3.getId(),
                         var5 + 1,
                         var3.getTicksUsingItem(),
-                        j5.H(var0)
+                        w7.G(var0)
                      );
                   }
                }
@@ -62,68 +62,68 @@ public final class ShieldBreakerModule extends Module {
    }
 
    @Override
-   public Module.b getTickPhase() {
-      return Module.b.w;
+   public Module.f getTickPhase() {
+      return Module.f.Z;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a, ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z, dm.j);
    }
 
    @Override
    public String getStatus() {
-      return this.isEnabled() ? this.y : "";
+      return this.isEnabled() ? this.I : "";
    }
 
    @Override
    public void onEnable() {
-      this.y = "Ready";
-      this.I = null;
-      r4.V("ShieldBreaker", "Enabled; swap back {}", this.Y.getValue());
+      this.I = "Ready";
+      this.S = null;
+      mt.K("ShieldBreaker", "Enabled; swap back {}", this.N.P());
    }
 
    @Override
    public void onDisable() {
-      if (this.W.K()) {
-         this.W.m(getMc(), this.Y.getValue());
+      if (this.D.k()) {
+         this.D.W(getMc(), this.N.P());
       }
 
-      this.I = null;
+      this.S = null;
    }
 
    @Override
    public void onTick() {
-      this.q();
-      int var10000 = this.W.K();
+      this.R();
+      int var10000 = this.D.k();
       boolean var2 = false;
       byte var1 = (byte)var10000;
       var10000 = Integer.signum(var1);
       if ((var10000 | -var10000) >>> 31 != 0) {
-         this.W.C(mc, this.Y.getValue());
-         int var6 = this.W.K();
+         this.D.r(mc, this.N.P());
+         int var6 = this.D.k();
          boolean var4 = false;
          byte var3 = (byte)var6;
          var6 = Integer.signum(var3);
          if ((var6 | -var6) >>> 31 == 0) {
-            this.y = "Ready";
+            this.I = "Ready";
          }
       }
    }
 
-   private void q() {
-      Player var1 = this.I;
+   private void R() {
+      Player var1 = this.S;
       if (var1 != null) {
-         int var2 = var1.tickCount - this.S;
+         int var2 = var1.tickCount - this.a;
          if (var1.isRemoved() || var1.level() != mc.level) {
-            this.I = null;
+            this.S = null;
          } else if (!var1.isUsingItem()) {
-            this.I = null;
-            r4.g("ShieldBreaker", "Shield of {} went down {} ticks after the axe hit", var1.getId(), var2);
-         } else if (!j5.F(var1)) {
-            this.I = null;
-            this.y = "Retrying";
-            r4.V("ShieldBreaker", "Shield of {} still up {} ticks after the axe hit; the next hit retries", var1.getId(), var2);
+            this.S = null;
+            mt.U("ShieldBreaker", "Shield of {} went down {} ticks after the axe hit", var1.getId(), var2);
+         } else if (!w7.p(var1)) {
+            this.S = null;
+            this.I = "Retrying";
+            mt.K("ShieldBreaker", "Shield of {} still up {} ticks after the axe hit; the next hit retries", var1.getId(), var2);
          }
       }
    }

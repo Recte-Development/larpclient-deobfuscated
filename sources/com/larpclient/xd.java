@@ -1,27 +1,43 @@
 package com.larpclient;
 
-public final class xd {
-   public static final String s = "Larp Client";
-   public static final int F = 512;
-   public static final int W = 96;
-   public static final int j = 256;
-   public static final int u = ("Larp Client".length() + 1) * 96;
-   public static final int g = u + 256;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 
-   private xd() {
+final class xd<T> {
+   private final Executor v;
+   private final BooleanSupplier p;
+   private CompletableFuture<T> I;
+
+   xd(Executor var1, BooleanSupplier var2) {
+      this.v = var1;
+      this.p = var2;
    }
 
-   public static xd.s X(int var0, int var1) {
-      int var2 = Math.max(12, Math.min(Math.min(104, var1 / 5), var0 / 3));
-      int var3 = Math.max(1, Math.min(256, var0 - 32));
-      int var4 = Math.max(1, var3 * 96 / 512);
-      int var5 = Math.max(8, var2 / 6);
-      int var6 = (var1 - var2 - var5 - var4) / 2;
-      int var7 = Math.min(Math.min(var0, var1), var2 * 2);
-      o6.b var8 = new o6.b((var0 - var2) / 2, var6, var2, var2);
-      return new xd.s(var8, new o6.b((var0 - var3) / 2, var6 + var2 + var5, var3, var4), new o6.b((var0 - var7) / 2, var6 + (var2 - var7) / 2, var7, var7));
+   boolean F(CompletableFuture<T> var1, BiConsumer<T, Throwable> var2) {
+      if (this.I != null) {
+         var1.cancel(true);
+         return false;
+      } else {
+         this.I = var1;
+         var1.whenComplete((var3, var4) -> this.v.execute(() -> {
+            if (this.I == var1) {
+               this.I = null;
+               if (this.p.getAsBoolean()) {
+                  var2.accept(var3, var4);
+               }
+            }
+         }));
+         return true;
+      }
    }
 
-   public record s(o6.b logo, o6.b title, o6.b glow) {
+   void k() {
+      CompletableFuture var1 = this.I;
+      this.I = null;
+      if (var1 != null) {
+         var1.cancel(true);
+      }
    }
 }

@@ -1,61 +1,96 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import org.joml.Matrix4fc;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.api.textures.AddressMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 
-final class ho implements VertexConsumer {
-   VertexConsumer e;
-   int x;
+public final class ho extends AbstractTexture {
+   public static final int K = 4096;
+   private final int O;
+   private final int n;
 
-   public VertexConsumer addVertex(float var1, float var2, float var3) {
-      this.e.addVertex(var1, var2, var3);
-      return this;
+   public ho(String var1, List<NativeImage> var2) {
+      if (var2.isEmpty()) {
+         throw new IllegalArgumentException("No wallpaper levels");
+      }
+
+      NativeImage var3 = (NativeImage)var2.getFirst();
+      this.O = var3.getWidth();
+      this.n = var3.getHeight();
+      GpuDevice var4 = RenderSystem.getDevice();
+      this.texture = var4.createTexture(() -> var1, 5, GpuFormat.RGBA8_UNORM, this.O, this.n, 1, var2.size());
+      this.textureView = var4.createTextureView(this.texture);
+      CommandEncoder var5 = var4.createCommandEncoder();
+
+      for (int var6 = 0; var6 < var2.size(); var6++) {
+         var5.writeToTexture(this.texture, (NativeImage)var2.get(var6), var6, 0, 0, 0);
+      }
+
+      this.sampler = RenderSystem.getSamplerCache()
+         .getSampler(AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE, FilterMode.LINEAR, FilterMode.LINEAR, true);
    }
 
-   public VertexConsumer addVertex(Matrix4fc var1, float var2, float var3, float var4) {
-      return this.addVertex(
-         var1.m00() * var2 + var1.m10() * var3 + var1.m20() * var4 + var1.m30(),
-         var1.m01() * var2 + var1.m11() * var3 + var1.m21() * var4 + var1.m31(),
-         var1.m02() * var2 + var1.m12() * var3 + var1.m22() * var4 + var1.m32()
-      );
+   public int b() {
+      return this.O;
    }
 
-   public VertexConsumer setColor(int var1, int var2, int var3, int var4) {
-      this.e.setColor(var1 * (this.x >>> 16 & 0xFF) / 255, var2 * (this.x >>> 8 & 0xFF) / 255, var3 * (this.x & 0xFF) / 255, var4 * (this.x >>> 24) / 255);
-      return this;
+   public int r() {
+      return this.n;
    }
 
-   public VertexConsumer setColor(int var1) {
-      return this.setColor(var1 >>> 16 & 0xFF, var1 >>> 8 & 0xFF, var1 & 0xFF, var1 >>> 24);
+   public static List<NativeImage> j(NativeImage var0) {
+      ArrayList var1 = new ArrayList();
+      NativeImage var2 = var0;
+
+      try {
+         int var3 = Math.max(var0.getWidth(), var0.getHeight());
+         if (var3 > 4096) {
+            double var4 = 4096.0 / var3;
+            int var6 = Math.max(1, (int)Math.round(var0.getWidth() * var4));
+            int var7 = Math.max(1, (int)Math.round(var0.getHeight() * var4));
+            NativeImage var8 = new NativeImage(var6, var7, false);
+            var1.add(var8);
+            var0.resizeSubRectTo(0, 0, var0.getWidth(), var0.getHeight(), var8);
+            var0.close();
+         } else {
+            var1.add(var0);
+         }
+
+         var2 = null;
+         NativeImage var10 = (NativeImage)var1.getFirst();
+         int var5 = a(var10.getWidth(), var10.getHeight());
+
+         for (int var11 = 1; var11 < var5; var11++) {
+            var1.add(u4.E((NativeImage)var1.getLast()));
+         }
+
+         return var1;
+      } catch (RuntimeException var9) {
+         if (var2 != null) {
+            var2.close();
+         }
+
+         G(var1);
+         throw var9;
+      }
    }
 
-   public VertexConsumer setUv(float var1, float var2) {
-      this.e.setUv(var1, var2);
-      return this;
+   public static int a(int var0, int var1) {
+      return 32 - Integer.numberOfLeadingZeros(Math.max(1, Math.min(var0, var1)));
    }
 
-   public VertexConsumer setUv1(int var1, int var2) {
-      this.e.setUv1(var1, var2);
-      return this;
-   }
+   public static void G(List<NativeImage> var0) {
+      for (NativeImage var2 : var0) {
+         var2.close();
+      }
 
-   public VertexConsumer setUv3(float var1, float var2) {
-      this.e.setUv3(var1, var2);
-      return this;
-   }
-
-   public VertexConsumer setUv2(int var1, int var2) {
-      this.e.setUv2(var1, var2);
-      return this;
-   }
-
-   public VertexConsumer setNormal(float var1, float var2, float var3) {
-      this.e.setNormal(var1, var2, var3);
-      return this;
-   }
-
-   public VertexConsumer setLineWidth(float var1) {
-      this.e.setLineWidth(var1);
-      return this;
+      var0.clear();
    }
 }

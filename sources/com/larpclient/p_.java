@@ -1,277 +1,361 @@
 package com.larpclient;
 
-import com.larpclient.module.GUIAnimationModule;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.larpclient.module.Module;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
-public final class p_ extends oq {
-   public String V = "";
-   private final String f;
-   private final int H;
-   private boolean w;
-   private final u7 R = new u7(0.0);
-   private final lt a = new lt();
-   private final Consumer<String> P;
-   private Runnable p;
-   private Function<String, List<String>> X;
-   private List<String> J = List.of();
-   private String T;
-   private int C;
-   private boolean D;
-   private boolean m;
-   public String S = "";
-   public int U = -1;
+public final class p_ {
+   private static final Pattern I = Pattern.compile(
+      "^(?:license[_ -]?key|(?:access|refresh|install|session)[_ -]?token|token|password|client[_ -]?secret|authorization|auth(?:\\.json)?|hwid)$", 2
+   );
+   private static final Pattern J = Pattern.compile("-----BEGIN .*PRIVATE KEY-----|\\bBearer\\s+\\S+", 2);
 
-   public p_ h() {
-      this.m = (boolean)1;
-      return this;
+   public static String g(String var0) {
+      if (var0 != null && var0.matches("[A-Za-z0-9 _-]{1,32}") && !var0.isBlank()) {
+         return var0;
+      } else {
+         throw new IllegalArgumentException("Profile name must be 1–32 letters, digits, spaces, _ or -");
+      }
    }
 
-   public String o() {
-      return this.m ? "*".repeat(this.V.codePointCount(0, this.V.length())) : this.V;
-   }
-
-   public p_ Y(Function<String, List<String>> var1) {
-      this.X = var1;
-      this.T = null;
-      return this;
-   }
-
-   public String A() {
-      if (!this.m && this.X != null && !this.V.isBlank()) {
-         if (!this.V.equals(this.T)) {
-            this.T = this.V;
-            this.C = 0;
-            this.D = (boolean)0;
-            this.J = this.X.apply(this.V).stream().filter(var1 -> var1.length() <= this.H).filter(var1 -> !var1.equalsIgnoreCase(this.V)).limit(6L).toList();
+   public static JsonObject Z(String var0, JsonObject var1, List<Module> var2) {
+      var1 = c(var1);
+      JsonObject var3 = new JsonObject();
+      var3.addProperty("name", g(var0));
+      var3.addProperty("description", "");
+      var3.add("tags", new JsonArray());
+      var3.addProperty("minecraftVersion", zq.C);
+      var3.addProperty("larpVersion", zq.x);
+      var3.add("schemaVersion", var1.get("schema").deepCopy());
+      JsonObject var4 = var1.deepCopy();
+      if (var4.has("ui")) {
+         JsonObject var5 = var4.getAsJsonObject("ui");
+         if (var5.has("category") && Set.of("MISC", "DONUT_RIGS").contains(var5.get("category").getAsString())) {
+            var5.addProperty("category", "PLAYER");
          }
 
-         return !this.D && !this.J.isEmpty() ? this.J.get(this.C) : "";
-      } else {
-         return "";
-      }
-   }
-
-   public boolean q() {
-      if (!this.A) {
-         return false;
-      }
-
-      String var1 = this.A();
-      if (var1.isEmpty()) {
-         return false;
-      }
-
-      this.V = var1;
-      this.w = (boolean)0;
-      this.k();
-      this.D = (boolean)1;
-      this.T = this.V;
-      return true;
-   }
-
-   private void k() {
-      this.T = null;
-      this.D = (boolean)0;
-      this.P.accept(this.V);
-   }
-
-   private boolean f(int var1) {
-      if (var1 == 262) {
-         return this.q();
-      }
-
-      if ((var1 == 264 || var1 == 265 || var1 == 256) && !this.A().isEmpty()) {
-         if (var1 == 256) {
-            this.D = (boolean)1;
-         } else {
-            this.C = Math.floorMod(this.C + (var1 == 265 ? -1 : 1), this.J.size());
+         if (var5.has("category") && Set.of("BASE_FINDING", "COSMETICS").contains(var5.get("category").getAsString())) {
+            var5.addProperty("category", "RENDER");
          }
-
-         return true;
-      } else {
-         return false;
-      }
-   }
-
-   public void d() {
-      this.w = (boolean)1;
-   }
-
-   public p_ T(Runnable var1) {
-      this.p = var1;
-      return this;
-   }
-
-   public p_(String var1, Consumer<String> var2) {
-      this(var1, var2, 64);
-   }
-
-   public p_(String var1, Consumer<String> var2, int var3) {
-      this.H = var3;
-      this.f = var1;
-      this.P = var2;
-   }
-
-   @Override
-   public void render(GuiGraphicsExtractor var1, int var2, int var3) {
-      double var4 = this.R.y(this.A ? 1.0 : 0.0, 180);
-      if (this.U < 0) {
-         ll.j(var1, this.B, this.L, this.v, this.O, var4);
-      } else {
-         ll.P(var1, this.B, this.L, this.v, this.O, this.U, var4);
       }
 
-      GUIAnimationModule var6 = GUIAnimationModule.s();
-      String var7 = this.o();
-      this.a.p(var7, System.nanoTime(), !this.m && this.A && var6 != null && var6.n());
-      int var8 = this.L + (this.O - 9) / 2;
-      int var9 = this.S.isEmpty() ? 6 : 26;
-      if (!this.S.isEmpty()) {
-         ou.u(var1, ou.e(this.S), this.B + 9, this.L + (this.O - 12) / 2, 12, oh.j(rv.r, rv.P, var4 * 0.6));
-      }
-
-      var1.enableScissor(this.B + var9, this.L + 2, this.B + this.v - 6, this.L + this.O - 2);
-
-      try {
-         if (this.V.isEmpty()) {
-            j_.E(var1, j_.S(this.f, this.v - var9 - 6), this.B + var9, var8, rv.r);
-         } else {
-            int var10 = j_.a(var7);
-            int var11 = this.B + var9 - Math.max(0, var10 + (this.A ? j_.a("_") : 0) - (this.v - var9 - 6));
-            if (!this.a.n()) {
-               j_.E(var1, var7, var11, var8, rv.P);
-            } else {
-               int var12 = 0;
-
-               while (var12 < var7.length()) {
-                  int var13 = var7.codePointAt(var12);
-                  String var14 = new String(Character.toChars(var13));
-                  int var15 = var11 + j_.a(var7.substring(0, var12));
-                  if (var15 + j_.a(var14) >= this.B + var9 && var15 < this.B + this.v - 6) {
-                     var1.pose().pushMatrix();
-                     var1.pose().translate(0.0F, (float)this.a.O(var12));
-
-                     try {
-                        j_.E(var1, var14, var15, var8, this.a.X(rv.P, var12));
-                     } finally {
-                        var1.pose().popMatrix();
-                     }
-                  }
-
-                  var12 += Character.charCount(var13);
-               }
+      if (var4.has("ui") && var4.getAsJsonObject("ui").has("clickGui")) {
+         JsonObject var8 = var4.getAsJsonObject("ui").getAsJsonObject("clickGui");
+         if (var8.has("page")) {
+            String var6 = var8.get("page").getAsString();
+            if (Set.of("Settings", "Appearance", "Account", "HUD Editor", "Local", "Cloud", "Import", "Marketplace", "Experimental").contains(var6)) {
+               var6 = cx.D(var6);
             }
 
-            if (this.A) {
-               String var24 = this.A();
-               if (!var24.isEmpty()) {
-                  if (var24.regionMatches(true, 0, this.V, 0, this.V.length())) {
-                     j_.E(var1, var24.substring(this.V.length()), var11 + var10, var8, oh.S(rv.G0, 0.65));
+            var8.addProperty("page", var6.equals("Settings") ? "Appearance" : var6);
+         }
+      }
+
+      var3.add("config", var4);
+      return var3;
+   }
+
+   public static p_.x g(JsonObject var0, List<Module> var1) {
+      String var2 = g(Q(var0, "name", 32));
+      String var3 = Q(var0, "larpVersion", 40);
+      String var4 = Q(var0, "minecraftVersion", 40);
+
+      for (String var6 : List.of(var3, var4)) {
+         if (!var6.matches("[A-Za-z0-9][A-Za-z0-9._+-]{0,39}")) {
+            throw new IllegalArgumentException("Invalid source version label");
+         }
+      }
+
+      if (var0.has("schemaVersion")) {
+         w(var0.get("schemaVersion"), 1.0, 2.147483647E9, true);
+      }
+
+      JsonObject var9 = c(S(var0.get("config")));
+      if (!var3.equals(zq.x) || !var4.equals(zq.C)) {
+         mt.K("Config", "Accepted profile from Larp {} / Minecraft {} for Larp {} / Minecraft {}; unavailable settings stay saved", var3, var4, zq.x, zq.C);
+      }
+
+      int var10 = 0;
+
+      for (Entry var8 : var9.getAsJsonObject("modules").entrySet()) {
+         if (((JsonElement)var8.getValue()).getAsJsonObject().has("enabled") && ((JsonElement)var8.getValue()).getAsJsonObject().get("enabled").getAsBoolean()) {
+            var10++;
+         }
+      }
+
+      return new p_.x(var2, var3, var4, var9.getAsJsonObject("modules").size(), var10, var9.deepCopy());
+   }
+
+   public static void Q(JsonObject var0, List<Module> var1) {
+      c(var0);
+   }
+
+   public static JsonObject c(JsonObject var0) {
+      return e(var0, true);
+   }
+
+   public static JsonObject K(JsonObject var0) {
+      return e(var0, false);
+   }
+
+   private static JsonObject e(JsonObject var0, boolean var1) {
+      O(var0, var1);
+      JsonObject var2 = var0.deepCopy();
+      if (!var2.has("modules") && !var2.has("schema")) {
+         JsonObject var3 = var2;
+         var2 = new JsonObject();
+         var2.add("modules", var3);
+      }
+
+      v(var2, "schema", "ui", "modules");
+      if (!var2.has("schema")) {
+         var2.addProperty("schema", 2);
+      }
+
+      if (!var2.has("ui")) {
+         var2.add("ui", new JsonObject());
+      }
+
+      w(var2.get("schema"), 1.0, 2.147483647E9, true);
+      JsonObject var8 = S(var2.get("modules"));
+      if (var8.size() > 200) {
+         throw new IllegalArgumentException("Too many modules");
+      }
+
+      for (Entry var5 : var8.entrySet()) {
+         JsonObject var6 = S((JsonElement)var5.getValue());
+         v(var6, "enabled", "keybind", "settings", "legacySettings");
+         he.Z(var6);
+         if (var6.has("enabled")) {
+            v(var6.get("enabled"));
+         }
+
+         if (var6.has("keybind")) {
+            w(var6.get("keybind"), -1.0, 348.0, true);
+         }
+
+         if (var6.has("settings") && S(var6.get("settings")).size() > 200) {
+            throw new IllegalArgumentException("Too many settings");
+         }
+      }
+
+      k(S(var2.get("ui")));
+      var2 = he.q(var2);
+      O(var2, var1);
+      return var2;
+   }
+
+   public static void i(JsonElement var0) {
+      O(var0, true);
+   }
+
+   public static void O(JsonElement var0, boolean var1) {
+      F(var0, 0, new int[1], var1);
+      if (var0.toString().getBytes(StandardCharsets.UTF_8).length > 131072) {
+         throw new IllegalArgumentException("Profile exceeds 128 KiB");
+      }
+   }
+
+   private static void F(JsonElement var0, int var1, int[] var2, boolean var3) {
+      if (++var2[0] > 20000 || var1 > 10) {
+         throw new IllegalArgumentException("Profile data is too complex");
+      }
+
+      if (var0 != null && !var0.isJsonNull()) {
+         if (var0.isJsonObject()) {
+            if (var0.getAsJsonObject().size() > 512) {
+               throw new IllegalArgumentException("Too many profile fields");
+            }
+
+            for (Entry var9 : var0.getAsJsonObject().entrySet()) {
+               String var6 = (String)var9.getKey();
+               if (var6.isEmpty() || var6.length() > 128 || var6.chars().anyMatch(Character::isISOControl)) {
+                  throw new IllegalArgumentException("Invalid profile field name");
+               }
+
+               if (Set.of("__proto__", "constructor", "prototype").contains(var6) || I.matcher(var6).matches()) {
+                  throw new IllegalArgumentException("Remove unsafe or authentication fields before sharing");
+               }
+
+               F((JsonElement)var9.getValue(), var1 + 1, var2, var3);
+            }
+         } else if (var0.isJsonArray()) {
+            if (var0.getAsJsonArray().size() > 512) {
+               throw new IllegalArgumentException("Too many profile entries");
+            }
+
+            for (JsonElement var5 : var0.getAsJsonArray()) {
+               F(var5, var1 + 1, var2, var3);
+            }
+         } else if (var0.getAsJsonPrimitive().isNumber()) {
+            w(var0, -1.0E15, 1.0E15, false);
+         } else if (var0.getAsJsonPrimitive().isString()) {
+            String var7 = var0.getAsString();
+            if (var7.length() > 8192 || var7.chars().anyMatch(var0x -> Character.isISOControl(var0x) && var0x != 9 && var0x != 10 && var0x != 13)) {
+               throw new IllegalArgumentException("Invalid profile text");
+            }
+
+            if (var3 && J.matcher(var7).find()) {
+               throw new IllegalArgumentException("Text that looks like a credential, such as \"Bearer ...\", cannot be shared. Change it, then share again.");
+            }
+         }
+      }
+   }
+
+   private static void k(JsonObject var0) {
+      for (String var2 : List.of("moduleFavorites", "favorites", "moduleFavoritesOpen")) {
+         if (var0.has(var2)) {
+            throw new IllegalArgumentException("Local preferences are not profile settings");
+         }
+      }
+
+      for (Entry var12 : var0.entrySet()) {
+         JsonElement var3 = (JsonElement)var12.getValue();
+         switch ((String)var12.getKey()) {
+            case "category":
+               Q(var0, (String)var12.getKey(), 128);
+               break;
+            case "accent":
+            case "secondary":
+               w(var3, -2.1474836E9F, 2.147483647E9, true);
+               break;
+            case "bloom":
+            case "blur":
+               Q(var0, (String)var12.getKey(), 128);
+               break;
+            case "bloomIntensity":
+               w(var3, 0.0, 2.0, false);
+               break;
+            case "bloomRadius":
+               w(var3, 0.5, 3.0, false);
+               break;
+            case "hudEditor":
+               JsonObject var14 = S(var3);
+
+               for (String var19 : List.of("x", "y")) {
+                  if (var14.has(var19)) {
+                     w(var14.get(var19), 0.0, 1.0, false);
+                  }
+               }
+
+               for (String var20 : List.of("collapsed", "snapping", "grid")) {
+                  if (var14.has(var20)) {
+                     v(var14.get(var20));
+                  }
+               }
+               break;
+            case "clickGui":
+               JsonObject var13 = S(var3);
+               if (var13.has("page")) {
+                  Q(var13, "page", 128);
+               }
+
+               if (var13.has("module")) {
+                  Q(var13, "module", 128);
+               }
+
+               if (var13.has("query")) {
+                  Q(var13, "query", 256);
+               }
+
+               for (String var18 : List.of("moduleScroll", "settingScroll")) {
+                  if (var13.has(var18)) {
+                     w(var13.get(var18), 0.0, 100000.0, true);
+                  }
+               }
+               break;
+            case "hud":
+            case "hudStyles":
+               JsonObject var6 = S(var3);
+               if (var6.size() > 100) {
+                  throw new IllegalArgumentException("Too many HUD entries");
+               }
+
+               for (Entry var8 : var6.entrySet()) {
+                  if (((String)var12.getKey()).equals("hud")) {
+                     if (!((JsonElement)var8.getValue()).isJsonArray() || ((JsonElement)var8.getValue()).getAsJsonArray().size() != 2) {
+                        throw new IllegalArgumentException("Invalid HUD position");
+                     }
+
+                     for (JsonElement var10 : ((JsonElement)var8.getValue()).getAsJsonArray()) {
+                        w(var10, 0.0, 1.0, false);
+                     }
                   } else {
-                     String var25 = "Tab: " + var24;
-                     int var26 = j_.o(var25, j_.m.U);
-                     if (var10 + var26 + 18 <= this.v) {
-                        j_.L(var1, var25, this.B + this.v - var26 - 6, var8, rv.G0, j_.m.U);
+                     JsonObject var9 = S((JsonElement)var8.getValue());
+                     if (var9.has("scale")) {
+                        w(var9.get("scale"), 0.5, 2.5, false);
+                     }
+
+                     if (var9.has("hidden")) {
+                        v(var9.get("hidden"));
                      }
                   }
                }
-
-               fr.k(var1, var11 + var10, var8, 1, 9, rv.P);
-            }
          }
-      } finally {
-         var1.disableScissor();
       }
    }
 
-   @Override
-   public boolean click(double var1, double var3, int var5) {
-      this.w = (boolean)0;
-      this.A = (boolean)(var5 == 0 && this.contains(var1, var3) ? 1 : 0);
-      return this.A;
-   }
-
-   @Override
-   public boolean character(int var1) {
-      if (this.A && !Character.isISOControl(var1)) {
-         if (this.w) {
-            this.V = "";
-            this.w = (boolean)0;
-         }
-
-         if (this.V.length() + Character.charCount(var1) > this.H) {
-            return false;
-         }
-
-         this.V = this.V + new String(Character.toChars(var1));
-         this.k();
-         hx.w(hx.t.i);
-         return true;
+   public static JsonObject S(JsonElement var0) {
+      if (var0 != null && var0.isJsonObject()) {
+         return var0.getAsJsonObject();
       } else {
-         return false;
+         throw new IllegalArgumentException("Expected config object");
       }
    }
 
-   @Override
-   public boolean key(int var1) {
-      if (!this.A) {
-         return false;
+   public static void v(JsonObject var0, String... var1) {
+      Set var2 = Set.of(var1);
+      if (!var2.containsAll(var0.keySet())) {
+         throw new IllegalArgumentException("Unsupported config fields");
       }
-
-      if (this.f(var1)) {
-         return true;
-      }
-
-      if ((var1 == 257 || var1 == 335) && this.p != null) {
-         this.p.run();
-         return true;
-      }
-
-      Minecraft var2 = Minecraft.getInstance();
-      long var3 = var2.getWindow().handle();
-      int var5 = eo.F(var3, 341) != 1 && eo.F(var3, 345) != 1 ? 0 : 1;
-      if (var5 != 0 && var1 == 86) {
-         this.E(var2.keyboardHandler.getClipboard());
-      } else if (var5 != 0 && var1 == 65) {
-         this.w = (boolean)1;
-      } else if (var1 == 259 && !this.V.isEmpty()) {
-         hx.w(hx.t.i);
-         if (this.w) {
-            this.V = "";
-            this.w = (boolean)0;
-            this.k();
-            return true;
-         }
-
-         this.V = this.V.substring(0, this.V.offsetByCodePoints(this.V.length(), -1));
-         this.k();
-      } else if (var1 == 256) {
-         this.A = (boolean)0;
-      }
-
-      return true;
    }
 
-   public void E(String var1) {
-      if (this.A && var1 != null) {
-         String var2 = var1.replaceAll("[\\p{Cntrl}]", " ");
-         if (this.w) {
-            this.V = "";
-            this.w = (boolean)0;
-         }
-
-         int var3 = Math.min(var2.length(), Math.max(0, this.H - this.V.length()));
-         if (var3 > 0 && var3 < var2.length() && Character.isHighSurrogate(var2.charAt(var3 - 1)) && Character.isLowSurrogate(var2.charAt(var3))) {
-            var3--;
-         }
-
-         this.V = this.V + var2.substring(0, var3);
-         this.k();
-         hx.w(hx.t.i);
+   public static String Q(JsonObject var0, String var1, int var2) {
+      JsonElement var3 = var0.get(var1);
+      if (var3 != null
+         && var3.isJsonPrimitive()
+         && var3.getAsJsonPrimitive().isString()
+         && var3.getAsString().length() <= var2
+         && !var3.getAsString().chars().anyMatch(var0x -> var0x < 32 && var0x != 10 && var0x != 13 && var0x != 9)) {
+         return var3.getAsString().replace('§', ' ');
+      } else {
+         throw pe.e();
       }
+   }
+
+   public static void w(JsonElement var0, double var1, double var3, boolean var5) {
+      if (var0 != null && var0.isJsonPrimitive() && var0.getAsJsonPrimitive().isNumber()) {
+         double var6 = var0.getAsDouble();
+         if (!Double.isFinite(var6) || var6 < var1 || var6 > var3 || var5 && var6 != Math.rint(var6)) {
+            throw new IllegalArgumentException("Number outside supported range");
+         }
+      } else {
+         throw new IllegalArgumentException("Expected number");
+      }
+   }
+
+   public static boolean v(JsonElement var0) {
+      if (var0 != null && var0.isJsonPrimitive() && var0.getAsJsonPrimitive().isBoolean()) {
+         return var0.getAsBoolean();
+      } else {
+         throw new IllegalArgumentException("Expected boolean");
+      }
+   }
+
+   public static String U(JsonElement var0, String... var1) {
+      if (var0 != null && var0.isJsonPrimitive() && var0.getAsJsonPrimitive().isString() && List.of(var1).contains(var0.getAsString())) {
+         return var0.getAsString();
+      } else {
+         throw new IllegalArgumentException("Unsupported value");
+      }
+   }
+
+   public record x(String name, String larpVersion, String minecraftVersion, int modules, int enabled, JsonObject config) {
    }
 }

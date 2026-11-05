@@ -1,388 +1,209 @@
 package com.larpclient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Map.Entry;
+import com.mojang.blaze3d.buffers.Std140Builder;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerInput;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.state.gui.BlitRenderState;
+import net.minecraft.resources.Identifier;
+import org.joml.Matrix3x2f;
+import org.joml.Vector4f;
+import org.lwjgl.system.MemoryStack;
 
 public final class xs {
-   private static ClientLevel m;
-   private static final Map<UUID, ItemStack> O = new HashMap<>();
-   private static final List<ItemEntity> F = new ArrayList<>();
-   private static final Map<Integer, ItemStack> W = new HashMap<>();
-   private static ItemStack B = ItemStack.EMPTY;
-   private static AbstractContainerMenu o;
-   private static int w = -1900000000;
+   private static final RenderPipeline o = RenderPipeline.builder(new Snippet[0])
+      .withLocation(Identifier.fromNamespaceAndPath("larp-client", "gui_aurora"))
+      .withVertexShader(Identifier.fromNamespaceAndPath("larp-client", "post/fullscreen"))
+      .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "gui/aurora"))
+      .withBindGroupLayout(BindGroupLayout.builder().withUniform("AuroraParameters", UniformType.UNIFORM_BUFFER).build())
+      .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
+      .withCull(false)
+      .build();
+   public static final int E = 112;
+   private static final long Z = System.nanoTime();
+   private static TextureTarget I;
+   private static GpuBuffer W;
+   private static int d = -1;
+   private static boolean x;
+   private static long D;
 
-   private static void h(Minecraft var0) {
-      if (m != var0.level) {
-         if (var0.player != null) {
-            for (Entry var2 : W.entrySet()) {
-               if (var0.player.getInventory().getItem((Integer)var2.getKey()) == var2.getValue()) {
-                  var0.player.getInventory().setItem((Integer)var2.getKey(), ItemStack.EMPTY);
-               }
-            }
+   private xs() {
+   }
+
+   public static boolean G(GuiGraphicsExtractor var0, int var1, int var2, double var3, int var5, int var6, boolean var7, boolean var8, xs.j var9, double var10) {
+      if (var1 > 0 && var2 > 0 && !(var3 <= 0.0)) {
+         if (d != m5.k) {
+            d();
+            d = m5.k;
+            x = (boolean)0;
          }
 
-         if (o != null && o.getCarried() == B) {
-            o.setCarried(ItemStack.EMPTY);
-         }
-
-         for (ItemEntity var4 : F) {
-            var4.discard();
-         }
-
-         O.clear();
-         F.clear();
-         W.clear();
-         B = ItemStack.EMPTY;
-         o = null;
-         m = var0.level;
-      }
-   }
-
-   public static ItemStack E(ItemFrame var0) {
-      Minecraft var1 = Minecraft.getInstance();
-      h(var1);
-      return var0.level() == m ? O.get(var0.getUUID()) : null;
-   }
-
-   public static void D(ItemFrame var0) {
-      O.remove(var0.getUUID());
-   }
-
-   public static void L(Minecraft var0, ItemFrame var1) {
-      h(var0);
-      ItemStack var2 = var1.getItem().copy();
-      O.put(var1.getUUID(), ItemStack.EMPTY);
-      if (!var2.isEmpty()) {
-         W(var0, var2.copyWithCount(1), new Vec3(var1.getX(), var1.getY(), var1.getZ()).add(0.0, 0.15, 0.0));
-      }
-   }
-
-   private static void W(Minecraft var0, ItemStack var1, Vec3 var2) {
-      ItemEntity var3 = new ItemEntity(var0.level, var2.x, var2.y, var2.z, var1.copy());
-      var3.setId(w--);
-      var3.setDefaultPickUpDelay();
-      var3.setUnlimitedLifetime();
-      var0.level.addEntity(var3);
-      F.add(var3);
-   }
-
-   private static int h(Minecraft var0, int var1, int var2) {
-      for (int var3 = var1; var3 < var2; var3++) {
-         if (var0.player.getInventory().getItem(var3).isEmpty() && !W.containsKey(var3)) {
-            return var3;
-         }
-      }
-
-      return -1;
-   }
-
-   private static void w(Minecraft var0, int var1, ItemStack var2) {
-      W.put(var1, var2);
-      var0.player.getInventory().setItem(var1, var2);
-   }
-
-   private static int S(ItemStack var0, ItemStack var1, int var2) {
-      if (!ItemStack.isSameItemSameComponents(var0, var1)) {
-         return 0;
-      }
-
-      int var3 = Math.min(var2, Math.min(var1.getCount(), Math.max(0, var0.getMaxStackSize() - var0.getCount())));
-      var0.grow(var3);
-      var1.shrink(var3);
-      return var3;
-   }
-
-   private static void X(Minecraft var0, ItemStack var1, int var2, int var3) {
-      ItemStack var4 = W.get(40);
-      if (var4 != null && var4 != var1 && var0.player.getInventory().getItem(40) == var4) {
-         S(var4, var1, var1.getCount());
-      }
-
-      for (int var5 = var2; var5 < var3 && !var1.isEmpty(); var5++) {
-         ItemStack var6 = W.get(var5);
-         if (var6 != null && var0.player.getInventory().getItem(var5) == var6) {
-            S(var6, var1, var1.getCount());
-         }
-      }
-
-      while (!var1.isEmpty()) {
-         int var7 = h(var0, var2, var3);
-         if (var7 < 0) {
-            return;
-         }
-
-         int var8 = Math.min(var1.getCount(), var1.getMaxStackSize());
-         w(var0, var7, var1.copyWithCount(var8));
-         var1.shrink(var8);
-      }
-   }
-
-   private static void Q(Minecraft var0, int var1, ItemStack var2) {
-      if (var2.isEmpty()) {
-         W.remove(var1);
-         if (var0.player.getInventory().getItem(var1) == var2) {
-            var0.player.getInventory().setItem(var1, ItemStack.EMPTY);
-         }
-      }
-   }
-
-   public static boolean f(Minecraft var0, InteractionHand var1) {
-      return var0.player != null && W.containsKey(var1 == InteractionHand.OFF_HAND ? 40 : var0.player.getInventory().getSelectedSlot());
-   }
-
-   public static void r(Minecraft var0) {
-      h(var0);
-      if (var0.level != null && var0.player != null) {
-         if (!B.isEmpty() && o != var0.player.containerMenu) {
-            Z(var0);
-         }
-
-         for (Entry var2 : new ArrayList<>(W.entrySet())) {
-            int var3 = (Integer)var2.getKey();
-            ItemStack var4 = (ItemStack)var2.getValue();
-            ItemStack var5 = var0.player.getInventory().getItem(var3);
-            if (var5 != var4) {
-               if (var5.isEmpty()) {
-                  var0.player.getInventory().setItem(var3, var4);
-               } else {
-                  W.remove(var3);
-                  X(var0, var4, 0, 36);
-                  if (!var4.isEmpty()) {
-                     W(var0, var4, new Vec3(var0.player.getX(), var0.player.getY(), var0.player.getZ()));
-                  }
-               }
-            }
-         }
-
-         if (!B.isEmpty() && o == var0.player.containerMenu) {
-            if (o.getCarried().isEmpty()) {
-               o.setCarried(B);
-            } else if (o.getCarried() != B) {
-               Z(var0);
-            }
-         }
-
-         Iterator var6 = F.iterator();
-
-         while (var6.hasNext()) {
-            ItemEntity var7 = (ItemEntity)var6.next();
-            if (var7.isRemoved()) {
-               var6.remove();
-            } else if (!var7.hasPickUpDelay() && var7.getBoundingBox().intersects(var0.player.getBoundingBox().inflate(1.0, 0.5, 1.0))) {
-               ItemStack var8 = var7.getItem().copy();
-               int var9 = var8.getCount();
-               X(var0, var8, 0, 36);
-               int var10 = var9 - var8.getCount();
-               if (var10 != 0) {
-                  var0.getConnection().handleTakeItemEntity(new ClientboundTakeItemEntityPacket(var7.getId(), var0.player.getId(), var10));
-                  if (var7.isRemoved() || var7.getItem().isEmpty()) {
-                     var7.discard();
-                     var6.remove();
-                  }
-               }
-            }
-         }
-      }
-   }
-
-   public static boolean v(Minecraft var0, ItemFrame var1, InteractionHand var2) {
-      h(var0);
-      if (!var1.getItem().isEmpty()) {
-         if (!O.containsKey(var1.getUUID()) && !f(var0, var2)) {
+         if (x) {
             return false;
          }
 
-         var1.setRotation((var1.getRotation() + 1) % 8);
-         var1.playSound(var1.getRotateItemSound(), 1.0F, 1.0F);
-         return true;
-      } else {
-         if (!f(var0, var2)) {
-            return O.containsKey(var1.getUUID());
-         }
-
-         int var3 = var2 == InteractionHand.OFF_HAND ? 40 : var0.player.getInventory().getSelectedSlot();
-         ItemStack var4 = W.get(var3);
-         O.put(var1.getUUID(), var4.copyWithCount(1));
-         if (var4.getCount() == 1) {
-            W.remove(var3);
-            if (var0.player.getInventory().getItem(var3) == var4) {
-               var0.player.getInventory().setItem(var3, ItemStack.EMPTY);
+         try {
+            Window var12 = Minecraft.getInstance().getWindow();
+            double var13 = Math.min(1.0, 640.0 / Math.max(1, var12.getWidth()));
+            int var15 = Math.max(1, (int)Math.round(var12.getWidth() * var13));
+            int var16 = Math.max(1, (int)Math.round(var12.getHeight() * var13));
+            if (I == null || I.width != var15 || I.height != var16) {
+               d();
+               ea.z(o);
+               I = hj.j("Larp ClickGUI aurora", var15, var16, false, GpuFormat.RGBA8_UNORM);
+               W = RenderSystem.getDevice().createBuffer(() -> "Larp aurora parameters", 136, 112L);
+               mt.U("GUI", "Aurora backdrop target {}x{}", var15, var16);
             }
-         } else {
-            var4.shrink(1);
-         }
 
-         var1.playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 1.0F, 1.0F);
-         return true;
-      }
-   }
+            long var17 = System.nanoTime();
+            if (D == 0L || var17 - D >= 33000000L) {
+               float var19 = var8 ? (float)((var17 - Z) / 1.0E9 % 20000.0) : 0.0F;
+               CommandEncoder var20 = RenderSystem.getDevice().createCommandEncoder();
+               MemoryStack var21 = MemoryStack.stackPush();
 
-   public static boolean W(Minecraft var0, ItemFrame var1) {
-      h(var0);
-      O.remove(var1.getUUID());
-      return false;
-   }
+               try {
+                  Std140Builder var22 = Std140Builder.onStack(var21, 112);
 
-   public static boolean x(Minecraft var0) {
-      if (var0.player == null) {
-         return false;
-      }
+                  for (Vector4f var26 : x(var15, var16, var19, var5, var6, var7, var9, var10)) {
+                     var22.putVec4(var26);
+                  }
 
-      int var1 = var0.player.getInventory().getSelectedSlot();
-      ItemStack var2 = W.get(var1);
-      ItemStack var3 = W.get(40);
-      if (var2 == null && var3 == null) {
-         return false;
-      }
+                  var20.writeToBuffer(W.slice(), var22.get());
+               } catch (Throwable var30) {
+                  if (var21 != null) {
+                     try {
+                        var21.close();
+                     } catch (Throwable var28) {
+                        var30.addSuppressed(var28);
+                     }
+                  }
 
-      if ((var2 != null || var0.player.getMainHandItem().isEmpty()) && (var3 != null || var0.player.getOffhandItem().isEmpty())) {
-         W.remove(var1);
-         W.remove(40);
-         var0.player.getInventory().setItem(var1, ItemStack.EMPTY);
-         var0.player.getInventory().setItem(40, ItemStack.EMPTY);
-         if (var2 != null) {
-            w(var0, 40, var2);
-         }
-
-         if (var3 != null) {
-            w(var0, var1, var3);
-         }
-
-         return true;
-      } else {
-         return true;
-      }
-   }
-
-   public static boolean j(Minecraft var0, boolean var1) {
-      if (!f(var0, InteractionHand.MAIN_HAND)) {
-         return false;
-      }
-
-      int var2 = var0.player.getInventory().getSelectedSlot();
-      ItemStack var3 = W.get(var2);
-      ItemStack var4 = var3.split(var1 ? var3.getCount() : 1);
-      Q(var0, var2, var3);
-      W(var0, var4, var0.player.getEyePosition().add(var0.player.getViewVector(1.0F).scale(0.3)));
-      return true;
-   }
-
-   public static void Z(Minecraft var0) {
-      if (!B.isEmpty() && var0.player != null) {
-         if (o != null && o.getCarried() == B) {
-            o.setCarried(ItemStack.EMPTY);
-         }
-
-         X(var0, B, 0, 36);
-         if (!B.isEmpty() && var0.level != null) {
-            W(var0, B, new Vec3(var0.player.getX(), var0.player.getY(), var0.player.getZ()));
-         }
-
-         B = ItemStack.EMPTY;
-         o = null;
-      }
-   }
-
-   public static boolean j(Minecraft var0, int var1, int var2, ContainerInput var3) {
-      if (var0.player == null) {
-         return false;
-      }
-
-      AbstractContainerMenu var4 = var0.player.containerMenu;
-      Slot var5 = var1 >= 0 && var1 < var4.slots.size() ? var4.getSlot(var1) : null;
-      int var6 = var5 != null && var5.container == var0.player.getInventory() ? var5.getContainerSlot() : -1;
-      ItemStack var7 = W.get(var6);
-      if (var7 != null && var5.getItem() != var7) {
-         r(var0);
-         return true;
-      }
-
-      int var8 = var3 == ContainerInput.SWAP && W.containsKey(var2) ? 1 : 0;
-      if (var7 == null && B.isEmpty() && var8 == 0) {
-         ItemStack var14 = var3 == ContainerInput.PICKUP_ALL ? var4.getCarried() : (var5 == null ? ItemStack.EMPTY : var5.getItem());
-         if (var3 == ContainerInput.PICKUP_ALL || var3 == ContainerInput.QUICK_MOVE) {
-            for (ItemStack var11 : W.values()) {
-               if (ItemStack.isSameItemSameComponents(var14, var11)) {
-                  return true;
+                  throw var30;
                }
-            }
-         }
 
-         return false;
-      } else {
-         if (B.isEmpty() && !var4.getCarried().isEmpty()) {
+               if (var21 != null) {
+                  var21.close();
+               }
+
+               RenderPass var32 = var20.createRenderPass(() -> "Larp ClickGUI aurora", I.getColorTextureView(), Optional.empty());
+
+               try {
+                  hj.P(var32, o);
+                  var32.setUniform("AuroraParameters", W.slice());
+                  var32.draw(3, 1, 0, 0);
+               } catch (Throwable var29) {
+                  if (var32 != null) {
+                     try {
+                        var32.close();
+                     } catch (Throwable var27) {
+                        var29.addSuppressed(var27);
+                     }
+                  }
+
+                  throw var29;
+               }
+
+               if (var32 != null) {
+                  var32.close();
+               }
+
+               D = var17;
+            }
+
+            var0.guiRenderState
+               .addGuiElement(
+                  new BlitRenderState(
+                     RenderPipelines.GUI_TEXTURED,
+                     TextureSetup.singleTexture(I.getColorTextureView(), RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)),
+                     new Matrix3x2f(var0.pose()),
+                     0,
+                     0,
+                     var1,
+                     var2,
+                     0.0F,
+                     1.0F,
+                     1.0F,
+                     0.0F,
+                     _3.A(-1, var3),
+                     var0.scissorStack.peek()
+                  )
+               );
             return true;
+         } catch (RuntimeException var31) {
+            x = (boolean)1;
+            d();
+            mt.P("GUI", var9 + " backdrop unavailable; using the plain dim until resource reload", var31);
+            return false;
          }
-
-         if (var3 == ContainerInput.PICKUP) {
-            if (B.isEmpty()) {
-               if (var7 != null && var4.getCarried().isEmpty()) {
-                  B = var7.split(var2 == 1 ? (var7.getCount() + 1) / 2 : var7.getCount());
-                  Q(var0, var6, var7);
-               }
-            } else if (var6 >= 0 && (var6 < 36 || var6 == 40) && (var5.getItem().isEmpty() || var7 != null)) {
-               if (var7 == null) {
-                  w(var0, var6, B.split(var2 == 1 ? 1 : B.getCount()));
-               } else if (ItemStack.isSameItemSameComponents(var7, B)) {
-                  S(var7, B, var2 == 1 ? 1 : B.getCount());
-               } else {
-                  ItemStack var9 = var7;
-                  w(var0, var6, B);
-                  B = var9;
-               }
-            } else if (var1 == -999) {
-               W(var0, B.split(var2 == 1 ? 1 : B.getCount()), var0.player.getEyePosition());
-            }
-
-            if (B.isEmpty()) {
-               B = ItemStack.EMPTY;
-            }
-
-            var4.setCarried(B);
-            o = B.isEmpty() ? null : var4;
-         } else if (var3 == ContainerInput.QUICK_MOVE && var7 != null) {
-            X(var0, var7, var6 < 9 ? 9 : 0, var6 >= 9 && var6 != 40 ? 9 : 36);
-            Q(var0, var6, var7);
-         } else if (var3 == ContainerInput.SWAP && var6 >= 0 && (var6 < 36 || var6 == 40) && var2 >= 0 && (var2 < 9 || var2 == 40)) {
-            ItemStack var13 = W.get(var2);
-            if ((var7 != null || var5.getItem().isEmpty()) && (var13 != null || var0.player.getInventory().getItem(var2).isEmpty())) {
-               W.remove(var6);
-               W.remove(var2);
-               var0.player.getInventory().setItem(var6, ItemStack.EMPTY);
-               var0.player.getInventory().setItem(var2, ItemStack.EMPTY);
-               if (var7 != null) {
-                  w(var0, var2, var7);
-               }
-
-               if (var13 != null) {
-                  w(var0, var6, var13);
-               }
-            }
-         } else if (var3 == ContainerInput.THROW && var7 != null) {
-            ItemStack var12 = var7.split(var2 == 0 ? 1 : var7.getCount());
-            Q(var0, var6, var7);
-            W(var0, var12, var0.player.getEyePosition());
-         }
-
+      } else {
          return true;
       }
+   }
+
+   public static Vector4f[] O(int var0, int var1, float var2, int var3, int var4, boolean var5) {
+      return x(var0, var1, var2, var3, var4, var5, xs.j.v, 0.55);
+   }
+
+   public static Vector4f[] x(int var0, int var1, float var2, int var3, int var4, boolean var5, xs.j var6, double var7) {
+      float var9 = (float)Math.clamp(var7, 0.0, 1.0) * (var5 ? 0.73F : 1.0F);
+      int var10 = _3.D(var3, var4, 0.5);
+      int var11 = _3.D(var3, -1, 0.35);
+      float var12 = (float)Math.clamp(Math.max(r(var3), r(var4)) / 0.5, 0.0, 1.0);
+      float var13 = var5 ? 0.12F + 0.14F * var12 : 0.14F + 0.18F * var12;
+      return new Vector4f[]{
+         new Vector4f(var0, var1, var2, 0.0F),
+         Q(var3, 0.95F),
+         Q(var4, 0.85F),
+         Q(var10, 0.7F),
+         Q(var11, 0.55F),
+         var5 ? new Vector4f(0.086F, 0.086F, 0.1F, var9) : new Vector4f(0.03F, 0.03F, 0.04F, var9),
+         new Vector4f(var13, 0.6F, var6.ordinal(), 0.0F)
+      };
+   }
+
+   static double r(int var0) {
+      int var1 = var0 >> 16 & 0xFF;
+      int var2 = var0 >> 8 & 0xFF;
+      int var3 = var0 & 0xFF;
+      return (Math.max(var1, Math.max(var2, var3)) - Math.min(var1, Math.min(var2, var3))) / 255.0;
+   }
+
+   private static Vector4f Q(int var0, float var1) {
+      return new Vector4f((var0 >> 16 & 0xFF) / 255.0F, (var0 >> 8 & 0xFF) / 255.0F, (var0 & 0xFF) / 255.0F, var1);
+   }
+
+   public static void d() {
+      if (I != null) {
+         I.destroyBuffers();
+         I = null;
+      }
+
+      if (W != null) {
+         W.close();
+         W = null;
+      }
+
+      D = 0L;
+   }
+
+   public enum j {
+      v,
+      j,
+      F;
    }
 }

@@ -1,16 +1,16 @@
 package com.larpclient.module;
 
-import com.larp.obf.q5682c6a8aca9b6ec.q036f9c7ffe4c5a07;
+import com.larp.obf.qbac0b262827a15ac.qccc4a2dfe8596cd6;
 import com.larpclient.LarpClient;
-import com.larpclient.d8;
-import com.larpclient.e5;
-import com.larpclient.j5;
-import com.larpclient.o_;
-import com.larpclient.oz;
-import com.larpclient.pe;
-import com.larpclient.r4;
-import com.larpclient.rr;
-import com.larpclient.yh;
+import com.larpclient._m;
+import com.larpclient._p;
+import com.larpclient.c2;
+import com.larpclient.cc;
+import com.larpclient.mt;
+import com.larpclient.ti;
+import com.larpclient.tq;
+import com.larpclient.w7;
+import com.larpclient.zd;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -37,25 +37,25 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 
 public final class LungeSwapModule extends Module {
-   private static LungeSwapModule g;
-   public static final int T = 10;
-   public static final int a = 12;
-   public static final double D = 0.4;
-   private final lp x = this.addSetting(
-      new lp("Mode", "Legit waits for full charges like vanilla; Blatant jabs as soon as the server accepts it", "Legit", "Legit", "Blatant")
+   private static LungeSwapModule s;
+   public static final int Z = 10;
+   public static final int x = 12;
+   public static final double G = 0.4;
+   private final d6 f = this.addSetting(
+      new d6("Mode", "Legit waits for full charges like vanilla; Blatant jabs as soon as the server accepts it", "Legit", "Legit", "Blatant")
    );
-   private final la Q = this.addSetting(new la("Activation Key", "Press to swap to your Lunge spear and jab; separate from the module toggle", 86));
-   private final ln v = this.addSetting(new ln("Swap Back", "Return after the jab; Blatant always returns", true));
-   private final ln X = this.addSetting(new ln("Swap Back To Slot", "Return to a fixed hotbar slot instead of your previous one", false));
-   private final lc R = this.addSetting(new lc("Swap Back Slot", "Hotbar slot to return to", 1.0, 1.0, 9.0, 1.0));
-   private final ln P = this.addSetting(new ln("Hold To Lunge", "Keep jabbing while the activation key is held", false));
-   private final ln h = this.addSetting(
-      new ln(
+   private final dv P = this.addSetting(new dv("Activation Key", "Press to swap to your Lunge spear and jab; separate from the module toggle", 86));
+   private final dh J = this.addSetting(new dh("Swap Back", "Return after the jab; Blatant always returns", true));
+   private final dh e = this.addSetting(new dh("Swap Back To Slot", "Return to a fixed hotbar slot instead of your previous one", false));
+   private final d9 t = this.addSetting(new d9("Swap Back Slot", "Hotbar slot to return to", 1.0, 1.0, 9.0, 1.0));
+   private final dh u = this.addSetting(new dh("Hold To Lunge", "Keep jabbing while the activation key is held", false));
+   private final dh j = this.addSetting(
+      new dh(
          "Charge After Swap", "On a server that resets charge on a swap, hold the spear until its own charge is ready. Off always jabs in the swap tick", true
       )
    );
-   private final lp I = this.addSetting(
-      new lp(
+   private final d6 K = this.addSetting(
+      new d6(
          "Swap Rule",
          "How the server treats charge across a swap. Detect jabs in the swap tick and waits for the spear's charge on a server where that did not lunge",
          "Detect",
@@ -64,8 +64,8 @@ public final class LungeSwapModule extends Module {
          "Reset"
       )
    );
-   private final lc t = this.addSetting(
-      new lc(
+   private final d9 v = this.addSetting(
+      new d9(
          "Jab Delay",
          "Fewest ticks from your press to the swap and jab; your held item keeps charging meanwhile. 0 jabs in the press tick",
          0.0,
@@ -74,125 +74,125 @@ public final class LungeSwapModule extends Module {
          1.0
       )
    );
-   private final lc s = this.addSetting(new lc("Jab Delay Max", "Most ticks from your press to the swap and jab", 0.0, 0.0, 10.0, 1.0));
-   private final lc z = this.addSetting(
-      new lc("Swap Back Delay", "Fewest ticks after the jab before you return to your slot. 1 is the next tick", 1.0, 1.0, 20.0, 1.0)
+   private final d9 p = this.addSetting(new d9("Jab Delay Max", "Most ticks from your press to the swap and jab", 0.0, 0.0, 10.0, 1.0));
+   private final d9 L = this.addSetting(
+      new d9("Swap Back Delay", "Fewest ticks after the jab before you return to your slot. 1 is the next tick", 1.0, 1.0, 20.0, 1.0)
    );
-   private final lc V = this.addSetting(new lc("Swap Back Delay Max", "Most ticks after the jab before you return to your slot", 1.0, 1.0, 20.0, 1.0));
-   private final lc u = this.addSetting(new lc("Hold Interval", "Fewest extra ticks between lunges while Hold To Lunge is held", 0.0, 0.0, 40.0, 1.0));
-   private final lc e = this.addSetting(new lc("Hold Interval Max", "Most extra ticks between lunges while Hold To Lunge is held", 0.0, 0.0, 40.0, 1.0));
-   private static final Map<String, Boolean> E = new HashMap<>();
-   private LungeSwapModule.c U = LungeSwapModule.c.P;
-   private boolean N;
-   private int m;
-   private int G;
-   private int i;
-   private int F = -1;
-   private int O = -1;
-   private int C;
-   private int Z;
-   private int J;
-   private int c;
+   private final d9 B = this.addSetting(new d9("Swap Back Delay Max", "Most ticks after the jab before you return to your slot", 1.0, 1.0, 20.0, 1.0));
+   private final d9 z = this.addSetting(new d9("Hold Interval", "Fewest extra ticks between lunges while Hold To Lunge is held", 0.0, 0.0, 40.0, 1.0));
+   private final d9 y = this.addSetting(new d9("Hold Interval Max", "Most extra ticks between lunges while Hold To Lunge is held", 0.0, 0.0, 40.0, 1.0));
+   private static final Map<String, Boolean> o = new HashMap<>();
+   private LungeSwapModule.f V = LungeSwapModule.f.F;
+   private boolean O;
    private int H;
-   private e5.g B = e5.g.g;
+   private int N;
+   private int q;
+   private int D = -1;
+   private int M = -1;
+   private int c;
+   private int h;
+   private int I;
+   private int g;
+   private int d;
+   private _p.t C = _p.t.g;
+   private String n = "";
    private String S = "";
-   private String k = "";
-   private float r;
-   private LocalPlayer A;
-   private ClientLevel o;
-   private String W = "Ready";
-   private String d = "";
-   private int w;
-   private int K;
-   private double M;
-   private boolean q;
-   private boolean Y;
-   private Vec3 b = Vec3.ZERO;
+   private float m;
+   private LocalPlayer Y;
+   private ClientLevel X;
+   private String a = "Ready";
+   private String T = "";
+   private int A;
+   private int l;
+   private double w;
+   private boolean b;
+   private boolean U;
+   private Vec3 F = Vec3.ZERO;
 
    public LungeSwapModule() {
       super("Lunge Swap", "Swap to your Lunge spear and jab with an activation key", Category.COMBAT, -1);
-      g = this;
-      this.v.x(this::a);
-      this.X.x(this::c);
-      this.R.x(() -> this.c() && this.X.getValue());
-      this.I.x(this.h::getValue);
-      this.t.A(this.s).b("Jab Delay");
-      this.z.A(this.V).b("Swap Back Delay");
-      this.u.A(this.e).b("Hold Interval");
-      this.z.x(this::c);
-      this.V.x(this::c);
-      this.u.x(this.P::getValue);
-      this.e.x(this.P::getValue);
-      this.x.W(var1 -> this.T(true));
-      this.Q.W(var1 -> {
-         this.T(true);
-         this.w = 0;
+      s = this;
+      this.J.H(this::j);
+      this.e.H(this::s);
+      this.t.H(() -> this.s() && this.e.P());
+      this.K.H(this.j::P);
+      this.v.V(this.p).n("Jab Delay");
+      this.L.V(this.B).n("Swap Back Delay");
+      this.z.V(this.y).n("Hold Interval");
+      this.L.H(this::s);
+      this.B.H(this::s);
+      this.z.H(this.u::P);
+      this.y.H(this.u::P);
+      this.f.h(var1 -> this.Z(true));
+      this.P.h(var1 -> {
+         this.Z(true);
+         this.A = 0;
       });
-      this.I.W(var1 -> this.T(true));
+      this.K.h(var1 -> this.Z(true));
    }
 
-   private boolean a() {
-      return this.x.i("Legit");
+   private boolean j() {
+      return this.f.S("Legit");
    }
 
-   private boolean f() {
-      return this.x.i("Blatant");
+   private boolean K() {
+      return this.f.S("Blatant");
    }
 
-   private boolean c() {
-      return this.f() || this.v.getValue();
+   private boolean s() {
+      return this.K() || this.J.P();
    }
 
-   public static int E(boolean var0) {
-      return e5.o(var0);
+   public static int S(boolean var0) {
+      return _p.C(var0);
    }
 
-   public static int b(double var0, double var2, double var4) {
-      return yh.Z((int)var0, (int)var2, var4);
+   public static int z(double var0, double var2, double var4) {
+      return zd.f((int)var0, (int)var2, var4);
    }
 
-   private int n(lc var1, lc var2) {
-      return b(var1.getValue(), var2.getValue(), ThreadLocalRandom.current().nextDouble());
+   private int B(d9 var1, d9 var2) {
+      return z(var1.P(), var2.P(), ThreadLocalRandom.current().nextDouble());
    }
 
-   public static int q(boolean var0, boolean var1, int var2, int var3, int var4, int var5) {
+   public static int K(boolean var0, boolean var1, int var2, int var3, int var4, int var5) {
       int var6 = var1 ? var2 : var3;
       return var0 && var4 == var5 && var6 >= 0 && var6 < 9 && var6 != var4 ? var6 : -1;
    }
 
-   public static e5.g k(boolean var0, String var1, Boolean var2, boolean var3) {
+   public static _p.t G(boolean var0, String var1, Boolean var2, boolean var3) {
       if (!var0 || "Kept".equals(var1)) {
-         return e5.g.g;
+         return _p.t.g;
       } else if ("Reset".equals(var1)) {
-         return e5.g.N;
+         return _p.t.e;
       } else if (var2 != null) {
-         return var2 ? e5.g.N : e5.g.g;
+         return var2 ? _p.t.e : _p.t.g;
       } else {
-         return var3 ? e5.g.N : e5.g.g;
+         return var3 ? _p.t.e : _p.t.g;
       }
    }
 
-   public static void l(int var0) {
-      if (g != null && g.isEnabled()) {
-         LungeSwapModule var1 = g;
-         if (var1 != null && var1.isRuntimeActive() && pe.F(var0) && var0 == var1.Q.getValue()) {
-            var1.N = (boolean)1;
+   public static void T(int var0) {
+      if (s != null && s.isEnabled()) {
+         LungeSwapModule var1 = s;
+         if (var1 != null && var1.isRuntimeActive() && cc.N(var0) && var0 == var1.P.P()) {
+            var1.O = (boolean)1;
          }
       }
    }
 
    public boolean U() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.U != LungeSwapModule.c.P && this.A != null && this.A == getMc().player;
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.V != LungeSwapModule.f.F && this.Y != null && this.Y == getMc().player;
    }
 
    @Override
-   public Module.b getTickPhase() {
-      return Module.b.w;
+   public Module.f getTickPhase() {
+      return Module.f.Z;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a, ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z, dm.j);
    }
 
    @Override
@@ -200,97 +200,94 @@ public final class LungeSwapModule extends Module {
       if (!this.isEnabled()) {
          return "";
       } else {
-         return this.U == LungeSwapModule.c.P && !this.d.isEmpty() ? pe.A(this.Q.getValue()) + " also triggers " + this.d : this.W;
+         return this.V == LungeSwapModule.f.F && !this.T.isEmpty() ? cc.u(this.P.P()) + " also triggers " + this.T : this.a;
       }
    }
 
    @Override
    public void onEnable() {
-      this.W();
-      this.A = mc.player;
-      this.o = mc.level;
-      this.W = "Ready";
-      this.d = "";
-      this.w = 0;
-      r4.V(
+      this.h();
+      this.Y = mc.player;
+      this.X = mc.level;
+      this.a = "Ready";
+      this.T = "";
+      this.A = 0;
+      mt.K(
          "LungeSwap",
          "Enabled; mode={}, activation key={}, hold={}, charge after swap={}, swap rule={}, jab delay {}-{}, swap back delay {}-{}, hold interval {}-{} ticks",
-         this.x.getValue(),
-         this.Q.getValue(),
-         this.P.getValue(),
-         this.h.getValue(),
-         this.I.getValue(),
-         this.t.getValue().intValue(),
-         this.s.getValue().intValue(),
-         this.z.getValue().intValue(),
-         this.V.getValue().intValue(),
-         this.u.getValue().intValue(),
-         this.e.getValue().intValue()
+         this.f.P(),
+         this.P.P(),
+         this.u.P(),
+         this.j.P(),
+         this.K.P(),
+         this.v.P().intValue(),
+         this.p.P().intValue(),
+         this.L.P().intValue(),
+         this.B.P().intValue(),
+         this.z.P().intValue(),
+         this.y.P().intValue()
       );
    }
 
    @Override
    public void onDisable() {
-      this.T(true);
-      this.A = null;
-      this.o = null;
+      this.Z(true);
+      this.Y = null;
+      this.X = null;
    }
 
-   private boolean V() {
+   private boolean d() {
       return this.isInGame()
-         && this.A == mc.player
-         && this.o == mc.level
+         && this.Y == mc.player
+         && this.X == mc.level
          && mc.player.isAlive()
          && !mc.player.isSpectator()
          && mc.gui.screen() == null
-         && (j5.A(mc) || rr.n() && j5.o(mc, rr.f.E));
+         && (w7.O(mc) || tq.Q() && w7.m(mc, tq.y.P));
    }
 
    @Override
    public void onTick() {
-      boolean var1 = this.N;
-      this.N = (boolean)0;
-      int var10000 = --this.w;
-      boolean var4 = false;
-      int var3 = var10000;
-      if (-Integer.signum(var3) >>> 31 == 0) {
-         this.w = 20;
-         this.X();
+      boolean var1 = this.O;
+      this.O = (boolean)0;
+      if (--this.A <= 0) {
+         this.A = 20;
+         this.N();
       }
 
-      if (this.A != mc.player || this.o != mc.level) {
-         this.T(false);
-         this.A = mc.player;
-         this.o = mc.level;
-         this.K = 0;
+      if (this.Y != mc.player || this.X != mc.level) {
+         this.Z(false);
+         this.Y = mc.player;
+         this.X = mc.level;
+         this.l = 0;
       }
 
-      if (this.K > 0) {
-         this.G();
+      if (this.l > 0) {
+         this.t();
       }
 
-      if (!this.V()) {
-         this.T(true);
-         this.W = "Paused";
+      if (!this.d()) {
+         this.Z(true);
+         this.a = "Paused";
       } else {
-         boolean var2 = pe.A(mc.getWindow().handle(), this.Q.getValue());
+         boolean var2 = cc.N(mc.getWindow().handle(), this.P.P());
          boolean var6 = false;
-         int var5 = this.i;
+         int var5 = this.q;
          if ((-Integer.signum(var5) >>> 31 ^ 1) == 0 && (!var2 || var1)) {
-            this.i = 0;
+            this.q = 0;
          }
 
          label60:
-         if (this.U == LungeSwapModule.c.P) {
+         if (this.V == LungeSwapModule.f.F) {
             if (!var1) {
-               if (!this.P.getValue() || !var2) {
+               if (!this.u.P() || !var2) {
                   break label60;
                }
 
-               var10000 = this.i;
+               int var10000 = this.q;
                byte var8 = 1;
-               int var7 = this.i;
-               this.i = var7 - var8;
+               int var7 = this.q;
+               this.q = var7 - var8;
                boolean var10 = false;
                int var9 = var10000;
                if (-Integer.signum(var9) >>> 31 != 0) {
@@ -298,28 +295,38 @@ public final class LungeSwapModule extends Module {
                }
             }
 
-            this.M(var1);
+            this.W(var1);
          }
 
-         if (this.U == LungeSwapModule.c.L) {
-            this.F();
-         } else if (this.U == LungeSwapModule.c.J) {
-            this.Y();
-         } else if (this.U == LungeSwapModule.c.i && --this.G <= 0) {
-            this.A();
-            if (this.P.getValue() && var2) {
-               this.i = this.n(this.u, this.e);
+         if (this.V == LungeSwapModule.f.z) {
+            this.n();
+         } else if (this.V == LungeSwapModule.f.a) {
+            this.Q();
+         } else {
+            if (this.V == LungeSwapModule.f.f) {
+               int var11 = --this.N;
+               boolean var4 = false;
+               int var3 = var11;
+               if (-Integer.signum(var3) >>> 31 == 0) {
+                  this.m();
+                  if (this.u.P() && var2) {
+                     this.q = this.B(this.z, this.y);
+                  }
+
+                  this.a = "Ready";
+                  return;
+               }
             }
 
-            this.W = "Ready";
-         } else if (this.U == LungeSwapModule.c.P && !pe.F(this.Q.getValue())) {
-            this.W = "Set an Activation Key";
+            if (this.V == LungeSwapModule.f.F && !cc.N(this.P.P())) {
+               this.a = "Set an Activation Key";
+            }
          }
       }
    }
 
-   public static String Z(Module var0, int var1, Iterable<Module> var2) {
-      if (!pe.F(var1)) {
+   public static String a(Module var0, int var1, Iterable<Module> var2) {
+      if (!cc.N(var1)) {
          return "";
       }
 
@@ -333,8 +340,8 @@ public final class LungeSwapModule extends Module {
                return var4.getName();
             }
 
-            for (l6 var6 : var4.getSettings()) {
-               if (var6 instanceof la var7 && var7.getValue() == var1) {
+            for (df var6 : var4.getSettings()) {
+               if (var6 instanceof dv var7 && var7.P() == var1) {
                   return var4.getName();
                }
             }
@@ -344,97 +351,97 @@ public final class LungeSwapModule extends Module {
       return "";
    }
 
-   private void X() {
-      LarpClient var1 = LarpClient.y();
-      int var2 = this.Q.getValue();
-      String var3 = var1 != null && var1.e() != null ? Z(this, var2, var1.e().X()) : "";
-      if (!var3.isEmpty() && !var3.equals(this.d)) {
-         r4.m(
+   private void N() {
+      LarpClient var1 = LarpClient.F();
+      int var2 = this.P.P();
+      String var3 = var1 != null && var1.x() != null ? a(this, var2, var1.x().C()) : "";
+      if (!var3.isEmpty() && !var3.equals(this.T)) {
+         mt.T(
             "LungeSwap",
             "Activation Key {} is also bound to {}; one press triggers both, and a movement module such as Fly cancels the lunge. Rebind one of them",
-            pe.A(var2),
+            cc.u(var2),
             var3
          );
       }
 
-      this.d = var3;
+      this.T = var3;
    }
 
-   private void G() {
+   private void t() {
       LocalPlayer var1 = mc.player;
-      this.M = Math.max(this.M, var1.getDeltaMovement().horizontalDistance());
-      if (--this.K <= 0) {
-         int var2 = this.M >= 0.4 ? 1 : 0;
-         r4.V(
+      this.w = Math.max(this.w, var1.getDeltaMovement().horizontalDistance());
+      if (--this.l <= 0) {
+         int var2 = this.w >= 0.4 ? 1 : 0;
+         mt.K(
             "LungeSwap",
             "Jab result: peak horizontal speed {} blocks/tick, moved {} blocks in {} ticks ({})",
-            String.format(Locale.ROOT, "%.3f", this.M),
-            String.format(Locale.ROOT, "%.2f", var1.position().subtract(this.b).horizontalDistance()),
+            String.format(Locale.ROOT, "%.3f", this.w),
+            String.format(Locale.ROOT, "%.2f", var1.position().subtract(this.F).horizontalDistance()),
             12,
             var2 != 0 ? "lunge push arrived" : "no lunge push; the server refused it or another movement owner replaced it"
          );
-         if (this.q && this.h.getValue() && this.I.i("Detect")) {
-            String var3 = this.b();
-            Boolean var4 = E.get(var3);
-            E.put(var3, var2 == 0);
+         if (this.b && this.j.P() && this.K.S("Detect")) {
+            String var3 = this.K();
+            Boolean var4 = o.get(var3);
+            o.put(var3, var2 == 0);
             if (var2 == 0 && !Boolean.TRUE.equals(var4)) {
-               r4.V("LungeSwap", "A swap-tick jab did not lunge on {}; later presses there wait for the spear's own charge", var3);
+               mt.K("LungeSwap", "A swap-tick jab did not lunge on {}; later presses there wait for the spear's own charge", var3);
             } else if (var2 != 0 && var4 == null) {
-               r4.V("LungeSwap", "{} keeps the charge across a swap; presses there jab in the swap tick", var3);
+               mt.K("LungeSwap", "{} keeps the charge across a swap; presses there jab in the swap tick", var3);
             }
          }
       }
    }
 
-   private String b() {
+   private String K() {
       ServerData var1 = mc.getCurrentServer();
       return var1 != null ? var1.ip : (mc.hasSingleplayerServer() ? "singleplayer" : "this server");
    }
 
-   private void M(boolean var1) {
-      String var2 = this.I();
+   private void W(boolean var1) {
+      String var2 = this.k();
       if (var2 != null) {
-         this.W = var2;
+         this.a = var2;
          if (var1) {
-            r4.V("LungeSwap", "Press refused: {}", var2);
+            mt.K("LungeSwap", "Press refused: {}", var2);
          }
-      } else if (this.q() == null) {
-         this.W = "No Lunge spear in hotbar";
+      } else if (this.I() == null) {
+         this.a = "No Lunge spear in hotbar";
          if (var1) {
-            r4.V("LungeSwap", "Press ignored: no Lunge spear in the hotbar");
+            mt.K("LungeSwap", "Press ignored: no Lunge spear in the hotbar");
          }
       } else {
-         this.F = mc.player.getInventory().getSelectedSlot();
-         this.S = mc.player.getMainHandItem().getHoverName().getString();
-         this.r = mc.player.getAttackStrengthScale(0.0F);
-         this.B = k(this.h.getValue(), this.I.getValue(), E.get(this.b()), oz.w());
-         this.C = this.Z = 0;
-         this.J = -1;
-         this.k = "";
-         this.m = this.n(this.t, this.s);
-         this.U = LungeSwapModule.c.L;
+         this.D = mc.player.getInventory().getSelectedSlot();
+         this.n = mc.player.getMainHandItem().getHoverName().getString();
+         this.m = mc.player.getAttackStrengthScale(0.0F);
+         this.C = G(this.j.P(), this.K.P(), o.get(this.K()), c2.C());
+         this.c = this.h = 0;
+         this.I = -1;
+         this.S = "";
+         this.H = this.B(this.v, this.p);
+         this.V = LungeSwapModule.f.z;
       }
    }
 
-   private String I() {
+   private String k() {
       LocalPlayer var1 = mc.player;
-      return e5.C(var1.getFoodData().getFoodLevel(), var1.getAbilities().instabuild, var1.isInWater(), var1.isPassenger(), var1.isFallFlying());
+      return _p.B(var1.getFoodData().getFoodLevel(), var1.getAbilities().instabuild, var1.isInWater(), var1.isPassenger(), var1.isFallFlying());
    }
 
-   private e5.j q() {
+   private _p.a I() {
       LocalPlayer var1 = mc.player;
       ItemStack var2 = var1.getMainHandItem();
       ArrayList var3 = new ArrayList();
 
       for (int var4 = 0; var4 < 9; var4++) {
-         int var5 = this.m(var4);
+         int var5 = this.e(var4);
          if (var5 > 0) {
             ItemStack var6 = var1.getInventory().getItem(var4);
-            if (var6.isItemEnabled(this.o.enabledFeatures())) {
+            if (var6.isItemEnabled(this.X.enabledFeatures())) {
                var3.add(
-                  new e5.m(
+                  new _p.x(
                      var4,
-                     y(var1, var6),
+                     l(var1, var6),
                      (Float)var6.getOrDefault(DataComponents.MINIMUM_ATTACK_CHARGE, 0.0F),
                      var5,
                      var6.isDamageableItem() ? var6.getMaxDamage() - var6.getDamageValue() : Integer.MAX_VALUE,
@@ -446,17 +453,17 @@ public final class LungeSwapModule extends Module {
          }
       }
 
-      return e5.a(
+      return _p.w(
          var3,
          var1.getInventory().getSelectedSlot(),
-         this.B,
-         ((q036f9c7ffe4c5a07)var1).larpAttackStrengthTicker(),
+         this.C,
+         ((qccc4a2dfe8596cd6)var1).larpAttackStrengthTicker(),
          var1.getCurrentItemAttackStrengthDelay(),
-         this.f()
+         this.K()
       );
    }
 
-   private static float y(LocalPlayer var0, ItemStack var1) {
+   private static float l(LocalPlayer var0, ItemStack var1) {
       AttributeInstance var2 = var0.getAttribute(Attributes.ATTACK_SPEED);
       if (var2 == null) {
          return var0.getCurrentItemAttackStrengthDelay();
@@ -500,237 +507,237 @@ public final class LungeSwapModule extends Module {
       return (float)(1.0 / ((Attribute)var2.getAttribute().value()).sanitizeValue(var6) * 20.0);
    }
 
-   private void F() {
-      e5.j var1 = this.q();
+   private void n() {
+      _p.a var1 = this.I();
       if (var1 == null) {
-         this.W();
-         this.W = "No Lunge spear in hotbar";
+         this.h();
+         this.a = "No Lunge spear in hotbar";
       } else {
-         if (this.J < 0) {
-            this.J = var1.ticks();
-            r4.V(
+         if (this.I < 0) {
+            this.I = var1.ticks();
+            mt.K(
                "LungeSwap",
                "Press: {} rule, slot {} (Lunge {}) from slot {} ({}, charge {}); {}",
-               this.B,
+               this.C,
                var1.slot() + 1,
                var1.lunge(),
-               this.F + 1,
-               this.S,
-               w(this.r),
+               this.D + 1,
+               this.n,
+               Q(this.m),
                var1.ticks() == 0 ? (var1.swap() ? "swap and jab now" : "jab now") : "server needs " + var1.ticks() + " more ticks"
             );
          }
 
-         this.O = var1.slot();
-         if (this.m > 0) {
-            this.m--;
-            this.W = "Lunge in " + e5.c(Math.max(this.m + 1, var1.ticks()));
-            this.v("Jab Delay");
+         this.M = var1.slot();
+         if (this.H > 0) {
+            this.H--;
+            this.a = "Lunge in " + _p.d(Math.max(this.H + 1, var1.ticks()));
+            this.S("Jab Delay");
          } else if (var1.ticks() > 0 && !var1.resets()) {
-            this.C++;
-            this.W = "Lunge in " + e5.c(var1.ticks());
-            this.v("charge");
-            if (this.C > this.J + 10 + 2) {
-               this.b("the charge never passed");
+            this.c++;
+            this.a = "Lunge in " + _p.d(var1.ticks());
+            this.S("charge");
+            if (this.c > this.I + 10 + 2) {
+               this.Y("the charge never passed");
             }
-         } else if (!this.H()) {
-            String var2 = this.A();
+         } else if (!this.O()) {
+            String var2 = this.D();
             if (var2 != null) {
-               this.v(var2);
-               this.W = "Waiting for " + var2;
-               if (++this.Z > 10) {
-                  this.b(var2);
+               this.S(var2);
+               this.a = "Waiting for " + var2;
+               if (++this.h > 10) {
+                  this.Y(var2);
                }
             } else {
-               this.W = "Lunging";
-               d8.A(this, this::J, () -> this.A() == null && this.U == LungeSwapModule.c.L);
+               this.a = "Lunging";
+               _m.F(this, this::y, () -> this.D() == null && this.V == LungeSwapModule.f.z);
             }
          }
       }
    }
 
-   private boolean H() {
-      if (!rr.n()) {
+   private boolean O() {
+      if (!tq.Q()) {
          return false;
       }
 
-      rr.T("a Lunge Swap jab");
-      this.v("your look");
-      this.W = "Lunging";
+      tq.j("a Lunge Swap jab");
+      this.S("your look");
+      this.a = "Lunging";
       return true;
    }
 
-   private String A() {
-      if (!this.isRuntimeActive() || !this.V()) {
+   private String D() {
+      if (!this.isRuntimeActive() || !this.d()) {
          return "the game";
-      } else if (!o_.N(this)) {
+      } else if (!ti.V(this)) {
          return "the hotbar";
-      } else if (!j5.E(mc, mc.player)) {
+      } else if (!w7.f(mc, mc.player)) {
          return "free hands";
-      } else if (this.a() && j5.w(mc) > 0) {
+      } else if (this.j() && w7.O(mc) > 0) {
          return "the miss delay";
-      } else if (this.I() != null) {
+      } else if (this.k() != null) {
          return "the Lunge conditions";
       } else {
-         return this.O >= 0 && this.Q(this.O) ? null : "the spear";
+         return this.M >= 0 && this.F(this.M) ? null : "the spear";
       }
    }
 
-   private void v(String var1) {
-      if (!var1.equals(this.k)) {
-         this.k = var1;
-         r4.V("LungeSwap", "Jab held by {}", var1);
+   private void S(String var1) {
+      if (!var1.equals(this.S)) {
+         this.S = var1;
+         mt.K("LungeSwap", "Jab held by {}", var1);
       }
    }
 
-   private void b(String var1) {
-      r4.V("LungeSwap", "Press lapsed after {} ticks, held by {}", this.C + this.Z, var1);
-      this.T(true);
-      this.W = "Lunge blocked by " + var1;
+   private void Y(String var1) {
+      mt.K("LungeSwap", "Press lapsed after {} ticks, held by {}", this.c + this.h, var1);
+      this.Z(true);
+      this.a = "Lunge blocked by " + var1;
    }
 
-   private void J() {
-      e5.j var1 = this.q();
-      if (this.U == LungeSwapModule.c.L && var1 != null && (var1.ticks() <= 0 || var1.resets()) && this.A() == null) {
+   private void y() {
+      _p.a var1 = this.I();
+      if (this.V == LungeSwapModule.f.z && var1 != null && (var1.ticks() <= 0 || var1.resets()) && this.D() == null) {
          LocalPlayer var2 = mc.player;
-         this.O = var1.slot();
+         this.M = var1.slot();
          boolean var3 = var1.swap();
          if (var1.resets()) {
-            this.H = e5.q(this.R(this.O), false, this.B, 0, 0.0F, this.f());
-            var2.getInventory().setSelectedSlot(this.O);
-            this.U = LungeSwapModule.c.J;
-            this.c = 0;
-            this.W = "Charging spear " + e5.c(this.H);
-            r4.V("LungeSwap", "Selected spear slot {}; the server restarts its charge, so the jab waits {} ticks", this.O + 1, this.H);
+            this.d = _p.H(this.v(this.M), false, this.C, 0, 0.0F, this.K());
+            var2.getInventory().setSelectedSlot(this.M);
+            this.V = LungeSwapModule.f.a;
+            this.g = 0;
+            this.a = "Charging spear " + _p.d(this.d);
+            mt.K("LungeSwap", "Selected spear slot {}; the server restarts its charge, so the jab waits {} ticks", this.M + 1, this.d);
          } else {
-            this.Y = (boolean)(var3 && !ItemStack.isSameItem(var2.getMainHandItem(), var2.getInventory().getItem(this.O)) ? 1 : 0);
-            var2.getInventory().setSelectedSlot(this.O);
-            this.S(var3);
+            this.U = (boolean)(var3 && !ItemStack.isSameItem(var2.getMainHandItem(), var2.getInventory().getItem(this.M)) ? 1 : 0);
+            var2.getInventory().setSelectedSlot(this.M);
+            this.i(var3);
          }
       }
    }
 
-   private e5.m R(int var1) {
+   private _p.x v(int var1) {
       LocalPlayer var2 = mc.player;
       ItemStack var3 = var2.getInventory().getItem(var1);
-      return new e5.m(var1, y(var2, var3), (Float)var3.getOrDefault(DataComponents.MINIMUM_ATTACK_CHARGE, 0.0F), this.m(var1), 0, false, false);
+      return new _p.x(var1, l(var2, var3), (Float)var3.getOrDefault(DataComponents.MINIMUM_ATTACK_CHARGE, 0.0F), this.e(var1), 0, false, false);
    }
 
-   private void Y() {
+   private void Q() {
       LocalPlayer var1 = mc.player;
-      this.c++;
-      if (var1.getInventory().getSelectedSlot() == this.O && this.Q(this.O)) {
-         int var2 = this.H - this.c;
+      this.g++;
+      if (var1.getInventory().getSelectedSlot() == this.M && this.F(this.M)) {
+         int var2 = this.d - this.g;
          if (var2 > 0) {
-            this.W = "Charging spear " + e5.c(var2);
-         } else if (!this.H()) {
-            String var3 = this.A();
+            this.a = "Charging spear " + _p.d(var2);
+         } else if (!this.O()) {
+            String var3 = this.D();
             if (var3 != null) {
-               this.v(var3);
-               this.W = "Waiting for " + var3;
-               if (++this.Z > 10) {
-                  r4.V("LungeSwap", "Charged jab lapsed, held by {}", var3);
-                  d8.K(this);
-                  this.A();
-                  this.W = "Lunge blocked by " + var3;
+               this.S(var3);
+               this.a = "Waiting for " + var3;
+               if (++this.h > 10) {
+                  mt.K("LungeSwap", "Charged jab lapsed, held by {}", var3);
+                  _m.w(this);
+                  this.m();
+                  this.a = "Lunge blocked by " + var3;
                }
             } else {
-               d8.A(this, () -> {
-                  if (this.U == LungeSwapModule.c.J && this.A() == null) {
-                     this.S(true);
+               _m.F(this, () -> {
+                  if (this.V == LungeSwapModule.f.a && this.D() == null) {
+                     this.i(true);
                   }
-               }, () -> this.U == LungeSwapModule.c.J && this.A() == null);
+               }, () -> this.V == LungeSwapModule.f.a && this.D() == null);
             }
          }
       } else {
-         r4.V("LungeSwap", "Charge interrupted after {} ticks: slot {} selected", this.c, var1.getInventory().getSelectedSlot() + 1);
-         d8.K(this);
-         this.W();
-         this.W = "Swap interrupted";
+         mt.K("LungeSwap", "Charge interrupted after {} ticks: slot {} selected", this.g, var1.getInventory().getSelectedSlot() + 1);
+         _m.w(this);
+         this.h();
+         this.a = "Swap interrupted";
       }
    }
 
-   private void S(boolean var1) {
+   private void i(boolean var1) {
       LocalPlayer var2 = mc.player;
-      ItemStack var3 = var2.getInventory().getItem(this.O);
-      int var4 = var1 && this.U == LungeSwapModule.c.L ? 1 : 0;
-      if (var3.isItemEnabled(this.o.enabledFeatures())) {
+      ItemStack var3 = var2.getInventory().getItem(this.M);
+      int var4 = var1 && this.V == LungeSwapModule.f.z ? 1 : 0;
+      if (var3.isItemEnabled(this.X.enabledFeatures())) {
          mc.gameMode.piercingAttack(var3.getAttackAnimation(), (PiercingWeapon)var3.get(DataComponents.PIERCING_WEAPON));
-         this.W = "Lunged";
-         this.K = 12;
-         this.M = 0.0;
-         this.b = var2.position();
-         this.q = (boolean)(var4 != 0 && this.Y ? 1 : 0);
+         this.a = "Lunged";
+         this.l = 12;
+         this.w = 0.0;
+         this.F = var2.position();
+         this.b = (boolean)(var4 != 0 && this.U ? 1 : 0);
       } else {
-         this.W = "Spear not enabled here";
+         this.a = "Spear not enabled here";
       }
 
-      int var5 = this.C + this.Z + this.c;
-      this.U = LungeSwapModule.c.i;
-      this.G = this.n(this.z, this.V);
-      r4.V(
+      int var5 = this.c + this.h + this.g;
+      this.V = LungeSwapModule.f.f;
+      this.N = this.B(this.L, this.B);
+      mt.K(
          "LungeSwap",
          "{}: {} {} rule, slot {} ({}, charge {}) to spear slot {} (Lunge {}) {} ticks after the press{}; food {}, ground {}, sprint {}",
-         this.W,
-         this.x.getValue(),
-         this.B,
-         this.F + 1,
-         this.S,
-         w(this.r),
-         this.O + 1,
-         this.m(this.O),
+         this.a,
+         this.f.P(),
+         this.C,
+         this.D + 1,
+         this.n,
+         Q(this.m),
+         this.M + 1,
+         this.e(this.M),
          var5,
          var4 != 0 ? ", swapped in the jab tick" : (var1 ? ", spear charged after the swap" : ", spear already held"),
          var2.getFoodData().getFoodLevel(),
          var2.onGround(),
          var2.isSprinting()
       );
-      if (this.G > 1) {
-         r4.V("LungeSwap", "Swap back in {} ticks", this.G);
+      if (this.N > 1) {
+         mt.K("LungeSwap", "Swap back in {} ticks", this.N);
       }
    }
 
-   private void A() {
+   private void m() {
       LocalPlayer var1 = getMc() == null ? null : mc.player;
-      if (var1 != null && var1 == this.A && var1.level() == this.o) {
-         int var2 = q(this.c(), this.X.getValue(), this.R.getValue().intValue() - 1, this.F, var1.getInventory().getSelectedSlot(), this.O);
+      if (var1 != null && var1 == this.Y && var1.level() == this.X) {
+         int var2 = K(this.s(), this.e.P(), this.t.P().intValue() - 1, this.D, var1.getInventory().getSelectedSlot(), this.M);
          if (var2 >= 0) {
             var1.getInventory().setSelectedSlot(var2);
          }
       }
 
-      this.W();
+      this.h();
    }
 
-   private void T(boolean var1) {
-      d8.K(this);
-      if (this.U != LungeSwapModule.c.P) {
-         r4.V("LungeSwap", "Cancelled at {}; restore={}, status {}", this.U, var1, this.W);
+   private void Z(boolean var1) {
+      _m.w(this);
+      if (this.V != LungeSwapModule.f.F) {
+         mt.K("LungeSwap", "Cancelled at {}; restore={}, status {}", this.V, var1, this.a);
       }
 
-      if (!var1 || this.U != LungeSwapModule.c.i && this.U != LungeSwapModule.c.J) {
-         this.W();
+      if (!var1 || this.V != LungeSwapModule.f.f && this.V != LungeSwapModule.f.a) {
+         this.h();
       } else {
-         this.A();
+         this.m();
       }
    }
 
-   private void W() {
-      this.U = LungeSwapModule.c.P;
-      this.Y = (boolean)0;
-      this.F = this.O = -1;
-      this.m = this.G = 0;
-      this.C = this.Z = this.c = this.H = 0;
-      this.J = -1;
-      this.N = (boolean)0;
-      this.k = "";
+   private void h() {
+      this.V = LungeSwapModule.f.F;
+      this.U = (boolean)0;
+      this.D = this.M = -1;
+      this.H = this.N = 0;
+      this.c = this.h = this.g = this.d = 0;
+      this.I = -1;
+      this.O = (boolean)0;
+      this.S = "";
    }
 
-   private boolean Q(int var1) {
-      return this.m(var1) > 0;
+   private boolean F(int var1) {
+      return this.e(var1) > 0;
    }
 
-   private int m(int var1) {
+   private int e(int var1) {
       if (var1 >= 0 && var1 < 9 && mc.player != null && mc.level != null) {
          ItemStack var2 = mc.player.getInventory().getItem(var1);
          if (!var2.has(DataComponents.PIERCING_WEAPON)) {
@@ -744,14 +751,14 @@ public final class LungeSwapModule extends Module {
       }
    }
 
-   private static String w(double var0) {
+   private static String Q(double var0) {
       return String.format(Locale.ROOT, "%.2f", var0);
    }
 
-   public enum c {
-      P,
-      L,
-      J,
-      i;
+   public enum f {
+      F,
+      z,
+      a,
+      f;
    }
 }

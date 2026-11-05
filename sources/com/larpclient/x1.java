@@ -1,302 +1,283 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.textures.GpuTexture;
-import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.blaze3d.platform.NativeImage;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Optional;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.MipmapStrategy;
+import net.minecraft.client.renderer.texture.ReloadableTexture;
+import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.metadata.texture.TextureMetadataSection;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 public final class x1 {
-   private static final m_ W = new m_();
-   private static GpuTexture y;
-   private static GpuTexture N;
-   private static GpuTextureView Q;
-   private static GpuTextureView q;
-   private static GpuTexture O;
-   private static GpuTexture L;
-   private static GpuTexture x;
-   private static GpuTextureView G;
-   private static boolean H;
-   private static boolean i;
-   private static boolean g;
-   private static boolean M;
-   private static boolean A;
-   private static boolean t;
-   private static int U = -1;
+   public static final Identifier i = Identifier.fromNamespaceAndPath("larp-client", "crosshair/crosshair.png");
+   static final int y = 4096;
+   static final int e = 512;
+   static final int l = 16777216;
+   private static final x1.d c = new x1.d("live");
+   private static final x1.d b = new x1.d("preview");
+   private static x1.g g;
+   private static boolean d;
+   private static TextureManager w;
 
-   public static void X() {
-      if (U != jk.v) {
-         U = jk.v;
-         t = (boolean)0;
-         M = (boolean)0;
-         g = (boolean)0;
+   private x1() {
+   }
 
-         try {
-            k();
-         } catch (RuntimeException var1) {
-            t = (boolean)1;
-            M = (boolean)1;
-            g = (boolean)1;
-            r4.r("Scene resources", "Generation cleanup failed; geometric materials retained until resource reload", var1);
-         }
+   public static x1.b o(int var0, boolean var1) {
+      if (!d) {
+         d = (boolean)1;
+         g = U();
       }
 
-      W.w();
-      A = (boolean)0;
-      i = (boolean)0;
-      H = (boolean)0;
-   }
-
-   public static void t() {
-      if (!t) {
-         try {
-            GpuTexture var0 = Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture();
-            if (var0 == null) {
-               return;
-            }
-
-            if (!T(x, var0)) {
-               i();
-               x = p("Larp depth before translucent terrain", var0);
-               G = RenderSystem.getDevice().createTextureView(x);
-            }
-
-            s(var0, x);
-            A = (boolean)1;
-            h_.A("Scene depth copies", 1L);
-         } catch (RuntimeException var3) {
-            t = (boolean)1;
-
-            try {
-               i();
-            } catch (RuntimeException var2) {
-               var3.addSuppressed(var2);
-            }
-
-            r4.r("Scene resources", "Depth before translucent terrain failed; local glow stays hidden behind glass until resource reload", var3);
-         }
-      }
-   }
-
-   public static GpuTextureView G() {
-      return A ? G : null;
-   }
-
-   public static void N() {
-      W.F();
-   }
-
-   public static void p() {
-      W.m();
-   }
-
-   public static GpuTextureView x() {
-      H = (boolean)1;
-      if (g) {
+      if (g == null) {
          return null;
       }
 
-      try {
-         GpuTexture var0 = Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTexture();
-         if (var0 == null) {
+      TextureManager var2 = Minecraft.getInstance().getTextureManager();
+      if (var2 != w) {
+         c.q = b.q = null;
+         c.D = b.D = -1;
+         w = var2;
+      }
+
+      x1.d var3 = var1 ? b : c;
+      int var4 = Math.clamp(var0, 1, 512);
+      int var5 = W(g, var4);
+      if (var3.q == null || var5 != var3.D) {
+         x1.t var6 = new x1.t(var3.S, g(g, var4));
+
+         try {
+            w.registerAndLoad(var3.S, var6);
+         } catch (RuntimeException var8) {
+            var6.close();
+            g = null;
+            c.A(w);
+            b.A(w);
+            mt.P("Crosshair", "Image upload failed; using Star of David until the module is re-enabled", var8);
             return null;
          }
 
-         if (!T(y, var0)) {
-            Z();
-            y = p("Larp shared scene color", var0);
-            Q = RenderSystem.getDevice().createTextureView(y);
-            W.F();
+         var3.q = var6;
+         var3.D = var5;
+         mt.U("Crosshair", "Prepared image at {}x{} for {} pixels", var6.X.width(), var6.X.height(), var4);
+      }
+
+      return new x1.b(var3.S, var3.q.X.width(), var3.q.X.height());
+   }
+
+   public static void z() {
+      d = (boolean)0;
+      g = null;
+      if (c.q != null || b.q != null) {
+         TextureManager var0 = Minecraft.getInstance().getTextureManager();
+         c.A(var0);
+         b.A(var0);
+      }
+   }
+
+   private static x1.g U() {
+      Optional var0 = Minecraft.getInstance().getResourceManager().getResource(i);
+      if (var0.isEmpty()) {
+         mt.T("Crosshair", "{} is not in the mod; using Star of David", i);
+         return null;
+      }
+
+      try (InputStream var1 = ((Resource)var0.get()).open()) {
+         x1.m var2 = y(var1);
+         mt.K("Crosshair", "Loaded {} ({}), kept at {}x{}", i, var2.original(), var2.picture().width(), var2.picture().height());
+         return var2.picture();
+      } catch (IOException | RuntimeException var6) {
+         mt.T("Crosshair", "Could not read {}; using Star of David: {}", i, var6.toString());
+         return null;
+      }
+   }
+
+   public static x1.m y(InputStream var0) throws IOException {
+      byte[] var1 = var0.readNBytes(16777217);
+      if (var1.length > 16777216) {
+         throw new IOException("file is larger than 16 MB");
+      }
+
+      BufferedImage var2;
+      try (ImageInputStream var3 = ImageIO.createImageInputStream(new ByteArrayInputStream(var1))) {
+         Iterator var4 = ImageIO.getImageReaders(var3);
+         if (!var4.hasNext()) {
+            throw new IOException("not a PNG image");
          }
 
-         if (var0 != O) {
-            O = var0;
-            W.F();
-         }
-
-         if (!W.Y()) {
-            s(var0, y);
-            W.E();
-            h_.A("Scene color copies", 1L);
-         }
-
-         return Q;
-      } catch (RuntimeException var3) {
-         g = (boolean)1;
+         ImageReader var5 = (ImageReader)var4.next();
 
          try {
-            Z();
-         } catch (RuntimeException var2) {
-            var3.addSuppressed(var2);
-         }
+            var5.setInput(var3);
+            if (!var5.getFormatName().equalsIgnoreCase("png")) {
+               throw new IOException("expected PNG, found " + var5.getFormatName());
+            }
 
-         r4.r("Scene resources", "Color capture failed; geometric materials retained until resource reload", var3);
-         return null;
+            int var6 = var5.getWidth(0);
+            int var7 = var5.getHeight(0);
+            if (var6 > 4096 || var7 > 4096) {
+               throw new IOException(var6 + "x" + var7 + " is too large; use at most 4096 pixels per side");
+            }
+
+            var2 = var5.read(0);
+         } finally {
+            var5.dispose();
+         }
       }
+
+      int var15 = var2.getWidth();
+      int var16 = var2.getHeight();
+      x1.g var17 = new x1.g(var15, var16, var2.getRGB(0, 0, var15, var16, null, 0, var15));
+
+      while (Math.max(var17.width(), var17.height()) > 512) {
+         var17 = n(var17);
+      }
+
+      return new x1.m(U(var17), var15 + "x" + var16);
    }
 
-   public static GpuTextureView z() {
-      i = (boolean)1;
-      if (M) {
-         return null;
+   public static int W(x1.g var0, int var1) {
+      int var2 = 0;
+      int var3 = Math.max(var0.width(), var0.height());
+
+      for (int var4 = Math.min(var0.width(), var0.height()); var3 >= var1 * 2 && var4 > 1; var4 = Math.max(1, var4 / 2)) {
+         var2++;
+         var3 = Math.max(1, var3 / 2);
       }
 
-      try {
-         GpuTexture var0 = Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture();
-         if (var0 == null) {
-            return null;
-         }
-
-         if (!T(N, var0)) {
-            g();
-            N = p("Larp shared scene depth", var0);
-            q = RenderSystem.getDevice().createTextureView(N);
-            W.m();
-         }
-
-         if (var0 != L) {
-            L = var0;
-            W.m();
-         }
-
-         if (!W.N()) {
-            s(var0, N);
-            W.l();
-            h_.A("Scene depth copies", 1L);
-         }
-
-         return q;
-      } catch (RuntimeException var3) {
-         M = (boolean)1;
-
-         try {
-            g();
-         } catch (RuntimeException var2) {
-            var3.addSuppressed(var2);
-         }
-
-         r4.r("Scene resources", "Depth capture failed; hard-depth geometry retained until resource reload", var3);
-         return null;
-      }
-   }
-
-   private static boolean T(GpuTexture var0, GpuTexture var1) {
-      return var0 != null && var0.getWidth(0) == var1.getWidth(0) && var0.getHeight(0) == var1.getHeight(0) && var0.getFormat() == var1.getFormat();
-   }
-
-   private static GpuTexture p(String var0, GpuTexture var1) {
-      GpuTexture var2 = RenderSystem.getDevice()
-         .createTexture(var0, 5 | (var1.getFormat().hasDepthAspect() ? 8 : 0), var1.getFormat(), var1.getWidth(0), var1.getHeight(0), 1, 1);
-      r4.g("Scene resources", "Allocated {} {}x{}, {} bytes before alignment", var0, var1.getWidth(0), var1.getHeight(0), w(var2));
       return var2;
    }
 
-   private static void s(GpuTexture var0, GpuTexture var1) {
-      if (var0 == var1) {
-         throw new IllegalStateException("Scene capture aliases output");
+   public static x1.g g(x1.g var0, int var1) {
+      x1.g var2 = var0;
+
+      for (int var3 = W(var0, var1); var3 > 0; var3--) {
+         var2 = n(var2);
       }
 
-      RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(var0, var1, 0, 0, 0, 0, 0, var0.getWidth(0), var0.getHeight(0));
+      return var2 == var0 ? var0 : U(var2);
    }
 
-   private static long w(GpuTexture var0) {
-      return var0 == null ? 0L : (long)var0.getWidth(0) * var0.getHeight(0) * var0.getFormat().blockSize();
-   }
+   private static x1.g n(x1.g var0) {
+      int var1 = Math.max(1, var0.width() / 2);
+      int var2 = Math.max(1, var0.height() / 2);
+      int[] var3 = new int[var1 * var2];
 
-   public static long A() {
-      return w(y) + w(N) + w(x);
-   }
+      for (int var4 = 0; var4 < var2; var4++) {
+         for (int var5 = 0; var5 < var1; var5++) {
+            long var6 = 0L;
+            long var8 = 0L;
+            long var10 = 0L;
+            long var12 = 0L;
 
-   public static void V() {
-      try {
-         if (!H) {
-            Z();
-         }
-      } finally {
-         try {
-            if (!i) {
-               g();
+            for (int var14 = 0; var14 < 2; var14++) {
+               for (int var15 = 0; var15 < 2; var15++) {
+                  int var16 = var0.pixels()[Math.min(var4 * 2 + var14, var0.height() - 1) * var0.width() + Math.min(var5 * 2 + var15, var0.width() - 1)];
+                  int var17 = var16 >>> 24;
+                  var6 += var17;
+                  var8 += (var16 >> 16 & 0xFF) * var17;
+                  var10 += (var16 >> 8 & 0xFF) * var17;
+                  var12 += (var16 & 0xFF) * var17;
+               }
             }
-         } finally {
-            if (!A) {
-               i();
+
+            var3[var4 * var1 + var5] = var6 == 0L
+               ? 0
+               : (int)Math.round(var6 / 4.0) << 24 | (int)(var8 / var6) << 16 | (int)(var10 / var6) << 8 | (int)(var12 / var6);
+         }
+      }
+
+      return new x1.g(var1, var2, var3);
+   }
+
+   private static x1.g U(x1.g var0) {
+      int var1 = var0.width();
+      int var2 = var0.height();
+      int[] var3 = (int[])var0.pixels().clone();
+
+      for (int var4 = 0; var4 < var2; var4++) {
+         for (int var5 = 0; var5 < var1; var5++) {
+            if (var0.pixels()[var4 * var1 + var5] >>> 24 == 0) {
+               for (int var6 = 0; var6 < 4; var6++) {
+                  int var7 = var5 + (var6 == 0 ? -1 : (var6 == 1 ? 1 : 0));
+                  int var8 = var4 + (var6 == 2 ? -1 : (var6 == 3 ? 1 : 0));
+                  if (var7 >= 0 && var8 >= 0 && var7 < var1 && var8 < var2) {
+                     int var9 = var0.pixels()[var8 * var1 + var7];
+                     if (var9 >>> 24 != 0) {
+                        var3[var4 * var1 + var5] = var9 & 16777215;
+                        break;
+                     }
+                  }
+               }
             }
          }
       }
 
-      h_.S("Scene attachment bytes (estimate)", A());
+      return new x1.g(var1, var2, var3);
    }
 
-   private static void Z() {
-      GpuTextureView var0 = Q;
-      GpuTexture var1 = y;
-      Q = null;
-      y = null;
-      O = null;
+   public record b(Identifier id, int width, int height) {
+   }
 
-      try {
-         if (var0 != null) {
-            var0.close();
-         }
-      } finally {
-         if (var1 != null) {
-            var1.close();
-         }
+   private static final class d {
+      final Identifier S;
+      x1.t q;
+      int D = -1;
+
+      d(String var1) {
+         this.S = Identifier.fromNamespaceAndPath("larp-client", "crosshair/image-" + var1);
       }
 
-      W.F();
-   }
-
-   private static void g() {
-      GpuTextureView var0 = q;
-      GpuTexture var1 = N;
-      q = null;
-      N = null;
-      L = null;
-
-      try {
-         if (var0 != null) {
-            var0.close();
+      void A(TextureManager var1) {
+         if (this.q != null) {
+            var1.release(this.S);
+            this.q = null;
          }
-      } finally {
-         if (var1 != null) {
-            var1.close();
-         }
-      }
 
-      W.m();
-   }
-
-   private static void i() {
-      GpuTextureView var0 = G;
-      GpuTexture var1 = x;
-      G = null;
-      x = null;
-      A = (boolean)0;
-
-      try {
-         if (var0 != null) {
-            var0.close();
-         }
-      } finally {
-         if (var1 != null) {
-            var1.close();
-         }
+         this.D = -1;
       }
    }
 
-   public static void k() {
-      try {
-         Z();
-      } finally {
+   public record g(int width, int height, int[] pixels) {
+   }
+
+   public record m(x1.g picture, String original) {
+   }
+
+   private static final class t extends ReloadableTexture {
+      final x1.g X;
+
+      t(Identifier var1, x1.g var2) {
+         super(var1);
+         this.X = var2;
+      }
+
+      public TextureContents loadContents(ResourceManager var1) {
+         NativeImage var2 = new NativeImage(this.X.width(), this.X.height(), false);
+
          try {
-            g();
-         } finally {
-            i();
-            W.i();
+            for (int var3 = 0; var3 < this.X.height(); var3++) {
+               for (int var4 = 0; var4 < this.X.width(); var4++) {
+                  var2.setPixel(var4, var3, this.X.pixels()[var3 * this.X.width() + var4]);
+               }
+            }
+
+            return new TextureContents(var2, new TextureMetadataSection(true, true, MipmapStrategy.MEAN, 0.0F));
+         } catch (RuntimeException var5) {
+            var2.close();
+            throw var5;
          }
       }
-   }
-
-   private x1() {
    }
 }

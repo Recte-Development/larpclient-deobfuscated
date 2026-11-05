@@ -1,127 +1,92 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Builder;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.ptr.IntByReference;
 import java.io.IOException;
-import java.io.InputStream;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Quaternionfc;
+import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
 
-public final class _i {
-   public static final String G = "Tung Tung Tung Sahur";
-   private static final Identifier c = Identifier.fromNamespaceAndPath("larp-client", "models/pets/sahur/mesh.bin");
-   private static final RenderType k = m(false);
-   private static final RenderType I = m(true);
-   private static ed.q V;
-   private static long Z = -1L;
-   private static long v = -1L;
+final class _i implements ByteChannel {
+   private final HANDLE B;
+   private final IntByReference P = new IntByReference();
+   private final IntByReference p = new IntByReference();
+   private volatile boolean n = (boolean)1;
 
-   private static RenderType m(boolean var0) {
-      Builder var1 = RenderPipeline.builder(new Snippet[]{RenderPipelines.GUI_TEXTURED_SNIPPET})
-         .withLocation(Identifier.fromNamespaceAndPath("larp-client", var0 ? "sahur_strike" : "sahur_pet"))
-         .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "particle/sprite"))
-         .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
-         .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true))
-         .withColorTargetState(ColorTargetState.DEFAULT)
-         .withCull(true);
-      if (var0) {
-         var1.withShaderDefine("DITHER_FADE");
+   _i(String var1) throws IOException {
+      this.B = Kernel32.INSTANCE.CreateFile(var1, -1073741824, 0, null, 3, 0, null);
+      if (WinBase.INVALID_HANDLE_VALUE.equals(this.B)) {
+         throw R("open");
       }
 
-      return RenderType.create(
-         var0 ? "larp_sahur_strike" : "larp_sahur_pet",
-         RenderSetup.builder(var1.build())
-            .withTexture("Sampler0", Identifier.fromNamespaceAndPath("larp-client", "models/pets/sahur/albedo.png"))
-            .createRenderSetup()
-      );
-   }
-
-   public static boolean V() {
-      return V != null && Z == jk.v;
-   }
-
-   public static ed.q P() {
-      if (!V()) {
-         throw new IllegalStateException("Sahur asset is not prepared");
-      } else {
-         return V;
+      if (!Kernel32.INSTANCE.SetNamedPipeHandleState(this.B, new IntByReference(1), null, null)) {
+         IOException var2 = R("nonblocking mode");
+         this.close();
+         throw var2;
       }
    }
 
-   public static void h() {
-      if (V == null || Z != jk.v) {
-         V = null;
+   @Override
+   public synchronized int read(ByteBuffer var1) throws IOException {
+      if (!this.n) {
+         return -1;
+      }
 
-         try (InputStream var0 = Minecraft.getInstance().getResourceManager().getResourceOrThrow(c).open()) {
-            ed.q var1 = ed.r(var0);
-            e4.U(k.pipeline());
-            V = var1;
-            Z = jk.v;
-            r4.g("Sahur", "Static mesh ready: {} triangles, resource generation {}", V.triangles(), Z);
-         } catch (IOException var5) {
-            throw new IllegalStateException("Sahur asset load failed; reload resources to retry", var5);
+      if (!var1.hasRemaining()) {
+         return 0;
+      }
+
+      if (!Kernel32.INSTANCE.PeekNamedPipe(this.B, null, 0, null, this.P, null)) {
+         throw R("peek");
+      }
+
+      int var2 = Math.min(var1.remaining(), this.P.getValue());
+      if (var2 == 0) {
+         return 0;
+      }
+
+      byte[] var3 = new byte[var2];
+      if (!Kernel32.INSTANCE.ReadFile(this.B, var3, var2, this.p, null)) {
+         throw R("read");
+      }
+
+      var1.put(var3, 0, this.p.getValue());
+      return this.p.getValue();
+   }
+
+   @Override
+   public synchronized int write(ByteBuffer var1) throws IOException {
+      if (!this.n) {
+         throw new IOException("Discord pipe closed");
+      }
+
+      byte[] var2 = new byte[var1.remaining()];
+      var1.duplicate().get(var2);
+      if (!Kernel32.INSTANCE.WriteFile(this.B, var2, var2.length, this.p, null)) {
+         throw R("write");
+      }
+
+      var1.position(var1.position() + this.p.getValue());
+      return this.p.getValue();
+   }
+
+   @Override
+   public boolean isOpen() {
+      return this.n;
+   }
+
+   @Override
+   public synchronized void close() throws IOException {
+      if (this.n) {
+         this.n = (boolean)0;
+         if (!Kernel32.INSTANCE.CloseHandle(this.B)) {
+            throw R("close");
          }
       }
    }
 
-   public static void c() {
-      h();
-      if (v != jk.v) {
-         e4.U(I.pipeline());
-         v = jk.v;
-      }
-   }
-
-   public static void b(r6 var0, Vec3 var1, Quaternionfc var2, float var3) {
-      if (V()) {
-         var0.R(k, var1, var2, var3, V.vertices(), V.colors());
-         h_.A("Sahur triangles", V.triangles());
-      }
-   }
-
-   public static void g(PoseStack var0, y2 var1, Matrix4f var2) {
-      if (V()) {
-         Matrix4f var3 = new Matrix4f(var0.last().pose()).mul(var2);
-         r6.D(var1, k, var3, V.vertices(), V.colors());
-         h_.A("Sahur triangles", V.triangles());
-      }
-   }
-
-   public static void s(PoseStack var0, y2 var1, Matrix4f var2, float[] var3, int[] var4) {
-      if (V()) {
-         Matrix4f var5 = new Matrix4f(var0.last().pose()).mul(var2);
-         r6.D(var1, k, var5, var3, var4);
-         h_.A("Sahur triangles", var4.length / 3);
-      }
-   }
-
-   public static void L(PoseStack var0, y2 var1, Matrix4f var2, float[] var3, int[] var4, double var5) {
-      if (V() && !(var5 <= 0.001)) {
-         Matrix4f var7 = new Matrix4f(var0.last().pose()).mul(var2);
-         VertexConsumer var8 = var1.a(I);
-
-         for (int var9 = 0; var9 < var4.length; var9++) {
-            int var10 = var9 * 5;
-            var8.addVertex(var7, var3[var10], var3[var10 + 1], var3[var10 + 2]).setUv(var3[var10 + 3], var3[var10 + 4]).setColor(oh.S(var4[var9], var5));
-         }
-
-         h_.A("Sahur triangles", var4.length / 3);
-      }
-   }
-
-   private _i() {
+   private static IOException R(String var0) {
+      return new IOException("Discord pipe " + var0 + " failed (Win32 " + Kernel32.INSTANCE.GetLastError() + ")");
    }
 }

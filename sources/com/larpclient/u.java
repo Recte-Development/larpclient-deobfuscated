@@ -1,12 +1,18 @@
 package com.larpclient;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix4fc;
+import org.joml.Quaternionfc;
+
 public final class u {
-   private u() {
+   public static void v(PoseStack var0, Quaternionfc var1) {
+      var0.rotate(var1);
    }
 
-   public static void O(String var0) {
-      if (var0 != null && !var0.isBlank()) {
-         r4.g("Rig/Baccarat", "{}", var0.replace('\r', ' ').replace('\n', ' '));
-      }
+   public static void v(PoseStack var0, Matrix4fc var1) {
+      var0.mulPose(var1);
+   }
+
+   private u() {
    }
 }

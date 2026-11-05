@@ -1,59 +1,34 @@
 package com.larpclient;
 
-import com.larpclient.module.HeadlessKorbloxModule;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.item.ItemStack;
+import java.util.Optional;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class p1 {
+   public static Optional<Vec3> S(Vec3 var0, Vec3 var1, AABB var2, double var3) {
+      if (!Double.isFinite(var3) || var3 < 0.0) {
+         return Optional.empty();
+      } else {
+         return var2.contains(var0) ? Optional.of(var0) : var2.clip(var0, var0.add(var1.normalize().scale(var3)));
+      }
+   }
+
+   public static double X(Vec3 var0, AABB var1) {
+      return var0.distanceTo(
+         new Vec3(Math.clamp(var0.x, var1.minX, var1.maxX), Math.clamp(var0.y, var1.minY, var1.maxY), Math.clamp(var0.z, var1.minZ, var1.maxZ))
+      );
+   }
+
+   public static boolean H(Vec3 var0, Vec3 var1, AABB var2) {
+      double var3 = var0.distanceToSqr(var1);
+      if (var2.contains(var0)) {
+         return var3 > 1.0E-7;
+      }
+
+      Optional var5 = var2.clip(var0, var1);
+      return var5.isPresent() && var0.distanceToSqr((Vec3)var5.get()) + 1.0E-7 < var3;
+   }
+
    private p1() {
-   }
-
-   public static void m(Avatar var0, AvatarRenderState var1) {
-      pq var2 = (pq)var1;
-      var2.larp$roblox(0, null);
-      HeadlessKorbloxModule var3 = HeadlessKorbloxModule.U();
-      int var4 = var3 == null ? 0 : var3.u(var0);
-      fd var5 = var3 == null ? null : var3.g(var0);
-      if (var5 != null && !fa.t()) {
-         var5 = null;
-      }
-
-      var2.larp$roblox(var4, var5);
-      if (var4 == 2) {
-         P(var1);
-      }
-   }
-
-   public static void P(HumanoidRenderState var0) {
-      var0.headEquipment = ItemStack.EMPTY;
-      var0.headItem.clear();
-      var0.wornHeadType = null;
-      var0.wornHeadProfile = null;
-   }
-
-   public static boolean h(PlayerModel var0, boolean var1, int var2, fd var3) {
-      int var4 = var1 && var2 != 0 && var0.head.visible ? 1 : 0;
-      if (var4 != 0) {
-         var0.head.visible = (boolean)0;
-      }
-
-      if (var3 != null) {
-         if (var3.right()) {
-            var0.rightLeg.visible = (boolean)0;
-         }
-
-         if (var3.left()) {
-            var0.leftLeg.visible = (boolean)0;
-         }
-      }
-
-      return (boolean)var4;
-   }
-
-   public static void w(AvatarRenderState var0) {
-      ((pq)var0).larp$roblox(0, null);
    }
 }

@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larpclient.d8;
-import com.larpclient.mh;
+import com.larpclient._m;
+import com.larpclient.xq;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,30 +15,30 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class ReachModule extends Module {
-   private final lc E = this.addSetting(new lc("Combat", "Combat interaction range", 3.5, 3.0, 6.0, 0.1));
-   private final lc X = this.addSetting(new lc("Block", "Block interaction range", 4.5, 4.5, 8.0, 0.1));
-   private final lp N = this.addSetting(new lp("Mode", "Fixed or nearby-target-limited range", "Normal", "Normal", "Dynamic"));
-   private final ln m = this.addSetting(new ln("OnlySword", "Only while holding a supported weapon (includes axes, trident and mace)", false));
-   private static ReachModule M;
-   private final mh v = new mh();
-   private final mh D = new mh();
-   private ReachModule.y q;
+   private final d9 t = this.addSetting(new d9("Combat", "Combat interaction range", 3.5, 3.0, 6.0, 0.1));
+   private final d9 C = this.addSetting(new d9("Block", "Block interaction range", 4.5, 4.5, 8.0, 0.1));
+   private final d6 U = this.addSetting(new d6("Mode", "Fixed or nearby-target-limited range", "Normal", "Normal", "Dynamic"));
+   private final dh B = this.addSetting(new dh("OnlySword", "Only while holding a supported weapon (includes axes, trident and mace)", false));
+   private static ReachModule m;
+   private final xq w = new xq();
+   private final xq X = new xq();
+   private ReachModule.a p;
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    public ReachModule() {
       super("Reach", "Adjust attack and block reach", Category.COMBAT, -1);
-      M = this;
+      m = this;
    }
 
-   public static ReachModule I() {
-      return M;
+   public static ReachModule w() {
+      return m;
    }
 
-   public static boolean s() {
+   public static boolean p() {
       LocalPlayer var0 = getMc().player;
       if (var0 == null) {
          return false;
@@ -61,30 +61,30 @@ public class ReachModule extends Module {
          || var1.is(Items.MACE);
    }
 
-   private boolean f() {
+   private boolean H() {
       return this.isInGame();
    }
 
-   private boolean i() {
-      return this.isRuntimeActive() && this.f() && (!this.m.getValue() || s());
+   private boolean I() {
+      return this.isRuntimeActive() && this.H() && (!this.B.P() || p());
    }
 
    @Override
    public String getStatus() {
-      return this.i() ? "Configured range active" : "Waiting for player or weapon condition";
+      return this.I() ? "Configured range active" : "Waiting for player or weapon condition";
    }
 
    @Override
    public void onTick() {
-      int var10000 = this.i();
+      int var10000 = this.I();
       boolean var11 = false;
       byte var10 = (byte)var10000;
       var10000 = Integer.signum(var10);
       if ((var10000 | -var10000) >>> 31 == 0) {
          this.onDisable();
       } else {
-         double var1 = this.E.getValue();
-         int var18 = this.N.i("Dynamic");
+         double var1 = this.t.P();
+         int var18 = this.U.S("Dynamic");
          boolean var13 = false;
          byte var12 = (byte)var18;
          var18 = Integer.signum(var12);
@@ -93,35 +93,35 @@ public class ReachModule extends Module {
 
             for (Entity var6 : mc.level.entitiesForRendering()) {
                if (var6 != mc.player && var6.isAlive() && var6.isPickable()) {
-                  var3 = Math.min(var3, d8.L(var6) + 0.5);
+                  var3 = Math.min(var3, _m.p(var6) + 0.5);
                }
             }
 
             var1 = Math.max(3.0, var3);
          }
 
-         this.v.e(mc.player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE), var1);
-         this.D.e(mc.player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE), this.X.getValue());
+         this.w.E(mc.player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE), var1);
+         this.X.E(mc.player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE), this.C.P());
          IntegratedServer var14 = mc.getSingleplayerServer();
          if (var14 == null) {
-            this.e();
+            this.b();
          } else {
-            if (this.q == null || this.q.H != var14) {
-               this.e();
-               this.q = new ReachModule.y(var14);
+            if (this.p == null || this.p.n != var14) {
+               this.b();
+               this.p = new ReachModule.a(var14);
             }
 
-            ReachModule.y var4 = this.q;
+            ReachModule.a var4 = this.p;
             UUID var15 = mc.player.getUUID();
             double var16 = var1;
-            double var8 = this.X.getValue();
+            double var8 = this.C.P();
             var14.execute(() -> {
                ServerPlayer var7 = var14.getPlayerList().getPlayer(var15);
-               if (var4.u && var7 != null && var7.isAlive()) {
-                  var4.Q.e(var7.getAttribute(Attributes.ENTITY_INTERACTION_RANGE), var16);
-                  var4.I.e(var7.getAttribute(Attributes.BLOCK_INTERACTION_RANGE), var8);
+               if (var4.y && var7 != null && var7.isAlive()) {
+                  var4.p.E(var7.getAttribute(Attributes.ENTITY_INTERACTION_RANGE), var16);
+                  var4.L.E(var7.getAttribute(Attributes.BLOCK_INTERACTION_RANGE), var8);
                } else {
-                  var4.U();
+                  var4.R();
                }
             });
          }
@@ -130,58 +130,58 @@ public class ReachModule extends Module {
 
    @Override
    public void onDisable() {
-      this.v.e();
-      this.D.e();
-      this.e();
+      this.w.e();
+      this.X.e();
+      this.b();
    }
 
-   private void e() {
-      ReachModule.y var1 = this.q;
-      this.q = null;
+   private void b() {
+      ReachModule.a var1 = this.p;
+      this.p = null;
       if (var1 != null) {
-         var1.u = (boolean)0;
-         var1.H.execute(var1::U);
+         var1.y = (boolean)0;
+         var1.n.execute(var1::R);
       }
    }
 
-   public void V(AttributeInstance var1) {
-      this.v.v(var1);
-      this.D.v(var1);
+   public void W(AttributeInstance var1) {
+      this.w.Q(var1);
+      this.X.Q(var1);
    }
 
-   public double P() {
+   public double y() {
       return getMc().player == null ? 3.0 : getMc().player.entityInteractionRange();
    }
 
-   public double Q() {
-      return this.P();
+   public double L() {
+      return this.y();
+   }
+
+   public double N() {
+      return this.y();
    }
 
    public double D() {
-      return this.P();
-   }
-
-   public double K() {
       return getMc().player == null ? 4.5 : getMc().player.blockInteractionRange();
    }
 
-   public boolean s(Entity var1) {
-      return d8.M(var1, this.P());
+   public boolean m(Entity var1) {
+      return _m.b(var1, this.y());
    }
 
-   private static final class y {
-      final MinecraftServer H;
-      final mh Q = new mh();
-      final mh I = new mh();
-      volatile boolean u = (boolean)1;
+   private static final class a {
+      final MinecraftServer n;
+      final xq p = new xq();
+      final xq L = new xq();
+      volatile boolean y = (boolean)1;
 
-      y(MinecraftServer var1) {
-         this.H = var1;
+      a(MinecraftServer var1) {
+         this.n = var1;
       }
 
-      void U() {
-         this.Q.e();
-         this.I.e();
+      void R() {
+         this.p.e();
+         this.L.e();
       }
    }
 }

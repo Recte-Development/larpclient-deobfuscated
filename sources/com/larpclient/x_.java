@@ -1,35 +1,44 @@
 package com.larpclient;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.world.phys.Vec3;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.IntPredicate;
 
-public final class x_ {
-   public static final List<jr.l> a = b();
+final class x_ {
+   static int H(int var0, int[] var1) {
+      return N(var0, var1, var0x -> false);
+   }
 
-   private static List<jr.l> b() {
-      Vec3[] var0 = new Vec3[6];
-
-      for (int var1 = 0; var1 < 6; var1++) {
-         double var2 = var1 * Math.PI / 3.0 - (Math.PI / 2);
-         var0[var1] = new Vec3(Math.cos(var2), 0.0, Math.sin(var2));
-      }
-
-      ArrayList var4 = new ArrayList();
-
-      for (int var5 = 0; var5 < 2; var5++) {
-         for (int var3 = 0; var3 < 3; var3++) {
-            var4.add(new jr.l(var0[var5 + var3 * 2], var0[var5 + (var3 * 2 + 2) % 6], 0.5));
+   static int N(int var0, int[] var1, IntPredicate var2) {
+      for (int var3 = 0; var3 < 36; var3++) {
+         int var4 = (var3 + 9) % 36;
+         if (var4 != var0 && var1[var4] > 0 && var2.test(var4)) {
+            return var4;
          }
       }
 
-      return List.copyOf(var4);
+      if (var1[var0] == 1) {
+         return var0;
+      }
+
+      for (int var5 = 0; var5 < 36; var5++) {
+         if (var1[var5] == 0) {
+            return var5;
+         }
+      }
+
+      return -1;
    }
 
-   public static double n(double var0, double var2, double var4) {
-      return var0 + var2 * var4;
+   static <T> Map<Integer, T> r(int var0, int var1, int var2, T var3, T var4, BiFunction<T, Integer, T> var5) {
+      return f(var0, var1, var2, 0, (T)var3, (T)var4, var5);
    }
 
-   private x_() {
+   static <T> Map<Integer, T> f(int var0, int var1, int var2, int var3, T var4, T var5, BiFunction<T, Integer, T> var6) {
+      if (var1 < 0) {
+         return Map.of();
+      } else {
+         return var0 == var1 ? Map.of(var0, (T)var6.apply(var5, 1)) : Map.of(var0, (T)var6.apply(var4, var2 - 1), var1, (T)var6.apply(var5, var3 + 1));
+      }
    }
 }

@@ -1,35 +1,35 @@
 package com.larpclient.module;
 
-import com.larpclient.dy;
-import com.larpclient.r4;
-import com.larpclient.rg;
+import com.larpclient.mt;
+import com.larpclient.p3;
+import com.larpclient.xw;
 
 public final class HandChamsModule extends Module {
-   private static HandChamsModule g;
-   public final rg S = new rg(var1 -> this.addSetting(var1));
+   private static HandChamsModule o;
+   public final p3 i = new p3(var1 -> this.addSetting(var1));
 
    public HandChamsModule() {
       super("Hand Chams", "Animated gradient outlines, fill and glow on your hands and held items", Category.RENDER, -1);
-      g = this;
+      o = this;
    }
 
-   public static HandChamsModule w() {
-      return g;
+   public static HandChamsModule e() {
+      return o;
    }
 
    @Override
    public void onEnable() {
-      r4.V("HandChams", "Echo gradient enabled for native hands and held items");
+      mt.K("HandChams", "Echo gradient enabled for native hands and held items");
    }
 
    @Override
    public void onDisable() {
-      dy.z();
-      this.S.C();
+      xw.F();
+      this.i.i();
    }
 
    @Override
    public void onTick() {
-      dy.K();
+      xw.j();
    }
 }

@@ -1,112 +1,107 @@
 package com.larpclient;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+public final class xz {
+   public static final double o = 16.0;
+   private boolean q;
+   private boolean D;
+   private boolean w;
+   private boolean a;
+   private double e = Double.NaN;
+   private double v = 4.0;
+   private double b = 1.0;
+   private long F;
 
-public final class xz<C> {
-   private C L;
-   private int e;
-   private int c;
-   private int n;
-   private int A;
-   private int l;
-   private List<int[]> q = List.of();
-
-   public void V() {
-      this.L = null;
-      this.n = this.A = 0;
+   public void I(boolean var1) {
+      this.q = var1;
+      this.D = var1;
+      this.w = this.a = (boolean)0;
+      this.e = Double.NaN;
+      this.b = 1.0;
+      this.F = 0L;
    }
 
-   public void z(int var1, int var2) {
-      if (this.L != null && this.e == var1 && this.c == var2) {
-         this.L = null;
-      }
-   }
-
-   public void a(xz.b<C> var1, int var2, int var3, int var4, int var5) {
-      if (var4 >= 1 && var4 <= 12 && var5 >= 1 && var5 <= 8) {
-         if (this.l != var4) {
-            ArrayList var6 = new ArrayList();
-
-            for (int var7 = -var4; var7 <= var4; var7++) {
-               for (int var8 = -var4; var8 <= var4; var8++) {
-                  var6.add(new int[]{var7, var8});
-               }
-            }
-
-            var6.sort(Comparator.comparingInt(var0 -> var0[0] * var0[0] + var0[1] * var0[1]));
-            this.q = List.copyOf(var6);
-            this.l = var4;
-            this.A = 0;
-         }
-
-         int var12 = 0;
-         int var13 = 0;
-         int var14 = 0;
-         int var9 = 2 * var4 + 1;
-         int var10 = var9 * var9;
-         if (this.L != null) {
-            var12++;
-            if (Math.abs((long)this.e - var2) > var4 || Math.abs((long)this.c - var3) > var4 || var1.loaded(this.e, this.c) != this.L) {
-               this.L = null;
-            }
-         }
-
-         while (var12 < 16 && var13 < 64 && var14 < var5) {
-            if (this.L == null) {
-               int var11 = this.A++ % var10;
-               this.A %= var10;
-               this.e = var2 + this.q.get(var11)[0];
-               this.c = var3 + this.q.get(var11)[1];
-               var12++;
-               if (!var1.due(this.e, this.c)) {
-                  continue;
-               }
-
-               this.L = (C)var1.loaded(this.e, this.c);
-               if (this.L == null) {
-                  continue;
-               }
-
-               this.n = 0;
-               var1.begin(this.L);
-            }
-
-            if (this.n >= var1.sections(this.L)) {
-               var1.finish(this.e, this.c);
-               this.L = null;
-            } else {
-               int var15 = this.n++;
-               var13++;
-               if (var1.candidate(this.L, var15)) {
-                  var14++;
-                  var1.scan(this.L, var15);
-               }
-            }
-         }
+   public void E(boolean var1, boolean var2, boolean var3, double var4, boolean var6) {
+      if (!var1) {
+         this.I(true);
       } else {
-         throw new IllegalArgumentException("Invalid chunk scan budget");
+         double var7 = K(var4);
+         if (this.e != var7) {
+            this.e = var7;
+            this.v = var7;
+         }
+
+         if (!var2) {
+            this.q = (boolean)0;
+         }
+
+         if (this.q) {
+            this.D = var2;
+            this.a = (boolean)0;
+         } else {
+            int var9 = var2 && !this.D ? 1 : 0;
+            if (!var3 && var9 != 0) {
+               this.w = (boolean)(!this.w ? 1 : 0);
+            }
+
+            boolean var10 = var3 ? var2 : this.w;
+            if (!var10 && this.a && !var6) {
+               this.v = this.e;
+            }
+
+            this.a = var10;
+            this.D = var2;
+         }
       }
    }
 
-   public interface b<C> {
-      C loaded(int var1, int var2);
+   public boolean z(double var1) {
+      if (this.a && Double.isFinite(var1) && var1 != 0.0) {
+         this.v = K(this.v * Math.pow(1.2, Math.clamp(var1, -8.0, 8.0)));
+         return true;
+      } else {
+         return false;
+      }
+   }
 
-      boolean due(int var1, int var2);
-
-      int sections(C var1);
-
-      boolean candidate(C var1, int var2);
-
-      void begin();
-
-      default void begin(C var1) {
-         this.begin();
+   public double t(long var1, double var3, boolean var5) {
+      double var6 = this.a ? 1.0 / this.v : 1.0;
+      if (!var5 || var3 <= 0.0 || !Double.isFinite(var3)) {
+         this.b = var6;
+      } else if (this.F != 0L && var1 > this.F) {
+         double var8 = Math.min((var1 - this.F) * 1.0E-9, 0.05);
+         this.b = this.b + (var6 - this.b) * -Math.expm1(-4.605170185988092 * var8 / var3);
+         if (Math.abs(var6 - this.b) < 1.0E-4) {
+            this.b = var6;
+         }
       }
 
-      void scan(C var1, int var2);
+      this.F = var1;
+      return this.b;
+   }
 
-      void finish(int var1, int var2);
+   public boolean k() {
+      return this.a;
+   }
+
+   public double H() {
+      return this.b;
+   }
+
+   public double L() {
+      return this.v;
+   }
+
+   public static double K(double var0) {
+      return Double.isFinite(var0) ? Math.clamp(var0, 1.0, 16.0) : 4.0;
+   }
+
+   public static float K(float var0, double var1) {
+      if (Float.isFinite(var0) && !(var0 <= 0.0F)) {
+         double var3 = Math.clamp(var0, 1.0F, 179.0F);
+         double var5 = Double.isFinite(var1) ? Math.clamp(var1, 0.0625, 1.0) : 1.0;
+         return var5 == 1.0 ? var0 : (float)Math.max(1.0, Math.toDegrees(2.0 * Math.atan(Math.tan(Math.toRadians(var3) * 0.5) * var5)));
+      } else {
+         return var0;
+      }
    }
 }

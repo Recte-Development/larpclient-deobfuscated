@@ -1,10 +1,10 @@
 package com.larpclient.module;
 
-import com.larp.obf.q5682c6a8aca9b6ec.q2b89c22912c19361;
-import com.larpclient.pe;
-import com.larpclient.r4;
-import com.larpclient.rr;
-import com.larpclient.yw;
+import com.larp.obf.qbac0b262827a15ac.q1ff3fe7b68a0197e;
+import com.larpclient.cc;
+import com.larpclient.hs;
+import com.larpclient.mt;
+import com.larpclient.tq;
 import java.util.Locale;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
@@ -17,70 +17,70 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec2;
 
 public class FreecamModule extends Module {
-   private final lc E = this.addSetting(new lc("Speed", "Detached camera speed", 1.0, 0.1, 50.0, 0.1));
-   private final lc N = this.addSetting(new lc("Vertical", "Vertical speed multiplier", 1.0, 0.2, 5.0, 0.05) {
+   private final d9 h = this.addSetting(new d9("Speed", "Detached camera speed", 1.0, 0.1, 50.0, 0.1));
+   private final d9 s = this.addSetting(new d9("Vertical", "Vertical speed multiplier", 1.0, 0.2, 5.0, 0.05) {
       @Override
       public String getValueAsString() {
-         return String.format(Locale.ROOT, "%.2f", this.getValue());
+         return String.format(Locale.ROOT, "%.2f", this.P());
       }
    });
-   private final ln e = this.addSetting(new ln("Smooth", "Use smooth half-speed camera travel", true));
-   private final ln a = this.addSetting(new ln("Body", "Show your body from the detached camera", true));
-   private final ln R = this.addSetting(new ln("Hands", "Show first-person hands while detached", true));
-   private final ln n = this.addSetting(new ln("Keys Move Body", "Also steer your body with movement keys", false));
-   private final ln V = this.addSetting(new ln("Keep Walking", "Carry movement held when Freecam starts", true));
-   private final ln y = this.addSetting(new ln("Scroll Speed", "Adjust camera speed with the mouse wheel", true));
-   private final ln C = this.addSetting(new ln("Reset Scroll Speed", "Keep wheel changes temporary until Freecam ends", true));
-   private final lc T = this.addSetting(new lc("Chunks", "Client chunk-view radius, within server-provided terrain", 12.0, 2.0, 32.0, 1.0));
-   private final lp q = this.addSetting(new lp("Activation", "Toggle the module key or keep it held to use Freecam", "Toggle", "Toggle", "Hold"));
-   private final yw f = new yw();
-   private static FreecamModule K;
-   private LocalPlayer s;
-   private ClientLevel i;
-   private yw.n m;
-   private boolean W;
-   private boolean I;
-   private boolean O;
+   private final dh t = this.addSetting(new dh("Smooth", "Use smooth half-speed camera travel", true));
+   private final dh o = this.addSetting(new dh("Body", "Show your body from the detached camera", true));
+   private final dh i = this.addSetting(new dh("Hands", "Show first-person hands while detached", true));
+   private final dh p = this.addSetting(new dh("Keys Move Body", "Also steer your body with movement keys", false));
+   private final dh y = this.addSetting(new dh("Keep Walking", "Carry movement held when Freecam starts", true));
+   private final dh x = this.addSetting(new dh("Scroll Speed", "Adjust camera speed with the mouse wheel", true));
+   private final dh A = this.addSetting(new dh("Reset Scroll Speed", "Keep wheel changes temporary until Freecam ends", true));
+   private final d9 P = this.addSetting(new d9("Chunks", "Client chunk-view radius, within server-provided terrain", 12.0, 2.0, 32.0, 1.0));
+   private final d6 r = this.addSetting(new d6("Activation", "Toggle the module key or keep it held to use Freecam", "Toggle", "Toggle", "Hold"));
+   private final hs E = new hs();
+   private static FreecamModule S;
+   private LocalPlayer C;
+   private ClientLevel l;
+   private hs.n Z;
+   private boolean D;
+   private boolean b;
+   private boolean Y;
 
    @Override
-   public Module.b getTickPhase() {
-      return Module.b.m;
+   public Module.f getTickPhase() {
+      return Module.f.M;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z);
    }
 
    public FreecamModule() {
       super("Freecam", "Explore with a detached camera", Category.PLAYER, -1);
-      K = this;
-      this.C.x(this.y::getValue);
-      this.E.W(var1 -> this.f.A());
-      this.V.W(var1 -> {
+      S = this;
+      this.A.H(this.x::P);
+      this.h.h(var1 -> this.E.Q());
+      this.y.h(var1 -> {
          if (!var1) {
-            this.f.m();
+            this.E.t();
          }
       });
-      this.q.W(var1 -> {
-         if (this.t() || this.O) {
+      this.r.h(var1 -> {
+         if (this.w() || this.Y) {
             this.setEnabled(false);
          }
       });
    }
 
-   public boolean t() {
-      return this.q.i("Hold");
+   public boolean w() {
+      return this.r.S("Hold");
    }
 
-   private boolean r() {
-      return pe.A(getMc().getWindow().handle(), this.getKeyBind());
+   private boolean H() {
+      return cc.N(getMc().getWindow().handle(), this.getKeyBind());
    }
 
-   public boolean O() {
+   public boolean Q() {
       if (this.isEnabled()) {
-         if (this.t() && this.r()) {
-            this.O = (boolean)1;
+         if (this.w() && this.H()) {
+            this.Y = (boolean)1;
             this.enable();
             return this.isEnabled();
          } else {
@@ -93,29 +93,29 @@ public class FreecamModule extends Module {
 
    @Override
    public void enable() {
-      if (!this.t() || this.O) {
+      if (!this.w() || this.Y) {
          super.enable();
       }
    }
 
    @Override
    public void disable() {
-      this.O = (boolean)0;
+      this.Y = (boolean)0;
       super.disable();
    }
 
    @Override
    public void suspendForDisconnect() {
-      if (this.t()) {
+      if (this.w()) {
          this.disable();
       } else {
          super.suspendForDisconnect();
       }
    }
 
-   public static void y() {
-      FreecamModule var0 = K;
-      if (var0 != null && var0.t() && var0.isEnabled()) {
+   public static void o() {
+      FreecamModule var0 = S;
+      if (var0 != null && var0.w() && var0.isEnabled()) {
          Minecraft var1 = getMc();
          if (var1 == null
             || var1.player == null
@@ -124,8 +124,8 @@ public class FreecamModule extends Module {
             || var1.gui.screen() != null
             || var1.gui.overlay() != null
             || !var1.isWindowActive()
-            || var0.s != null && (var0.s != var1.player || var0.i != var1.level)
-            || !var0.r()) {
+            || var0.C != null && (var0.C != var1.player || var0.l != var1.level)
+            || !var0.H()) {
             var0.setEnabled(false);
          }
       }
@@ -133,7 +133,7 @@ public class FreecamModule extends Module {
 
    @Override
    public void setKeyBind(int var1) {
-      if (this.t() && var1 != this.getKeyBind()) {
+      if (this.w() && var1 != this.getKeyBind()) {
          this.setEnabled(false);
       }
 
@@ -143,23 +143,23 @@ public class FreecamModule extends Module {
    @Override
    public void onEnable() {
       Minecraft var1 = getMc();
-      this.s = var1.player;
-      this.i = var1.level;
-      rr.W(rr.f.u);
-      this.f.t(yw.U(w(), this.s.input.keyPresses), this.s.isShiftKeyDown(), this.V.getValue());
-      this.z(true);
-      this.b();
-      this.o();
-      r4.V(
+      this.C = var1.player;
+      this.l = var1.level;
+      tq.i(tq.y.F);
+      this.E.b(hs.b(z(), this.C.input.keyPresses), this.C.isShiftKeyDown(), this.y.P());
+      this.K(true);
+      this.g();
+      this.n();
+      mt.K(
          "Freecam",
          "Detached camera acquired; activation={}, speed={}, smooth={}, carry={}, body keys={}",
-         this.q.getValue(),
-         this.E.getValue(),
-         this.e.getValue(),
-         this.V.getValue(),
-         this.n.getValue()
+         this.r.P(),
+         this.h.P(),
+         this.t.P(),
+         this.y.P(),
+         this.p.P()
       );
-      r4.g("Freecam", "Terrain visibility starts from loaded columns in view, including across unloaded camera chunks");
+      mt.U("Freecam", "Terrain visibility starts from loaded columns in view, including across unloaded camera chunks");
    }
 
    @Override
@@ -167,70 +167,70 @@ public class FreecamModule extends Module {
       Minecraft var1 = getMc();
 
       try {
-         if (this.i != null && this.s != null) {
-            ChunkPos var2 = this.s.chunkPosition();
-            this.i.getChunkSource().updateViewCenter(var2.x(), var2.z());
-            this.i.getChunkSource().updateViewRadius(this.D());
+         if (this.l != null && this.C != null) {
+            ChunkPos var2 = this.C.chunkPosition();
+            this.l.getChunkSource().updateViewCenter(var2.x(), var2.z());
+            this.l.getChunkSource().updateViewRadius(this.O());
          }
 
-         if (this.s == var1.player && this.i == var1.level && this.s != null && this.s.isAlive()) {
-            if (this.W && this.s.getAbilities().mayfly && !this.s.getAbilities().flying) {
-               this.s.getAbilities().flying = this.I;
+         if (this.C == var1.player && this.l == var1.level && this.C != null && this.C.isAlive()) {
+            if (this.D && this.C.getAbilities().mayfly && !this.C.getAbilities().flying) {
+               this.C.getAbilities().flying = this.b;
             }
 
-            this.s.input.keyPresses = Input.EMPTY;
+            this.C.input.keyPresses = Input.EMPTY;
          }
       } finally {
-         this.O = (boolean)0;
-         this.W = (boolean)0;
-         this.s = null;
-         this.i = null;
-         this.m = null;
-         this.f.S();
-         rr.N(rr.f.u);
+         this.Y = (boolean)0;
+         this.D = (boolean)0;
+         this.C = null;
+         this.l = null;
+         this.Z = null;
+         this.E.M();
+         tq.A(tq.y.F);
          if (var1.level != null) {
             var1.levelRenderer.sectionOcclusionGraph().invalidate();
          }
 
-         r4.V("Freecam", "Released camera, body input and chunk view");
+         mt.K("Freecam", "Released camera, body input and chunk view");
       }
    }
 
    @Override
    public void onTick() {
-      y();
+      o();
       if (this.isRuntimeActive()) {
-         rr.W(rr.f.u);
-         this.z(false);
-         this.b();
-         rr.S(this.f.y(this.E.getValue(), this.C.getValue()), this.N.getValue(), this.e.getValue());
-         this.o();
+         tq.i(tq.y.F);
+         this.K(false);
+         this.g();
+         tq.C(this.E.u(this.h.P(), this.A.P()), this.s.P(), this.t.P());
+         this.n();
       }
    }
 
-   public static boolean x() {
-      return K != null && K.isEnabled() ? rr.o() : false;
+   public static boolean s() {
+      return S != null && S.isEnabled() ? tq.f() : false;
    }
 
-   public static boolean j() {
-      return K != null && K.isEnabled() ? K != null && K.a.getValue() : false;
+   public static boolean p() {
+      return S != null && S.isEnabled() ? S != null && S.o.P() : false;
    }
 
-   public static boolean U() {
-      return K != null && K.isEnabled() ? K != null && K.R.getValue() : false;
+   public static boolean L() {
+      return S != null && S.isEnabled() ? S != null && S.i.P() : false;
    }
 
-   public static Input Z(Input var0) {
-      if (K != null && K.isEnabled()) {
-         FreecamModule var1 = K;
+   public static Input P(Input var0) {
+      if (S != null && S.isEnabled()) {
+         FreecamModule var1 = S;
          Minecraft var2 = Minecraft.getInstance();
-         return var1 != null && var2.gui.screen() == null && var2.isWindowActive() ? var1.f.d(var0, var1.n.getValue()) : Input.EMPTY;
+         return var1 != null && var2.gui.screen() == null && var2.isWindowActive() ? var1.E.K(var0, var1.p.P()) : Input.EMPTY;
       } else {
          return var0;
       }
    }
 
-   public static Input w() {
+   public static Input z() {
       Options var0 = Minecraft.getInstance().options;
       return new Input(
          var0.keyUp.isDown(),
@@ -243,74 +243,74 @@ public class FreecamModule extends Module {
       );
    }
 
-   private void z(boolean var1) {
-      if (this.s != null) {
-         this.f
-            .a(
-               yw.U(w(), this.s.input.keyPresses),
-               this.V.getValue(),
-               this.n.getValue(),
-               this.s.isShiftKeyDown(),
-               new Vec2(this.s.xxa, this.s.zza),
-               this.s.getDeltaMovement(),
-               this.s.getYRot(),
+   private void K(boolean var1) {
+      if (this.C != null) {
+         this.E
+            .O(
+               hs.b(z(), this.C.input.keyPresses),
+               this.y.P(),
+               this.p.P(),
+               this.C.isShiftKeyDown(),
+               new Vec2(this.C.xxa, this.C.zza),
+               this.C.getDeltaMovement(),
+               this.C.getYRot(),
                var1
             );
       }
    }
 
-   private void b() {
-      if (this.s != null && this.s.getAbilities().mayfly) {
-         if (!this.W) {
-            this.I = this.s.getAbilities().flying;
-            this.W = (boolean)1;
+   private void g() {
+      if (this.C != null && this.C.getAbilities().mayfly) {
+         if (!this.D) {
+            this.b = this.C.getAbilities().flying;
+            this.D = (boolean)1;
          }
 
-         this.s.getAbilities().flying = (boolean)0;
+         this.C.getAbilities().flying = (boolean)0;
       }
    }
 
-   public static void I() {
-      if (K != null) {
-         K.W = (boolean)0;
+   public static void N() {
+      if (S != null) {
+         S.D = (boolean)0;
       }
    }
 
-   private void o() {
-      if (this.i != null && this.s != null) {
-         ChunkPos var1 = this.s.chunkPosition();
-         yw.n var2 = yw.a(rr.i(1.0F), var1.x(), var1.z(), this.T.getValue().intValue(), this.D());
-         ClientChunkCache var3 = this.i.getChunkSource();
+   private void n() {
+      if (this.l != null && this.C != null) {
+         ChunkPos var1 = this.C.chunkPosition();
+         hs.n var2 = hs.B(tq.N(1.0F), var1.x(), var1.z(), this.P.P().intValue(), this.O());
+         ClientChunkCache var3 = this.l.getChunkSource();
          var3.updateViewCenter(var2.x(), var2.z());
          var3.updateViewRadius(var2.radius());
-         if (!var2.equals(this.m)) {
+         if (!var2.equals(this.Z)) {
             getMc().levelRenderer.sectionOcclusionGraph().invalidate();
-            this.m = var2;
+            this.Z = var2;
          }
       }
    }
 
-   private int D() {
-      return this.s == null ? getMc().options.getEffectiveRenderDistance() : ((q2b89c22912c19361)this.s.connection).larpServerChunkRadius();
+   private int O() {
+      return this.C == null ? getMc().options.getEffectiveRenderDistance() : ((q1ff3fe7b68a0197e)this.C.connection).larpServerChunkRadius();
    }
 
-   public static boolean Z(double var0) {
-      if (K != null && K.isEnabled()) {
-         FreecamModule var2 = K;
+   public static boolean w(double var0) {
+      if (S != null && S.isEnabled()) {
+         FreecamModule var2 = S;
          Minecraft var3 = Minecraft.getInstance();
-         if (var2 == null || !rr.o() || !var2.y.getValue() || var3.gui.screen() != null || var3.gui.overlay() != null || !var3.isWindowActive()) {
+         if (var2 == null || !tq.f() || !var2.x.P() || var3.gui.screen() != null || var3.gui.overlay() != null || !var3.isWindowActive()) {
             return false;
          }
 
-         if (!var2.f.p(var0, var2.E.getValue(), var2.C.getValue())) {
+         if (!var2.E.v(var0, var2.h.P(), var2.A.P())) {
             return false;
          }
 
-         if (!var2.C.getValue()) {
-            var2.E.C(var2.E.getValue() * (var0 > 0.0 ? 1.2 : 0.8333333333333334));
+         if (!var2.A.P()) {
+            var2.h.o(var2.h.P() * (var0 > 0.0 ? 1.2 : 0.8333333333333334));
          }
 
-         r4.g("Freecam", "Wheel camera speed={}", var2.f.y(var2.E.getValue(), var2.C.getValue()));
+         mt.U("Freecam", "Wheel camera speed={}", var2.E.u(var2.h.P(), var2.A.P()));
          return true;
       } else {
          return false;

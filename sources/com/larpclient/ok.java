@@ -1,504 +1,551 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Builder;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
+import com.larpclient.module.AmbientParticlesModule;
+import com.larpclient.module.AnimationsModule;
+import com.larpclient.module.AstralWeaponTrailsModule;
+import com.larpclient.module.AuraModule;
+import com.larpclient.module.AutoAnchorModule;
+import com.larpclient.module.AutoArmorModule;
+import com.larpclient.module.AutoCartModule;
+import com.larpclient.module.AutoClickerModule;
+import com.larpclient.module.AutoCrystalModule;
+import com.larpclient.module.AutoPearlCatchModule;
+import com.larpclient.module.AutoSellModule;
+import com.larpclient.module.BlockOverlayModule;
+import com.larpclient.module.CelestialWeatherModule;
+import com.larpclient.module.ChamsModule;
+import com.larpclient.module.ChinaHatModule;
+import com.larpclient.module.CustomCrosshairModule;
+import com.larpclient.module.CustomSkyModule;
+import com.larpclient.module.DamageMarkersModule;
+import com.larpclient.module.ESPModule;
+import com.larpclient.module.EchoHandModule;
+import com.larpclient.module.FakeSpawnerModule;
+import com.larpclient.module.FlameHandsModule;
+import com.larpclient.module.FogModule;
+import com.larpclient.module.GUIAnimationModule;
+import com.larpclient.module.HUDModule;
+import com.larpclient.module.HalloweenModule;
+import com.larpclient.module.HandChamsModule;
+import com.larpclient.module.HeadlessKorbloxModule;
+import com.larpclient.module.HitFXModule;
+import com.larpclient.module.HitSoundsModule;
+import com.larpclient.module.HolesESPModule;
+import com.larpclient.module.HomeMacroModule;
+import com.larpclient.module.ItemESPModule;
+import com.larpclient.module.JumpFXModule;
+import com.larpclient.module.KillFXModule;
+import com.larpclient.module.LightDebugModule;
+import com.larpclient.module.Module;
+import com.larpclient.module.MotionBlurModule;
+import com.larpclient.module.MotionScannerModule;
+import com.larpclient.module.NametagsModule;
+import com.larpclient.module.OrderDropperModule;
+import com.larpclient.module.PearlParticlesModule;
+import com.larpclient.module.PerformanceModule;
+import com.larpclient.module.PlayerModelModule;
+import com.larpclient.module.PlayerTrailModule;
+import com.larpclient.module.RemovalsModule;
+import com.larpclient.module.RodSwapModule;
+import com.larpclient.module.ScaffoldModule;
+import com.larpclient.module.SelfVisualsModule;
+import com.larpclient.module.SkyShaderModule;
+import com.larpclient.module.StorageESPModule;
+import com.larpclient.module.SwordModelsModule;
+import com.larpclient.module.TargetAuraModule;
+import com.larpclient.module.TracersModule;
+import com.larpclient.module.ViewModelModule;
+import com.larpclient.module.WingsModule;
+import com.larpclient.module.WorldColorModule;
+import com.larpclient.module.XRayModule;
+import com.larpclient.module.ZoomModule;
+import com.larpclient.module.a0;
+import com.larpclient.module.az;
+import com.larpclient.module.df;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Optional;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Font.DisplayMode;
-import net.minecraft.client.gui.Font.GlyphVisitor;
-import net.minecraft.client.gui.Font.PreparedText;
-import net.minecraft.client.gui.font.TextRenderable;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.PreparedRenderType;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Quaternionfc;
-import org.joml.Vector3f;
+import java.util.Set;
 
-public final class ok implements AutoCloseable, GlyphVisitor {
-   private static final double W = 0.55;
-   private static final int Y = 15728880;
-   private static final int C = 256;
-   private static final Comparator<ok.t> E = Comparator.<ok.t>comparingDouble(var0 -> var0.j).reversed();
-   private final ok.t[] J = new ok.t[256];
-   private final ok.t[] z = new ok.t[256];
-   private int q;
-   private static final double Z = 0.01890625;
-   private final LinkedHashMap<String, ok.r> g = new LinkedHashMap<>(64, 0.75F, true);
-   private final Matrix4f L = new Matrix4f();
-   private final Matrix4f I = new Matrix4f();
-   private ok.f c;
-   private int D;
-   private int A;
-   private float G;
-   private boolean l;
-   private final Quaternionf k = new Quaternionf();
-   private final Vector3f R = new Vector3f();
-   private final ho m = new ho();
-   private final lg[] K = new lg[96];
-   private final double[] r = new double[96];
-   private final RenderPipeline[][] e = new RenderPipeline[3][2];
-   private y2 S;
-   private Font X;
-   private int v = -1;
-   private int d = -1;
-   private int a;
-   private boolean T;
-   private int b;
-
-   public void q(o3 var1, CameraRenderState var2) {
-      this.b = this.i(var1, var2);
-   }
-
-   public void I(List<ok.p> var1, CameraRenderState var2) {
-      this.u();
-      if (!this.T || this.d != jk.v) {
-         try {
-            this.X();
-            this.z(var1, var2);
-         } catch (RuntimeException var4) {
-            this.T(var4);
-         }
-      }
-   }
-
-   private void z(List<ok.p> var1, CameraRenderState var2) {
-      for (ok.p var4 : var1) {
-         if (this.q == 256) {
-            break;
+public final class ok {
+   public static List<ok.m> t(Module var0) {
+      if (var0 instanceof ChooseASkyEffectAndAdjustItsAppearanceModule var6) {
+         ArrayList var7 = new ArrayList();
+         var7.add(new ok.m("Sky", List.of(var6.q())));
+         if (var6.d() instanceof CustomSkyModule var78) {
+            var7.addAll(o(var78));
+         } else if (var6.d() instanceof SkyShaderModule var82) {
+            var7.addAll(L(var82));
          }
 
-         if (var4 != null
-            && var4.text() != null
-            && !var4.text().isBlank()
-            && Double.isFinite(var4.x())
-            && Double.isFinite(var4.y())
-            && Double.isFinite(var4.z())
-            && Double.isFinite(var4.scale())
-            && !(var4.scale() <= 0.0)
-            && var4.color() >>> 24 != 0
-            && (
-               !var4.worldAligned()
-                  || Float.isFinite(var4.qx())
-                     && Float.isFinite(var4.qy())
-                     && Float.isFinite(var4.qz())
-                     && Float.isFinite(var4.qw())
-                     && !(var4.qx() * var4.qx() + var4.qy() * var4.qy() + var4.qz() * var4.qz() + var4.qw() * var4.qw() < 1.0E-4F)
-            )) {
-            ok.r var5 = this.Z(var4.text());
-            ok.t var6 = this.J[this.q];
-            if (var6 == null) {
-               this.J[this.q] = var6 = new ok.t();
+         var7.add(ok.m.advanced("Existing keybinds", var6.V()));
+         return List.copyOf(var7);
+      } else {
+         ArrayList var1 = new ArrayList();
+         Set var2 = Collections.newSetFromMap(new IdentityHashMap());
+         if (var0.keybindMode() != null) {
+            var2.add(var0.keybindMode());
+         }
+
+         if (var0 instanceof AutoClickerModule var3) {
+            var1.add(new ok.m("Click controls", var3.Z()));
+            var1.add(new ok.m("Timing", var3.w()));
+            var1.add(new ok.m("Targets and mining", var3.l()));
+         }
+
+         if (var0 instanceof com.larpclient.module.v var8) {
+            var2.addAll(var8.s());
+         }
+
+         if (var0 instanceof RodSwapModule var9) {
+            var1.add(new ok.m("Rod controls", var9.n()));
+            var1.add(new ok.m("Range and timing", var9.H()));
+         }
+
+         if (var0 instanceof HalloweenModule var10) {
+            var1.add(new ok.m("After Dark", var10.E()));
+            var1.add(ok.m.advanced("Customize Effects", var10.o()));
+         }
+
+         if (var0 instanceof ZoomModule var11) {
+            var1.add(new ok.m("Zoom controls", var11.U()));
+            var1.add(new ok.m("View", var11.G()));
+         }
+
+         if (var0 instanceof RemovalsModule var12) {
+            var1.add(new ok.m("Effects", var12.x(), true));
+            var1.add(new ok.m("Sounds", var12.L(), true));
+         }
+
+         if (var0 instanceof AutoCrystalModule var13) {
+            var1.add(new ok.m("Actions", var13.L()));
+            var1.add(new ok.m("Obsidian bases", var13.b()));
+            var1.add(new ok.m("Targets", var13.O()));
+            var1.add(new ok.m("Aim", var13.Z()));
+            var1.add(new ok.m("Damage and pauses", var13.I()));
+         }
+
+         if (var0 instanceof AutoAnchorModule var14) {
+            var1.add(new ok.m("Actions", var14.H()));
+            var1.add(new ok.m("Targets", var14.j()));
+            var1.add(new ok.m("Aim", var14.k()));
+            var1.add(new ok.m("Damage and pauses", var14.E()));
+         }
+
+         if (var0 instanceof AutoCartModule var15) {
+            var1.add(new ok.m("Aim", var15.s()));
+            var1.add(new ok.m("Shot", var15.I()));
+            var1.add(new ok.m("Targets", var15.P()));
+            var1.add(new ok.m("Damage", var15.k()));
+         }
+
+         if (var0 instanceof AutoPearlCatchModule var16) {
+            var1.add(new ok.m("Catch", var16.V()));
+            var1.add(new ok.m("Aim", var16.Q()));
+         }
+
+         if (var0 instanceof PerformanceModule var17) {
+            var1.add(new ok.m("Render quality", var17.P()));
+            var1.add(new ok.m("Chunks and frame rate", var17.f()));
+            var1.add(new ok.m("Aggressive", var17.Y()));
+         }
+
+         if (var0 instanceof AutoArmorModule var18) {
+            var1.add(new ok.m("Armor materials", var18.s()));
+         }
+
+         if (var0 instanceof AuraModule var19) {
+            var1.add(new ok.m("Rotation", var19.o()));
+            var1.add(new ok.m("Attack", var19.C()));
+            var1.add(new ok.m("Targets", var19.H(), true));
+            var1.add(new ok.m("Selection", var19.r()));
+            var1.add(new ok.m("Utils", var19.x(), true));
+            var1.add(new ok.m("No Attack When", var19.p(), true));
+            var1.add(new ok.m("Indicators", var19.i()));
+         }
+
+         if (var0 instanceof HitSoundsModule var20) {
+            var1.add(new ok.m("Custom sound", var20.p()));
+            var1.add(new ok.m("Behavior", var20.k()));
+         }
+
+         if (var0 instanceof HitFXModule var21) {
+            var1.add(new ok.m("Impact style", var21.S()));
+            var1.add(new ok.m("Hit rings", var21.N()));
+            var1.add(new ok.m("Colors", var21.o()));
+            var1.add(ok.m.advanced("Advanced", var21.e()));
+         }
+
+         if (var0 instanceof KillFXModule var22) {
+            var1.add(new ok.m("Finisher", var22.q()));
+            var1.add(new ok.m("Feedback", var22.B()));
+            var1.add(ok.m.advanced("Distance", var22.F()));
+         }
+
+         if (var0 instanceof CustomSkyModule var23) {
+            var1.add(new ok.m("Sky", List.of(var23.N())));
+            var1.addAll(o(var23));
+         }
+
+         if (var0 instanceof SkyShaderModule var24) {
+            var1.add(new ok.m("Sky", List.of(var24.p())));
+            var1.addAll(L(var24));
+         }
+
+         if (var0 instanceof WorldColorModule var25) {
+            var1.add(new ok.m("World ambience", List.of(var25.B, var25.T)));
+            var1.add(new ok.m("Color grading", List.of(var25.w, var25.Q, var25.S)));
+            var1.add(ok.m.advanced("Fine grading", List.of(var25.A, var25.K, var25.G, var25.i, var25.D)));
+         }
+
+         if (var0 instanceof MotionBlurModule var26) {
+            var1.add(new ok.m("Motion blur", List.of(var26.n, var26.K)));
+            var1.add(ok.m.advanced("Streaks", List.of(var26.v, var26.V)));
+         }
+
+         if (var0 instanceof AmbientParticlesModule var27) {
+            var1.add(new ok.m("World particles", List.of(var27.M, var27.N, var27.a, var27.x, var27.z, var27.b)));
+            var1.add(new ok.m("Floating motion", List.of(var27.L, var27.s, var27.I, var27.d)));
+            var1.add(new ok.m("Flying comets", List.of(var27.l, var27.O, var27.C)));
+            var1.add(new ok.m("Appearance", List.of(var27.i, var27.o, var27.e, var27.F, var27.P)));
+            var1.add(ok.m.advanced("Particle limit", List.of(var27.g)));
+         }
+
+         if (var0 instanceof WingsModule var28) {
+            var1.add(new ok.m("Wearers", var28.x(), true));
+            var1.add(new ok.m("Appearance", var28.o()));
+         }
+
+         if (var0 instanceof HeadlessKorbloxModule var29) {
+            var1.add(new ok.m("Wearers", List.of(var29.c, var29.d), true));
+            var1.add(new ok.m("Headless head", List.of(var29.Y, var29.C)));
+            var1.add(new ok.m("Korblox leg", List.of(var29.H, var29.S, var29.X, var29.F)));
+            var1.add(new ok.m("Spike colors", List.of(var29.J, var29.z, var29.o)));
+         }
+
+         if (var0 instanceof ChinaHatModule var30) {
+            var1.add(new ok.m("Wearers", var30.D(), true));
+            var1.add(new ok.m("Appearance", var30.G()));
+            var1.add(ok.m.advanced("Shape", var30.a()));
+         }
+
+         if (var0 instanceof PlayerTrailModule var31) {
+            var1.add(new ok.m("Trail", var31.z()));
+            var1.add(new ok.m("Appearance", var31.X()));
+            var1.add(new ok.m("Motion", var31.Z()));
+            var1.add(ok.m.advanced("History and limits", var31.L()));
+         }
+
+         if (var0 instanceof AstralWeaponTrailsModule var32) {
+            var1.add(new ok.m("Effect", var32.f()));
+            var1.add(new ok.m("Appearance", var32.u()));
+            var1.add(ok.m.advanced("Advanced", var32.b()));
+         }
+
+         if (var0 instanceof CelestialWeatherModule var33) {
+            var1.add(new ok.m("Effect", var33.R()));
+            var1.add(new ok.m("Appearance", var33.F()));
+            var1.add(ok.m.advanced("Advanced", var33.j()));
+         }
+
+         if (var0 instanceof FogModule var34) {
+            var1.add(new ok.m("Distance", var34.Y()));
+            var1.add(new ok.m("Atmosphere", var34.l()));
+            var1.add(new ok.m("Sky", var34.A()));
+            var1.add(ok.m.advanced("Where", var34.Z()));
+         }
+
+         if (var0 instanceof SelfVisualsModule var35) {
+            var1.add(new ok.m("Body effect", var35.o()));
+            var1.add(new ok.m("Appearance", var35.R()));
+            var1.add(new ok.m("Motion", var35.l()));
+            var1.add(ok.m.advanced("Refraction", var35.m()));
+         }
+
+         if (var0 instanceof JumpFXModule var36) {
+            var1.add(new ok.m("Jump effect", var36.Y()));
+            var1.add(new ok.m("Shape and timing", var36.H()));
+            var1.add(new ok.m("Appearance", var36.k()));
+         }
+
+         if (var0 instanceof TargetAuraModule var37) {
+            var1.add(new ok.m("Target effect", var37.l()));
+            var1.add(new ok.m("Colors", var37.V()));
+         }
+
+         if (var0 instanceof CustomCrosshairModule var38) {
+            var1.add(new ok.m("Shape", var38.S()));
+            var1.add(new ok.m("Appearance", var38.V()));
+         }
+
+         if (var0 instanceof EchoHandModule var39) {
+            var1.add(new ok.m("Hand effect", var39.p()));
+            var1.add(new ok.m("Appearance", var39.P()));
+            var1.add(ok.m.advanced("History and motion", var39.W()));
+         }
+
+         if (var0 instanceof FlameHandsModule var40) {
+            var1.add(new ok.m("Hand flames", var40.f()));
+            var1.add(new ok.m("Colors", var40.I()));
+            var1.add(new ok.m("Motion", var40.O()));
+         }
+
+         if (var0 instanceof PearlParticlesModule var41) {
+            var1.add(new ok.m("Pearl trail", var41.J()));
+            var1.add(new ok.m("Colors", var41.M()));
+            var1.add(ok.m.advanced("Drift and fade", var41.N()));
+         }
+
+         if (var0 instanceof DamageMarkersModule var42) {
+            var1.add(new ok.m("Damage sources", var42.O(), true));
+            var1.add(new ok.m("Labels", var42.s()));
+         }
+
+         if (var0 instanceof PlayerModelModule var43) {
+            var1.add(new ok.m("Character", var43.u()));
+            var1.add(ok.m.advanced("Diagnostics", var43.T()));
+         }
+
+         if (var0 instanceof GUIAnimationModule var44) {
+            var1.add(new ok.m("Interface", var44.N(), true));
+            var1.add(new ok.m("Camera", var44.q(), true));
+            var1.add(new ok.m("World and timing", var44.E()));
+         }
+
+         if (var0 instanceof ChamsModule var45) {
+            var1.add(new ok.m("Entities", var45.X(), true));
+            var1.add(new ok.m("Colors", var45.y()));
+            var1.add(new ok.m("Outline and fill", var45.O.F()));
+            var1.add(new ok.m("Glow", var45.O.w()));
+            var1.add(new ok.m("Gradient motion", var45.O.f()));
+            var1.add(new ok.m("Occlusion", var45.q()));
+            var1.add(ok.m.advanced("Distance and limits", var45.s()));
+         }
+
+         if (var0 instanceof HandChamsModule var46) {
+            var1.add(new ok.m("Colors", var46.i.N()));
+            var1.add(new ok.m("Outline and fill", var46.i.F()));
+            var1.add(new ok.m("Glow", var46.i.w()));
+            var1.add(new ok.m("Gradient motion", var46.i.f()));
+         }
+
+         if (var0 instanceof ESPModule var47) {
+            var1.add(new ok.m("Entities", var47.C(), true));
+            var1.add(new ok.m("Highlight", var47.g()));
+            var1.add(new ok.m("Colors", var47.E()));
+            var1.add(new ok.m("Stroke", var47.j()));
+            var1.add(new ok.m("Health", var47.n()));
+            var1.add(ok.m.advanced("Limits and alerts", var47.U()));
+         }
+
+         if (var0 instanceof ItemESPModule var48) {
+            var1.add(new ok.m("Drops", var48.h()));
+            var1.add(new ok.m("Appearance", var48.F()));
+            var1.add(ok.m.advanced("Item limit", var48.N()));
+         }
+
+         if (var0 instanceof TracersModule var49) {
+            var1.add(new ok.m("Entities", var49.c(), true));
+            var1.add(new ok.m("Lines", var49.U()));
+            var1.add(ok.m.advanced("Entity limit", var49.J()));
+         }
+
+         if (var0 instanceof NametagsModule var50) {
+            var1.add(new ok.m("Entities", var50.a(), true));
+            var1.add(new ok.m("Label content", var50.z(), true));
+            var1.add(new ok.m("Placement", var50.t()));
+         }
+
+         if (var0 instanceof XRayModule var51) {
+            var1.add(new ok.m("Ore view", var51.b()));
+            var1.add(new ok.m("Show", var51.j(), true));
+            var1.add(new ok.m("Markers", var51.B()));
+            var1.add(ok.m.advanced("Marker limit", var51.L()));
+         }
+
+         if (var0 instanceof CrystalChamsModule var52) {
+            var1.add(new ok.m("Crystal", var52.f()));
+            var1.add(new ok.m("Appearance", var52.E()));
+            var1.add(new ok.m("Motion", var52.k()));
+         }
+
+         if (var0 instanceof PetsModule var53) {
+            var1.add(new ok.m("Companion", var53.J()));
+            var1.add(new ok.m("Follow", var53.Y()));
+            var1.add(new ok.m("Finish", var53.j()));
+            var1.add(new ok.m("Glow", var53.S()));
+         }
+
+         if (var0 instanceof CryptoPetsModule var54) {
+            var1.add(new ok.m("Coins", var54.E(), true));
+            var1.add(new ok.m("Ring", var54.b()));
+         }
+
+         if (var0 instanceof RealisticWaterModule var55) {
+            var1.add(new ok.m("Surface", List.of(var55.J, var55.F, var55.D, var55.E, var55.H)));
+            var1.add(new ok.m("Water view", List.of(var55.X, var55.V)));
+         }
+
+         if (var0 instanceof WavingFoliageModule var56) {
+            var1.add(new ok.m("Foliage", List.of(var56.x, var56.H, var56.F), true));
+            var1.add(new ok.m("Wind", List.of(var56.O, var56.G, var56.t)));
+         }
+
+         if (var0 instanceof WetGroundModule var57) {
+            var1.add(new ok.m("Puddles", List.of(var57.S, var57.G, var57.L, var57.g, var57.M)));
+            var1.add(new ok.m("Rain", List.of(var57.O, var57.q), true));
+         }
+
+         if (var0 instanceof SnowGroundModule var58) {
+            var1.add(new ok.m("Ground", List.of(var58.J, var58.W, var58.H, var58.Q)));
+            var1.add(new ok.m("Snowfall", List.of(var58.w, var58.g, var58.i, var58.e)));
+            var1.add(new ok.m("Footsteps", List.of(var58.C, var58.I)));
+         }
+
+         if (var0 instanceof BlockOverlayModule var59) {
+            var1.add(new ok.m("Appearance", var59.t()));
+            var1.add(new ok.m("Animation", var59.e()));
+         }
+
+         if (var0 instanceof az var60) {
+            var1.add(new ok.m("Detection", var60.detectionSettings()));
+            if (var60 instanceof a0 var4) {
+               var1.add(new ok.m("Diagnostics", var4.d()));
             }
 
-            var6.P = var4;
-            var6.k = var5;
-            double var7 = var4.x() - var2.pos.x;
-            double var9 = var4.y() - var2.pos.y;
-            double var11 = var4.z() - var2.pos.z;
-            var6.j = var7 * var7 + var9 * var9 + var11 * var11;
-            this.z[this.q++] = var6;
+            var1.add(new ok.m("Scanning", var60.h()));
+            var1.add(new ok.m("Markers", var60.markerSettings()));
+            var1.add(new ok.m("Alerts", var60.I()));
          }
-      }
 
-      Arrays.sort(this.z, 0, this.q, E);
-   }
-
-   private void u() {
-      for (int var1 = 0; var1 < this.q; var1++) {
-         this.z[var1].P = null;
-         this.z[var1].k = null;
-         this.z[var1] = null;
-      }
-
-      this.q = 0;
-   }
-
-   public void d(PoseStack var1, CameraRenderState var2, boolean var3) {
-      this.a(var1, var2, var3, true, 1.0);
-   }
-
-   public void a(PoseStack var1, CameraRenderState var2, boolean var3, boolean var4, double var5) {
-      if (this.q != 0 && !this.T && this.S != null) {
-         try {
-            this.a = var3 ? 1 : 0;
-            this.R.set(0.0F, 0.0F, -1.0F).rotate(var2.orientation);
-
-            for (int var7 = 0; var7 < this.q; var7++) {
-               ok.t var8 = this.z[var7];
-               ok.p var9 = var8.P;
-               ok.r var10 = var8.k;
-               double var11 = var9.x() - var2.pos.x;
-               double var13 = var9.y() - var2.pos.y;
-               double var15 = var9.z() - var2.pos.z;
-               double var17 = Math.hypot(var10.width + 12, var10.height + 8) * 0.01890625 * var9.scale();
-               if (!(var11 * this.R.x + var13 * this.R.y + var15 * this.R.z < -var17)) {
-                  this.L.set(var1.last().pose()).translate((float)var11, (float)var13, (float)var15);
-                  this.Q(var9, var2.orientation);
-                  float var19 = (float)(0.01890625 * Math.min(32.0, var9.scale()));
-                  this.L.scale(var19, -var19, var19).translate(0.0F, -var10.centerY, 0.0F);
-                  this.c = var9.motion();
-                  this.A = var10.width;
-                  this.G = var10.height / 9.0F;
-                  if (var4) {
-                     this.L.translate(1.0F, 1.0F, -0.03F);
-                     this.m.x = this.D = oh.i(-15724520, (var9.color() >>> 24) / 255.0 * 0.65 * var5);
-                     this.l = (boolean)1;
-                     var10.text.visit(this);
-                     this.L.translate(-1.0F, -1.0F, 0.03F);
-                  }
-
-                  this.m.x = this.D = oh.i(var9.color(), (var9.color() >>> 24) / 255.0 * var5);
-                  this.l = (boolean)0;
-                  var10.text.visit(this);
-               }
-            }
-
-            this.S.P(this::c);
-         } catch (RuntimeException var23) {
-            this.T(var23);
-         } finally {
-            this.m.e = null;
-            this.c = null;
+         if (var0 instanceof AutoSellModule var61) {
+            var1.add(new ok.m("Items", var61.L()));
+            var1.add(new ok.m("Sell menu", var61.i()));
+            var1.add(new ok.m("Timing", var61.M()));
+            var1.add(new ok.m("Feedback", var61.p()));
          }
-      }
-   }
 
-   private boolean v(TextRenderable var1) {
-      ok.f var2 = this.c;
-      float var3 = (var1.left() + var1.right()) * 0.5F;
-      float var4 = (var1.top() + var1.bottom()) * 0.5F;
-      double var5 = this.A <= 0 ? 0.0 : Math.clamp((var3 + this.A * 0.5) / this.A, 0.0, 1.0);
-      double var7 = 1.0;
-      double var9 = 0.0;
-      double var11 = 0.0;
-      double var13 = 0.0;
-      double var15 = 0.0;
-      double var17 = 1.0;
-      double var19 = this.G;
-      if (var2.kind() != 0) {
-         var7 = Math.clamp((var2.reveal() - var5 * 0.55) / 0.44999999999999996, 0.0, 1.0);
-         var9 = Math.clamp((var2.exit() - var5 * 0.4) / 0.6, 0.0, 1.0);
-         double var21 = 1.0 - Math.pow(1.0 - var7, 3.0);
-         if (var2.kind() == 1) {
-            double var23 = 1.0 + 2.2 * Math.pow(var7 - 1.0, 3.0) + 1.2 * Math.pow(var7 - 1.0, 2.0);
-            var13 = var19 * (7.0 * (1.0 - var21) + 0.7 * Math.sin(var2.time() * 2.4 - var5 * 6.0) * var21 - 10.0 * var9 * var9);
-            var11 = var19 * (var5 - 0.5) * 8.0 * var9 * var9;
-            var15 = (var5 - 0.5) * 0.6 * var9;
-            var17 = (0.4 + 0.6 * var23) * (1.0 - 0.3 * var9);
+         if (var0 instanceof MotionScannerModule var62) {
+            var1.add(new ok.m("Detection", var62.Z()));
+            var1.add(new ok.m("Alerts", var62.J()));
+            var1.add(new ok.m("Appearance", var62.c()));
+         }
+
+         if (var0 instanceof HomeMacroModule var63) {
+            var1.add(new ok.m("Home replacement", var63.v()));
+         }
+
+         if (var0 instanceof OrderDropperModule var64) {
+            var1.add(new ok.m("Orders", var64.e()));
+            var1.add(new ok.m("Shulkers", var64.E()));
+            var1.add(new ok.m("Timing and safety", var64.L()));
+         }
+
+         if (var0 instanceof LightDebugModule var65) {
+            var1.add(new ok.m("Scanning", var65.v()));
+            var1.add(new ok.m("Appearance", var65.J()));
+         }
+
+         if (var0 instanceof HolesESPModule var66) {
+            var1.add(new ok.m("Passage colors", var66.m()));
+            var1.add(new ok.m("Rendering", var66.X()));
+         }
+
+         if (var0 instanceof StorageESPModule var67) {
+            var1.add(new ok.m("Storage types", var67.i(), true));
+            var1.add(new ok.m("Highlights", var67.R()));
+            var1.add(new ok.m("Appearance", var67.m()));
+            var1.add(ok.m.advanced("Distance and limits", var67.U()));
+         }
+
+         if (var0 instanceof HUDModule var77) {
+            return List.of(new ok.m("Widgets", var77.d(), true), new ok.m("Panels", var77.T()));
          } else {
-            var11 = var19 * -6.0 * (1.0 - var21);
-            var13 = var19 * (1.4 * Math.sin(var2.time() * 3.0 - var5 * 7.0) * var21 + 7.0 * var9 * var9);
-         }
-      }
+            if (var0 instanceof AnimationsModule var68) {
+               var1.add(new ok.m("Swing", var68.u()));
+               var1.add(ok.m.advanced("Fine tuning", var68.I()));
+            }
 
-      double var26 = e6.q(var7) * (1.0 - e6.q(var9));
-      if (var26 < 0.00392156862745098) {
-         return false;
-      }
+            if (var0 instanceof ViewModelModule var69) {
+               var1.add(new ok.m("Main hand", var69.K()));
+               var1.add(new ok.m("Offhand", var69.c()));
+            }
 
-      int var27 = this.D;
-      if (!this.l && var2.accent() >>> 24 != 0) {
-         double var24 = 0.5 - 0.5 * Math.cos(var5 * 2.4 - var2.time() * 1.2);
-         var27 = oh.j(var27, var2.accent() & 16777215 | var27 & 0xFF000000, var24 * 0.85);
-      }
+            if (var0 instanceof SwordModelsModule var70) {
+               var1.add(new ok.m("Appearance", List.of(var70.n, var70.c, var70.j)));
+               var1.add(new ok.m("Inspect", List.of(var70.i, var70.T, var70.S)));
+               var1.add(ok.m.advanced("Hand placement", List.of(var70.R, var70.z, var70.s, var70.E)));
+            }
 
-      this.m.x = oh.S(var27, var26);
-      this.I.set(this.L).translate(var3 + (float)var11, var4 + (float)var13, 0.0F).rotateZ((float)var15).scale((float)var17).translate(-var3, -var4, 0.0F);
-      return true;
-   }
+            if (var0 instanceof FakeSpawnerModule var71) {
+               var1.add(new ok.m("Backing blocks", var71.Q()));
+               var1.add(new ok.m("Appearance", var71.s()));
+               var1.add(new ok.m("Loot worth", var71.W()));
+            }
 
-   private void Q(ok.p var1, Quaternionfc var2) {
-      this.L.rotate((Quaternionfc)(var1.worldAligned() ? this.k.set(var1.qx(), var1.qy(), var1.qz(), var1.qw()).normalize() : var2));
-   }
+            if (var0 instanceof com.larpclient.module.f var72) {
+               var1.add(new ok.m("Trap", var72.u()));
+               var1.add(ok.m.advanced("Advanced", var72.S()));
+            }
 
-   private void T(RuntimeException var1) {
-      this.T = (boolean)1;
-      this.u();
-      this.g.clear();
-      if (this.S != null) {
-         this.S.close();
-         this.S = null;
-      }
+            if (var0 instanceof ScaffoldModule var73) {
+               var1.add(new ok.m("Bridge", var73.p()));
+               var1.add(ok.m.advanced("Advanced", var73.d()));
+            }
 
-      r4.r("WorldText", "World label stage failed; isolated until resource reload or re-enable", var1);
-   }
+            if (var0 instanceof pp.x var74) {
+               var1.add(
+                  !(var0 instanceof com.larpclient.module.f) && !(var0 instanceof ScaffoldModule)
+                     ? new ok.m("Highlight", var74.placementHighlight().t())
+                     : ok.m.advanced("Highlight", var74.placementHighlight().t())
+               );
+            }
 
-   private void X() {
-      Font var1 = Minecraft.getInstance().font;
-      if (this.X != var1 || this.v != j_.g()) {
-         this.g.clear();
-         this.X = var1;
-         this.v = j_.g();
-      }
+            for (ok.m var79 : var1) {
+               var2.addAll(var79.settings());
+            }
 
-      if (this.d != jk.v) {
-         this.g.clear();
-         this.T = (boolean)0;
-         this.d = jk.v;
-
-         for (int var2 = 0; var2 < 3; var2++) {
-            for (int var3 = 0; var3 < 2; var3++) {
-               Builder var4 = RenderPipeline.builder(new Snippet[]{RenderPipelines.WORLD_TEXT_SNIPPET})
-                  .withLocation(Identifier.fromNamespaceAndPath("larp-client", "world_text_" + var2 + "_" + var3))
-                  .withVertexShader("core/text")
-                  .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "world_text"))
-                  .withCull(false)
-                  .withDepthStencilState(
-                     var2 == 1
-                        ? Optional.empty()
-                        : Optional.of(new DepthStencilState(var2 == 2 ? CompareOp.LESS_THAN : CompareOp.GREATER_THAN_OR_EQUAL, false))
-                  );
-               if (var3 == 1) {
-                  var4.withShaderDefine("IS_GRAYSCALE");
+            List var76 = var0.getSettings().stream().filter(var1x -> !var2.contains(var1x)).toList();
+            if (!var76.isEmpty()) {
+               String var80 = var1.isEmpty() ? "Settings" : (var0 instanceof CustomSkyModule ? "General" : "Defaults");
+               if (var0 instanceof a0 || var0 instanceof StorageESPModule) {
+                  var80 = "Appearance";
                }
 
-               this.e[var2][var3] = var4.build();
-               e4.U(this.e[var2][var3]);
+               var1.add(new ok.m(var80, var76));
             }
-         }
 
-         r4.V("WorldText", "World glyph pipelines ready: normal, through walls, soft occlusion");
-      }
-
-      if (this.S == null) {
-         this.S = new y2();
-      }
-   }
-
-   private ok.r Z(String var1) {
-      ok.r var2 = this.g.get(var1);
-      if (var2 != null) {
-         return var2;
-      }
-
-      Component var3 = j_.P(var1);
-      int var4 = this.X.width(var3);
-      PreparedText var5 = this.X.prepareText(var3.getVisualOrderText(), -var4 / 2.0F, 0.0F, -1, false, false, 0);
-      ScreenRectangle var6 = var5.bounds();
-      ok.r var7 = new ok.r(var5, var4, var6 == null ? 32 : var6.height(), var6 == null ? 16.0F : var6.top() + var6.height() / 2.0F);
-      if (this.g.size() >= 256) {
-         this.g.remove(this.g.keySet().iterator().next());
-      }
-
-      this.g.put(var1, var7);
-      return var7;
-   }
-
-   public boolean S() {
-      return !this.T;
-   }
-
-   public int B(String var1) {
-      if (var1.isEmpty()) {
-         return 0;
-      }
-
-      this.X();
-      return this.Z(var1).width;
-   }
-
-   public void i(PoseStack var1, CameraRenderState var2, o3 var3, e0 var4, boolean var5) {
-      if (!this.T || this.d != jk.v) {
-         if (!var5 || var4.z && !(var4.l <= 0.0)) {
-            long var6 = h_.U();
-
-            try {
-               this.X();
-               int var8 = this.b;
-               if (var4.p == e0.m.O) {
-                  this.a = 2;
-                  this.H(var1, var2, var3, var4, var5, var8, 0.18);
-               }
-
-               this.a = var4.p == e0.m.x ? 1 : 0;
-               this.H(var1, var2, var3, var4, var5, var8, 1.0);
-            } catch (RuntimeException var12) {
-               this.T = (boolean)1;
-               if (this.S != null) {
-                  this.S.close();
-                  this.S = null;
-               }
-
-               this.g.clear();
-               r4.r("WorldText", "World text render failed; isolated until resource reload or re-enable", var12);
-            } finally {
-               this.m.e = null;
-               h_.n("WorldText", var6);
+            if (var0 instanceof com.larpclient.module.v var81) {
+               var1.add(ok.m.advanced("Shortcuts", var81.s()));
             }
+
+            return List.copyOf(var1);
          }
       }
    }
 
-   private int i(o3 var1, CameraRenderState var2) {
-      int var3 = 0;
-      double var4 = Math.sin(var1.p);
-      double var6 = Math.cos(var1.p);
-      Vec3 var8 = var2.pos;
+   private static List<ok.m> o(CustomSkyModule var0) {
+      return List.of(
+         new ok.m("Appearance", var0.P()), new ok.m("Motion", var0.m()), new ok.m("Atmosphere", var0.N()), ok.m.advanced("Detail and placement", var0.M())
+      );
+   }
 
-      for (lg var12 : var1.n()) {
-         if (var12.h && !(var12.v < 0.00392156862745098)) {
-            double var13 = var12.m + var12.a;
-            double var15 = var12.k + var12.q;
-            double var17 = var1.D + var13 * var6 + var15 * var4 - var8.x;
-            double var19 = var1.w + var12.n + var12.E - var8.y;
-            double var21 = var1.s + var15 * var6 - var13 * var4 - var8.z;
-            double var23 = var17 * var17 + var19 * var19 + var21 * var21;
+   private static List<ok.m> L(SkyShaderModule var0) {
+      return List.of(new ok.m("Appearance", var0.E()), new ok.m("Motion and pattern", var0.x()));
+   }
 
-            int var25;
-            for (var25 = var3++; var25 > 0 && this.r[var25 - 1] < var23; var25--) {
-               this.r[var25] = this.r[var25 - 1];
-               this.K[var25] = this.K[var25 - 1];
-            }
-
-            this.r[var25] = var23;
-            this.K[var25] = var12;
-         }
+   public record m(String title, List<df<?>> settings, boolean chips, boolean collapsed) {
+      public m(String var1, List<df<?>> var2) {
+         this(var1, var2, false, false);
       }
 
-      return var3;
-   }
-
-   private void H(PoseStack var1, CameraRenderState var2, o3 var3, e0 var4, boolean var5, int var6, double var7) {
-      double var9 = Math.sin(var3.p);
-      double var11 = Math.cos(var3.p);
-      Vec3 var13 = var2.pos;
-      this.R.set(0.0F, 0.0F, -1.0F).rotate(var2.orientation);
-
-      for (int var14 = 0; var14 < var6; var14++) {
-         lg var15 = this.K[var14];
-         double var16 = Math.sqrt(this.r[var14]);
-         if (!(var16 >= var4.D)) {
-            double var18 = var15.v * var4.t * var7;
-            if (var4.O) {
-               double var20 = Math.min(var4.J, var4.D - 0.1);
-               var18 *= 1.0 - e6.q((var16 - var20) / (var4.D - var20));
-            }
-
-            var18 *= e6.q(var16 / 0.8);
-            if (var5) {
-               var18 *= var4.l;
-            }
-            int var38 = switch (var4.d) {
-               case n -> var4.s;
-               case D -> oh.j(var4.s, var4.N, (Math.sin(var15.p) + 1.0) * 0.5);
-               case N -> oh.O((float)((var3.e() * 0.035 + var15.p / (Math.PI * 2)) % 1.0), 0.45F, 1.0F);
-            };
-            var38 = oh.S(var38, var18);
-            if (var38 >>> 24 >= 1) {
-               ok.r var21 = this.Z(var15.W);
-               double var22 = var15.m + var15.a;
-               double var24 = var15.k + var15.q;
-               double var26 = var3.D + var22 * var11 + var24 * var9 - var13.x;
-               double var28 = var3.w + var15.n + var15.E - var13.y;
-               double var30 = var3.s + var24 * var11 - var22 * var9 - var13.z;
-               double var32 = Math.hypot(var21.width + 12, var21.height + 8) * 0.01890625 * var4.i * (1.0 + var15.f * var4.W) * var15.J * 0.5;
-               if (!(var26 * this.R.x + var28 * this.R.y + var30 * this.R.z < -var32)) {
-                  this.L.set(var1.last().pose()).translate((float)var26, (float)var28, (float)var30);
-                  switch (var4.j) {
-                     case l:
-                        this.L.rotate(var2.orientation);
-                        break;
-                     case j:
-                        this.L.rotateY((float)Math.atan2(-var26, -var30));
-                        break;
-                     case Y:
-                        this.L.rotateY((float)var15.u).rotateX((float)var15.D);
-                  }
-
-                  double var34 = var4.R == e0.z.O ? 0.0 : var15.K;
-                  this.L.rotateZ((float)(var15.i + var34));
-                  float var36 = (float)(0.01890625 * var4.i * (1.0 + var15.f * var4.W) * var15.J);
-                  this.L.scale(var36, -var36, var36).translate(0.0F, -var21.centerY, 0.0F);
-                  if (var4.u && !var5) {
-                     this.L.translate(2.0F, 2.0F, -0.03F);
-                     this.m.x = oh.i(-15724520, (var38 >>> 24) / 255.0 * 0.5);
-                     var21.text.visit(this);
-                     this.L.translate(-2.0F, -2.0F, 0.03F);
-                  }
-
-                  this.m.x = var38;
-                  var21.text.visit(this);
-               }
-            }
-         }
+      public m(String var1, List<df<?>> var2, boolean var3) {
+         this(var1, var2, var3, false);
       }
 
-      this.S.P(this::c);
-   }
-
-   private PreparedRenderType c(PreparedRenderType var1) {
-      int var2 = var1.pipeline() == RenderPipelines.TEXT_GRAYSCALE ? 1 : 0;
-      return of.R(var1, this.e[this.a][var2]);
-   }
-
-   public void acceptRenderable(TextRenderable var1) {
-      this.m.e = this.S.a(var1.renderType(DisplayMode.NORMAL));
-      if (this.c == null) {
-         var1.render(this.L, this.m, 15728880, false);
-      } else if (this.v(var1)) {
-         var1.render(this.I, this.m, 15728880, false);
+      public static ok.m advanced(String var0, List<df<?>> var1) {
+         return new ok.m(var0, var1, false, true);
       }
-   }
-
-   public void E() {
-      if (this.S != null) {
-         this.S.R();
-      }
-   }
-
-   @Override
-   public void close() {
-      this.g.clear();
-      this.u();
-      Arrays.fill(this.K, null);
-      if (this.S != null) {
-         this.S.close();
-         this.S = null;
-      }
-
-      this.T = (boolean)0;
-      this.d = -1;
-   }
-
-   public record f(int kind, double reveal, double exit, double time, int accent) {
-      public static final int FADE = 0;
-      public static final int POP = 1;
-      public static final int WAVE = 2;
-   }
-
-   public record p(
-      String text, double x, double y, double z, double scale, int color, float qx, float qy, float qz, float qw, boolean worldAligned, ok.f motion
-   ) {
-      public p(String var1, double var2, double var4, double var6, double var8, int var10) {
-         this(var1, var2, var4, var6, var8, var10, 0.0F, 0.0F, 0.0F, 1.0F, false);
-      }
-
-      public p(String var1, double var2, double var4, double var6, double var8, int var10, float var11, float var12, float var13, float var14, boolean var15) {
-         this(var1, var2, var4, var6, var8, var10, var11, var12, var13, var14, var15, null);
-      }
-   }
-
-   private record r(PreparedText text, int width, int height, float centerY) {
-   }
-
-   private static final class t {
-      ok.p P;
-      ok.r k;
-      double j;
    }
 }

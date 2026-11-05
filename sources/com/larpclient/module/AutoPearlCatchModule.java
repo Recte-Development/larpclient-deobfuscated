@@ -1,17 +1,18 @@
 package com.larpclient.module;
 
-import com.larp.obf.q5682c6a8aca9b6ec.q143ef5d8ac4bd5b8;
-import com.larp.obf.q5682c6a8aca9b6ec.qa1ad45ac3ead4599;
-import com.larpclient.d8;
-import com.larpclient.ep;
-import com.larpclient.h6;
-import com.larpclient.hp;
-import com.larpclient.l0;
-import com.larpclient.m;
-import com.larpclient.o_;
-import com.larpclient.r4;
-import com.larpclient.rr;
-import com.larpclient.y7;
+import com.larp.obf.qbac0b262827a15ac.q099a584e4baa1bb9;
+import com.larp.obf.qbac0b262827a15ac.qb131e08b200c8a57;
+import com.larpclient._8;
+import com.larpclient._d;
+import com.larpclient._m;
+import com.larpclient.h_;
+import com.larpclient.m0;
+import com.larpclient.m9;
+import com.larpclient.mt;
+import com.larpclient.mw;
+import com.larpclient.po;
+import com.larpclient.ti;
+import com.larpclient.tq;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,22 +36,22 @@ import net.minecraft.world.item.component.UseCooldown;
 import net.minecraft.world.phys.Vec3;
 
 public final class AutoPearlCatchModule extends Module {
-   private static final int K = 20;
-   private static final int I = 20;
+   private static final int d = 20;
    private static final int m = 20;
-   private static final int t = 3;
-   private static final int J = 4;
-   private static final double N = 0.6;
-   private static final double X = 5.0;
-   private static final float u = 0.05F;
-   public static final float Z = 2.5F;
-   private static AutoPearlCatchModule B;
-   private final la Q = this.addSetting(
-      new la("Catch Bind", "Press for one pearl catch; pressing again while it throws cancels it. Separate from the module toggle", -1)
+   private static final int a = 20;
+   private static final int B = 3;
+   private static final int k = 4;
+   private static final double i = 0.6;
+   private static final double z = 5.0;
+   private static final float s = 0.05F;
+   public static final float b = 2.5F;
+   private static AutoPearlCatchModule h;
+   private final dv W = this.addSetting(
+      new dv("Catch Bind", "Press for one pearl catch; pressing again while it throws cancels it. Separate from the module toggle", -1)
    );
-   private final lp G = this.addSetting(new lp("Direction", "Up throws straight up for height; Look throws where you aim for distance", "Up", "Up", "Look"));
-   private final lp a = this.addSetting(
-      new lp(
+   private final d6 y = this.addSetting(new d6("Direction", "Up throws straight up for height; Look throws where you aim for distance", "Up", "Up", "Look"));
+   private final d6 c = this.addSetting(
+      new d6(
          "Timing",
          "Instant throws both in one tick for a catch a few blocks out; Solved aims the wind charge a tick or more later for a farther catch; Fixed Delay throws it along the same look after Delay",
          "Instant",
@@ -59,111 +60,111 @@ public final class AutoPearlCatchModule extends Module {
          "Fixed Delay"
       )
    );
-   private final lc p = this.addSetting(
-      new lc("Delay", "Ticks from the pearl to the wind charge; same-look catches work near straight up", 2.0, 1.0, 10.0, 1.0)
+   private final d9 Q = this.addSetting(
+      new d9("Delay", "Ticks from the pearl to the wind charge; same-look catches work near straight up", 2.0, 1.0, 10.0, 1.0)
    );
-   private final lc S = this.addSetting(
-      new lc(
+   private final d9 P = this.addSetting(
+      new d9(
          "Turn Speed", "Maximum player turn in degrees per tick; your camera stays on your look. 180 with Humanize off turns at once", 90.0, 10.0, 180.0, 5.0
       )
    );
-   private final ln e = this.addSetting(new ln("Swap Back", "Return to your previous hotbar slot after each throw", true));
-   private final lc O = this.addSetting(
-      new lc("Return Speed", "Most the player turns per tick back to your look after the last throw. 180 returns at once", 40.0, 10.0, 180.0, 5.0)
+   private final dh O = this.addSetting(new dh("Swap Back", "Return to your previous hotbar slot after each throw", true));
+   private final d9 H = this.addSetting(
+      new d9("Return Speed", "Most the player turns per tick back to your look after the last throw. 180 returns at once", 40.0, 10.0, 180.0, 5.0)
    );
-   private final ln E = this.addSetting(
-      new ln(
+   private final dh G = this.addSetting(
+      new dh(
          "Humanize", "Turn like a hand on a mouse: speed up, ease in, drift a little and move in whole sensitivity steps. Off turns in straight lines", true
       )
    );
-   private final l0 b = new l0();
-   private final o_ H = new o_(this);
-   private final y7 y = new y7();
-   private final Set<Integer> s = new HashSet<>();
-   private final List<AutoPearlCatchModule.o> q = new ArrayList<>();
-   private LocalPlayer P;
-   private ClientLevel R;
-   private long M;
-   private long n = Long.MIN_VALUE;
-   private long g = -1L;
-   private float[] A;
+   private final h_ R = new h_();
+   private final ti X = new ti(this);
+   private final mw T = new mw();
+   private final Set<Integer> t = new HashSet<>();
+   private final List<AutoPearlCatchModule.x> v = new ArrayList<>();
+   private LocalPlayer r;
+   private ClientLevel Y;
+   private long w;
+   private long q = Long.MIN_VALUE;
+   private long J = -1L;
+   private float[] p;
    private float j;
-   private float x;
-   private List<h6.q> l;
-   private Vec3 k;
-   private Vec3 z = Vec3.ZERO;
-   private Vec3 U;
-   private Vec3 v = Vec3.ZERO;
-   private Vec3 i = Vec3.ZERO;
-   private Vec3 L = Vec3.ZERO;
+   private float D;
+   private List<po.f> L;
+   private Vec3 x;
+   private Vec3 g = Vec3.ZERO;
+   private Vec3 n;
+   private Vec3 V = Vec3.ZERO;
+   private Vec3 I = Vec3.ZERO;
+   private Vec3 C = Vec3.ZERO;
    private Vec3 F = Vec3.ZERO;
-   private float W;
-   private float Y;
-   private ThrownEnderpearl c;
-   private h6.n V;
-   private h6.n T;
-   private String r = "Set a Catch Bind";
+   private float N;
+   private float M;
+   private ThrownEnderpearl o;
+   private po.n A;
+   private po.n Z;
+   private String K = "Set a Catch Bind";
 
    public AutoPearlCatchModule() {
       super("Auto Pearl Catch", "Throw a pearl, then a wind charge it hits in flight, to teleport mid-air", Category.MOVEMENT, -1);
-      B = this;
-      this.p.x(this::i);
-      this.G.W(var1 -> this.S("Direction changed"));
-      this.a.W(var1 -> this.S("Timing changed"));
-      this.Q.W(var1 -> this.S("Bind changed"));
+      h = this;
+      this.Q.H(this::F);
+      this.y.h(var1 -> this.y("Direction changed"));
+      this.c.h(var1 -> this.y("Timing changed"));
+      this.W.h(var1 -> this.y("Bind changed"));
    }
 
-   public static AutoPearlCatchModule g() {
-      return B;
+   public static AutoPearlCatchModule D() {
+      return h;
    }
 
-   public List<l6<?>> y() {
-      return List.of(this.Q, this.G, this.a, this.p);
+   public List<df<?>> V() {
+      return List.of(this.W, this.y, this.c, this.Q);
    }
 
-   public List<l6<?>> E() {
-      return List.of(this.S, this.O, this.E, this.e);
+   public List<df<?>> Q() {
+      return List.of(this.P, this.H, this.G, this.O);
    }
 
-   public l0 g() {
-      return this.b;
+   public h_ c() {
+      return this.R;
    }
 
-   public double G() {
-      return this.O.getValue();
+   public double o() {
+      return this.H.P();
    }
 
-   public boolean v() {
-      return this.E.getValue();
-   }
-
-   @Override
-   public Module.b getTickPhase() {
-      return Module.b.w;
+   public boolean m() {
+      return this.G.P();
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a, ld.c);
+   public Module.f getTickPhase() {
+      return Module.f.Z;
+   }
+
+   @Override
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z, dm.j);
    }
 
    @Override
    public String getStatus() {
-      return this.isEnabled() ? this.r : "";
+      return this.isEnabled() ? this.K : "";
    }
 
-   public boolean n() {
+   public boolean a() {
       return !this.isEnabled()
          ? false
-         : this.isRuntimeActive() && this.P != null && this.P == mc.player && this.R == mc.level && (this.y.R() || this.M == this.n);
+         : this.isRuntimeActive() && this.r != null && this.r == mc.player && this.Y == mc.level && (this.T.t() || this.w == this.q);
    }
 
-   public static void K(int var0) {
-      if (B != null && B.isEnabled()) {
-         AutoPearlCatchModule var1 = B;
-         if (var1 != null && var1.isRuntimeActive() && var0 > 0 && var0 == var1.Q.getValue()) {
-            if (!var1.y.W()) {
-               var1.S("Cancelled with Catch Bind");
+   public static void v(int var0) {
+      if (h != null && h.isEnabled()) {
+         AutoPearlCatchModule var1 = h;
+         if (var1 != null && var1.isRuntimeActive() && var0 > 0 && var0 == var1.W.P()) {
+            if (!var1.T.Z()) {
+               var1.y("Cancelled with Catch Bind");
             }
          }
       }
@@ -172,133 +173,157 @@ public final class AutoPearlCatchModule extends Module {
    @Override
    public void onTick() {
       if (!this.isInGame()) {
-         this.S("Waiting for a world");
-         this.q.clear();
+         this.y("Waiting for a world");
+         this.v.clear();
       } else {
-         if (this.P != mc.player || this.R != mc.level) {
-            float[] var1 = !this.y.R() && this.M != this.n ? null : this.A;
-            this.S("World changed");
-            this.q.clear();
-            this.P = mc.player;
-            this.R = mc.level;
-            this.k = null;
+         if (this.r != mc.player || this.Y != mc.level) {
+            float[] var15;
+            label69: {
+               if (!this.T.t()) {
+                  long var21;
+                  int var10000 = (var21 = this.w - this.q) == 0L ? 0 : (var21 < 0L ? -1 : 1);
+                  boolean var10 = false;
+                  int var9 = var10000;
+                  int var14 = Integer.signum(var9);
+                  if ((var14 | -var14) >>> 31 != 0) {
+                     var15 = null;
+                     break label69;
+                  }
+               }
+
+               var15 = this.p;
+            }
+
+            float[] var1 = var15;
+            this.y("World changed");
+            this.v.clear();
+            this.r = mc.player;
+            this.Y = mc.level;
+            this.x = null;
             if (var1 != null) {
-               this.P.setYRot(var1[0]);
-               this.P.setXRot(var1[1]);
-               this.P.yRotO = var1[0];
-               this.P.xRotO = var1[1];
-               r4.V("PearlCatch", "World changed during a catch; your look (yaw {} pitch {}) restored", Q(var1[0]), Q(var1[1]));
+               this.r.setYRot(var1[0]);
+               this.r.setXRot(var1[1]);
+               this.r.yRotO = var1[0];
+               this.r.xRotO = var1[1];
+               mt.K("PearlCatch", "World changed during a catch; your look (yaw {} pitch {}) restored", k(var1[0]), k(var1[1]));
             }
          }
 
-         this.M++;
-         if (rr.u() == rr.f.H) {
-            this.A = rr.l(rr.j(), rr.T(), mc.options.getCameraType().isMirrored());
+         this.w++;
+         if (tq.l() == tq.y.N) {
+            this.p = tq.i(tq.J(), tq.F(), mc.options.getCameraType().isMirrored());
          }
 
-         Vec3 var13 = this.P.position();
-         this.z = this.k != null && !(var13.distanceToSqr(this.k) > 16.0) ? var13.subtract(this.k) : Vec3.ZERO;
-         this.k = var13;
-         this.Z();
-         byte var2 = this.y.U();
-         y7.c var3 = this.y.r();
-         if (var3 == y7.c.s) {
-            boolean var6 = false;
-            byte var5 = var2;
-            int var10000 = Integer.signum(var5);
-            if (((var10000 | -var10000) >>> 31 ^ 1) == 0) {
-               int var14 = this.y.e();
-               boolean var8 = false;
-               byte var7 = (byte)var14;
-               var14 = Integer.signum(var7);
-               if ((var14 | -var14) >>> 31 == 0) {
-                  this.j = this.x = 0.0F;
-                  this.y.J(this.M);
+         Vec3 var13;
+         Vec3 var17;
+         label63: {
+            var13 = this.r.position();
+            if (this.x != null) {
+               double var22;
+               int var10001 = (var22 = var13.distanceToSqr(this.x) - 16.0) == 0.0 ? 0 : (var22 < 0.0 ? -1 : 1);
+               boolean var12 = false;
+               int var11 = var10001;
+               if ((-Integer.signum(var11) >>> 31 ^ 1) != 0) {
+                  var17 = var13.subtract(this.x);
+                  break label63;
                }
             }
 
-            int var16 = this.y.e();
-            boolean var10 = false;
-            byte var9 = (byte)var16;
-            var16 = Integer.signum(var9);
-            if (((var16 | -var16) >>> 31 ^ 1) == 0) {
-               this.I();
+            var17 = Vec3.ZERO;
+         }
+
+         this.g = var17;
+         this.x = var13;
+         this.Y();
+         byte var2 = this.T.D();
+         mw.e var3 = this.T.q();
+         if (var3 == mw.e.T) {
+            boolean var8 = false;
+            byte var7 = var2;
+            int var16 = Integer.signum(var7);
+            if (((var16 | -var16) >>> 31 ^ 1) == 0 && !this.T.h()) {
+               this.j = this.D = 0.0F;
+               this.T.s(this.w);
+            }
+
+            if (this.T.h()) {
+               this.i();
             }
          } else {
-            String var4 = this.r();
+            String var4 = this.y();
             if (var4 != null) {
-               this.S(var4);
-            } else if (this.y.x(this.M)) {
-               String var10001;
-               if (var3 == y7.c.M) {
-                  var10001 = "The view did not reach the throw angle in time";
+               this.y(var4);
+            } else if (this.T.J(this.w)) {
+               String var18;
+               if (var3 == mw.e.d) {
+                  var18 = "The view did not reach the throw angle in time";
                } else {
-                  byte var18 = this.i();
-                  boolean var12 = false;
-                  byte var11 = var18;
-                  int var19 = Integer.signum(var11);
-                  var10001 = ((var19 | -var19) >>> 31 ^ 1) == 0
+                  byte var19 = this.F();
+                  boolean var6 = false;
+                  byte var5 = var19;
+                  int var20 = Integer.signum(var5);
+                  var18 = ((var20 | -var20) >>> 31 ^ 1) == 0
                      ? "The wind charge could not be thrown on its tick"
                      : "No reliable catch before the pearl came down";
                }
 
-               this.S(var10001);
+               this.y(var18);
             } else {
-               if (var3 == y7.c.M) {
-                  this.c();
+               if (var3 == mw.e.d) {
+                  this.t();
                } else {
-                  this.o();
+                  this.L();
                }
             }
          }
       }
    }
 
-   private void I() {
-      String var1 = this.r();
+   private void i() {
+      String var1 = this.y();
       if (var1 == null) {
-         var1 = this.B();
+         var1 = this.o();
       }
 
       if (var1 != null) {
-         this.y.h();
-         this.C(var1);
+         this.T.k();
+         this.M(var1);
       } else {
-         int var2 = this.b();
+         int var2 = this.P();
          if (var2 > 0) {
-            if (var2 <= 30 && !this.y.v(this.M)) {
-               this.r = String.format(Locale.ROOT, "Catch in %.2f s (cooldown)", var2 / 20.0);
+            if (var2 <= 30 && !this.T.V(this.w)) {
+               this.K = String.format(Locale.ROOT, "Catch in %.2f s (cooldown)", var2 / 20.0);
             } else {
-               this.y.h();
-               this.C(String.format(Locale.ROOT, "Ender pearl or wind charge is cooling down (%.1f s left)", var2 / 20.0));
+               this.T.k();
+               this.M(String.format(Locale.ROOT, "Ender pearl or wind charge is cooling down (%.1f s left)", var2 / 20.0));
             }
          } else {
-            this.y.h();
-            this.P();
+            this.T.k();
+            this.W();
          }
       }
    }
 
-   private int b() {
-      float var1 = this.i(Items.ENDER_PEARL);
-      float var2 = this.i(Items.WIND_CHARGE);
-      int var3 = Math.max(D(var1, this.j, Items.ENDER_PEARL), D(var2, this.x, Items.WIND_CHARGE));
+   private int P() {
+      float var1 = this.S(Items.ENDER_PEARL);
+      float var2 = this.S(Items.WIND_CHARGE);
+      int var3 = Math.max(s(var1, this.j, Items.ENDER_PEARL), s(var2, this.D, Items.WIND_CHARGE));
       this.j = var1;
-      this.x = var2;
+      this.D = var2;
       return var3;
    }
 
-   private float i(Item var1) {
-      int var2 = com.larpclient.m.Q(var1, true);
+   private float S(Item var1) {
+      int var2 = _d.B(var1, true);
       if (var2 == -1) {
          return 0.0F;
       }
 
-      ItemStack var3 = var2 == -2 ? this.P.getOffhandItem() : this.P.getInventory().getItem(var2);
-      return this.P.getCooldowns().getCooldownPercent(var3, 0.0F);
+      ItemStack var3 = var2 == -2 ? this.r.getOffhandItem() : this.r.getInventory().getItem(var2);
+      return this.r.getCooldowns().getCooldownPercent(var3, 0.0F);
    }
 
-   private static int D(float var0, float var1, Item var2) {
+   private static int s(float var0, float var1, Item var2) {
       if (var0 <= 0.0F) {
          return 0;
       }
@@ -312,76 +337,74 @@ public final class AutoPearlCatchModule extends Module {
       return (int)Math.ceil(var0 * (var4 == null ? 20 : var4.ticks()));
    }
 
-   private void P() {
-      String var1 = this.r();
+   private void W() {
+      String var1 = this.y();
       if (var1 == null) {
-         var1 = this.B();
+         var1 = this.o();
       }
 
       if (var1 != null) {
-         this.C(var1);
+         this.M(var1);
       } else {
-         float[] var2 = this.n();
+         float[] var2 = this.I();
          float var3 = var2[0];
          float var4 = var2[1];
-         float var5 = this.w() ? -90.0F : var4;
-         Vec3 var6 = this.P.getEyePosition();
-         h6.n var7;
-         if (this.W()) {
-            h6.v var8 = h6.C(var6, var3, var5, this.E(), this.o(), 0.6);
+         float var5 = this.q() ? -90.0F : var4;
+         Vec3 var6 = this.r.getEyePosition();
+         po.n var7;
+         if (this.C()) {
+            po.q var8 = po.Y(var6, var3, var5, this.H(), this.J(), 0.6);
             if (var8 == null) {
-               this.C(this.w() ? "No instant catch: clear the space above you" : "No instant catch along this look; clear the space ahead");
+               this.M(this.q() ? "No instant catch: clear the space above you" : "No instant catch along this look; clear the space ahead");
                return;
             }
 
             var5 = var8.pitch();
             var7 = var8.plan();
          } else {
-            Vec3 var11 = h6.p(var3, var5);
-            var7 = this.i()
-               ? h6.v(this.k(var6, var11, this.E(), this.p.getValue().intValue()), var6, this.E(), var11, this.o())
-               : this.f(var6, var11, this.E());
+            Vec3 var11 = po.y(var3, var5);
+            var7 = this.F() ? po.J(this.H(var6, var11, this.H(), this.Q.P().intValue()), var6, this.H(), var11, this.J()) : this.a(var6, var11, this.H());
             if (var7 == null || var7.reliability() < 0.6) {
-               this.C(this.L(var7));
+               this.M(this.w(var7));
                return;
             }
          }
 
-         this.W = var3;
-         this.Y = var5;
-         this.V = var7;
-         this.s.clear();
+         this.N = var3;
+         this.M = var5;
+         this.A = var7;
+         this.t.clear();
 
          for (Entity var9 : mc.level.entitiesForRendering()) {
-            if (var9 instanceof ThrownEnderpearl var10 && var10.getOwner() == this.P) {
-               this.s.add(var10.getId());
+            if (var9 instanceof ThrownEnderpearl var10 && var10.getOwner() == this.r) {
+               this.t.add(var10.getId());
             }
          }
 
-         this.y.W(this.M, 20);
-         this.b.O();
-         this.r = this.j(var3, var5) ? "Throwing" : "Turning to throw";
-         r4.V(
+         this.T.r(this.w, 20);
+         this.R.b();
+         this.K = this.x(var3, var5) ? "Throwing" : "Turning to throw";
+         mt.K(
             "PearlCatch",
             "Catch started; direction={}, timing={}, pitch {}{}, forecast catch on step {} at {} ({}/{} samples)",
-            this.G.getValue(),
-            this.a.getValue(),
-            Q(var5),
-            !this.w() && var5 < var4 - 0.5F ? " raised from " + Q(var4) : "",
+            this.y.P(),
+            this.c.P(),
+            k(var5),
+            !this.q() && var5 < var4 - 0.5F ? " raised from " + k(var4) : "",
             var7.nominal().tick(),
-            r(var7.nominal().point()),
+            I(var7.nominal().point()),
             var7.score(),
             var7.samples()
          );
-         this.c();
+         this.t();
       }
    }
 
-   private h6.n f(Vec3 var1, Vec3 var2, Vec3 var3) {
-      h6.n var4 = null;
+   private po.n a(Vec3 var1, Vec3 var2, Vec3 var3) {
+      po.n var4 = null;
 
       for (int var5 = 1; var5 <= 20; var5++) {
-         h6.n var6 = h6.g(this.k(var1, var2, var3, var5), var1, var3, this.o());
+         po.n var6 = po.l(this.H(var1, var2, var3, var5), var1, var3, this.J());
          if (var6 != null && var6.reliability() >= 0.6) {
             return var6;
          }
@@ -394,54 +417,54 @@ public final class AutoPearlCatchModule extends Module {
       return var4;
    }
 
-   private List<h6.q> k(Vec3 var1, Vec3 var2, Vec3 var3, int var4) {
-      return h6.A(var1, var2, var3, var4, this.o());
+   private List<po.f> H(Vec3 var1, Vec3 var2, Vec3 var3, int var4) {
+      return po.a(var1, var2, var3, var4, this.J());
    }
 
-   private String L(h6.n var1) {
-      if (this.i() && !this.w()) {
+   private String w(po.n var1) {
+      if (this.F() && !this.q()) {
          return "Fixed Delay only catches near straight up; use Instant or Solved for Look";
       } else if (var1 == null) {
-         return this.w() ? "No catch: the pearl would come down first, so clear the space above you" : "No catch at this angle; aim higher or use Instant";
+         return this.q() ? "No catch: the pearl would come down first, so clear the space above you" : "No catch at this angle; aim higher or use Instant";
       } else {
          return String.format(
             Locale.ROOT,
             "Only %d of %d samples catch here; %s",
             var1.score(),
             var1.samples(),
-            this.i() ? "try another Delay or Instant" : (this.w() ? "clear the space above you" : "aim higher or use Instant")
+            this.F() ? "try another Delay or Instant" : (this.q() ? "clear the space above you" : "aim higher or use Instant")
          );
       }
    }
 
-   private void c() {
-      if (d8.m(this)) {
-         this.S(this.W, this.Y);
+   private void t() {
+      if (_m.f(this)) {
+         this.y(this.N, this.M);
       }
 
-      d8.A(this, this.W() ? this::R : this::q, this::z);
+      _m.F(this, this.C() ? this::J : this::G, this::A);
    }
 
-   private boolean z() {
+   private boolean A() {
       if (!this.isRuntimeActive()
-         || this.y.r() != y7.c.M
-         || this.r() != null
-         || (this.W() ? !this.r(this.W, this.Y, 2.5F) : !this.j(this.W, this.Y))
-         || !this.n(Items.ENDER_PEARL)
-         || !this.n(Items.WIND_CHARGE)
-         || !this.K(Items.ENDER_PEARL)
-         || AuraModule.W()) {
+         || this.T.q() != mw.e.d
+         || this.y() != null
+         || (this.C() ? !this.U(this.N, this.M, 2.5F) : !this.x(this.N, this.M))
+         || !this.L(Items.ENDER_PEARL)
+         || !this.L(Items.WIND_CHARGE)
+         || !this.R(Items.ENDER_PEARL)
+         || AuraModule.i()) {
          return false;
-      } else if (!this.W()) {
+      } else if (!this.C()) {
          return true;
-      } else if (!this.K(Items.WIND_CHARGE)) {
+      } else if (!this.R(Items.WIND_CHARGE)) {
          return false;
       } else {
-         Vec3 var1 = this.P.getEyePosition();
-         Vec3 var2 = h6.p(this.P.getYRot(), this.P.getXRot());
-         h6.n var3 = h6.v(h6.j(var1, var2, this.E(), this.o()), var1, this.E(), var2, this.o());
+         Vec3 var1 = this.r.getEyePosition();
+         Vec3 var2 = po.y(this.r.getYRot(), this.r.getXRot());
+         po.n var3 = po.J(po.v(var1, var2, this.H(), this.J()), var1, this.H(), var2, this.J());
          if (var3 != null && !(var3.reliability() < 0.6)) {
-            this.T = var3;
+            this.Z = var3;
             return true;
          } else {
             return false;
@@ -449,111 +472,111 @@ public final class AutoPearlCatchModule extends Module {
       }
    }
 
-   private void R() {
-      h6.n var1 = this.T;
-      this.v = this.P.position();
+   private void J() {
+      po.n var1 = this.Z;
+      this.V = this.r.position();
       byte var2 = 0;
       byte var3 = 0;
 
       try {
-         var7 = this.Z(Items.ENDER_PEARL);
+         var7 = this.B(Items.ENDER_PEARL);
          if (var7) {
-            var3 = this.Z(Items.WIND_CHARGE);
+            var3 = this.B(Items.WIND_CHARGE);
          }
       } finally {
-         this.U();
+         this.C();
       }
 
       if (!var7) {
-         this.S("The pearl throw was rejected");
+         this.y("The pearl throw was rejected");
       } else if (var3 == 0) {
-         this.S("The wind charge was rejected after the pearl, so the pearl flies on");
+         this.y("The wind charge was rejected after the pearl, so the pearl flies on");
       } else {
-         this.V = var1;
-         this.n = this.M;
-         this.y.J(this.M, 1);
-         this.y.U();
-         this.R(var1);
-         this.r = "Pearl and wind charge thrown together";
-         r4.V(
+         this.A = var1;
+         this.q = this.w;
+         this.T.X(this.w, 1);
+         this.T.j();
+         this.w(var1);
+         this.K = "Pearl and wind charge thrown together";
+         mt.K(
             "PearlCatch",
             "Instant pair thrown at yaw {} pitch {} from {} after a turn of {}; expected catch on step {} at {} ({}/{} samples)",
-            Q(this.P.getYRot()),
-            Q(this.P.getXRot()),
-            r(this.P.getEyePosition()),
-            this.b.F(),
+            k(this.r.getYRot()),
+            k(this.r.getXRot()),
+            I(this.r.getEyePosition()),
+            this.R.H(),
             var1 == null ? "?" : var1.nominal().tick(),
-            var1 == null ? "?" : r(var1.nominal().point()),
+            var1 == null ? "?" : I(var1.nominal().point()),
             var1 == null ? 0 : var1.score(),
             var1 == null ? 0 : var1.samples()
          );
       }
    }
 
-   private void q() {
-      this.v = this.P.position();
-      Vec3 var1 = this.P.getEyePosition();
-      Vec3 var2 = this.E();
-      if (!this.G(Items.ENDER_PEARL)) {
-         this.S("The pearl throw was rejected");
+   private void G() {
+      this.V = this.r.position();
+      Vec3 var1 = this.r.getEyePosition();
+      Vec3 var2 = this.H();
+      if (!this.X(Items.ENDER_PEARL)) {
+         this.y("The pearl throw was rejected");
       } else {
-         this.W = this.P.getYRot();
-         this.Y = this.P.getXRot();
-         this.i = var1;
-         this.L = h6.p(this.W, this.Y);
+         this.N = this.r.getYRot();
+         this.M = this.r.getXRot();
+         this.I = var1;
+         this.C = po.y(this.N, this.M);
          this.F = var2;
-         this.y.J(this.M, this.i() ? this.p.getValue().intValue() + 1 : 21);
-         this.r = this.i() ? "Pearl thrown; wind charge in " + this.p.getValue().intValue() + " ticks" : "Pearl thrown; aiming the wind charge";
-         r4.V("PearlCatch", "Pearl thrown at yaw {} pitch {} from {} after a turn of {}", Q(this.W), Q(this.Y), r(var1), this.b.F());
-         this.b.O();
+         this.T.X(this.w, this.F() ? this.Q.P().intValue() + 1 : 21);
+         this.K = this.F() ? "Pearl thrown; wind charge in " + this.Q.P().intValue() + " ticks" : "Pearl thrown; aiming the wind charge";
+         mt.K("PearlCatch", "Pearl thrown at yaw {} pitch {} from {} after a turn of {}", k(this.N), k(this.M), I(var1), this.R.H());
+         this.R.b();
       }
    }
 
-   private void o() {
-      this.T();
-      if (this.c != null && this.c.isRemoved()) {
-         this.S("The pearl came down before the wind charge");
-      } else if (this.i()) {
-         if (d8.m(this)) {
-            this.S(this.W, this.Y);
+   private void L() {
+      this.o();
+      if (this.o != null && this.o.isRemoved()) {
+         this.y("The pearl came down before the wind charge");
+      } else if (this.F()) {
+         if (_m.f(this)) {
+            this.y(this.N, this.M);
          }
 
-         if (this.y.q(this.M) >= this.p.getValue().intValue()) {
-            d8.A(this, this::F, this::B);
+         if (this.T.l(this.w) >= this.Q.P().intValue()) {
+            _m.F(this, this::m, this::B);
          }
       } else {
-         List var1 = this.R();
-         if (this.U == null) {
-            this.U = ((h6.q)var1.get(0)).K();
+         List var1 = this.d();
+         if (this.n == null) {
+            this.n = ((po.f)var1.get(0)).m();
          }
 
-         h6.n var2 = h6.g(var1, this.P.getEyePosition(), this.E(), this.o());
+         po.n var2 = po.l(var1, this.r.getEyePosition(), this.H(), this.J());
          if (var2 != null && !(var2.reliability() < 0.6)) {
-            this.V = var2;
-            float[] var3 = ep.g(Vec3.ZERO, var2.direction());
-            this.W = var3[0];
-            this.Y = Mth.clamp(var3[1], -90.0F, 90.0F);
-            if (d8.m(this)) {
-               this.S(this.W, this.Y);
+            this.A = var2;
+            float[] var3 = m9.Z(Vec3.ZERO, var2.direction());
+            this.N = var3[0];
+            this.M = Mth.clamp(var3[1], -90.0F, 90.0F);
+            if (_m.f(this)) {
+               this.y(this.N, this.M);
             }
 
-            d8.A(this, this::F, this::B);
-            this.r = "Aiming wind charge";
+            _m.F(this, this::m, this::B);
+            this.K = "Aiming wind charge";
          } else {
-            this.r = "Waiting for a reliable catch line";
+            this.K = "Waiting for a reliable catch line";
          }
       }
    }
 
    private boolean B() {
-      if (this.isRuntimeActive() && this.y.r() == y7.c.i && this.r() == null && this.n(Items.WIND_CHARGE) && this.K(Items.WIND_CHARGE) && !AuraModule.W()) {
-         Vec3 var1 = h6.p(this.P.getYRot(), this.P.getXRot());
-         h6.n var2 = h6.v(this.R(), this.P.getEyePosition(), this.E(), var1, this.o());
-         if (this.i()) {
-            this.T = var2;
-            return this.y.q(this.M) == this.p.getValue().intValue() && this.j(this.W, this.Y);
+      if (this.isRuntimeActive() && this.T.q() == mw.e.J && this.y() == null && this.L(Items.WIND_CHARGE) && this.R(Items.WIND_CHARGE) && !AuraModule.i()) {
+         Vec3 var1 = po.y(this.r.getYRot(), this.r.getXRot());
+         po.n var2 = po.J(this.d(), this.r.getEyePosition(), this.H(), var1, this.J());
+         if (this.F()) {
+            this.Z = var2;
+            return this.T.l(this.w) == this.Q.P().intValue() && this.x(this.N, this.M);
          } else if (var2 != null && !(var2.reliability() < 0.6)) {
-            this.T = var2;
+            this.Z = var2;
             return true;
          } else {
             return false;
@@ -563,28 +586,28 @@ public final class AutoPearlCatchModule extends Module {
       }
    }
 
-   private void F() {
-      h6.n var1 = this.T;
-      long var2 = this.y.q(this.M);
-      if (!this.G(Items.WIND_CHARGE)) {
-         this.S("The wind charge throw was rejected");
+   private void m() {
+      po.n var1 = this.Z;
+      long var2 = this.T.l(this.w);
+      if (!this.X(Items.WIND_CHARGE)) {
+         this.y("The wind charge throw was rejected");
       } else {
-         this.V = var1;
-         this.n = this.M;
-         this.y.U();
-         this.R(var1);
-         this.r = "Wind charge thrown";
+         this.A = var1;
+         this.q = this.w;
+         this.T.j();
+         this.w(var1);
+         this.K = "Wind charge thrown";
          if (var1 == null) {
-            r4.V("PearlCatch", "Wind charge thrown {} ticks after the pearl; no catch expected along this look", var2);
+            mt.K("PearlCatch", "Wind charge thrown {} ticks after the pearl; no catch expected along this look", var2);
          } else {
-            r4.V(
+            mt.K(
                "PearlCatch",
                "Wind charge thrown {} ticks after the pearl at yaw {} pitch {}; expected catch on step {} at {} ({}/{} samples){}",
                var2,
-               Q(this.P.getYRot()),
-               Q(this.P.getXRot()),
+               k(this.r.getYRot()),
+               k(this.r.getXRot()),
                var1.nominal().tick(),
-               r(var1.nominal().point()),
+               I(var1.nominal().point()),
                var1.score(),
                var1.samples(),
                var1.nominal().burst() ? ", charge bursts on you" : ""
@@ -593,47 +616,47 @@ public final class AutoPearlCatchModule extends Module {
       }
    }
 
-   private void R(h6.n var1) {
-      if (this.q.size() >= 4) {
-         this.q.remove(0);
+   private void w(po.n var1) {
+      if (this.v.size() >= 4) {
+         this.v.remove(0);
       }
 
-      int var2 = (var1 == null ? 60 : var1.nominal().tick()) + this.R() + 20;
-      AutoPearlCatchModule.o var3 = new AutoPearlCatchModule.o(new HashSet<>(this.s), this.v, var1, this.U, this.M, this.M + var2);
-      var3.T = this.c;
-      this.q.add(var3);
-      this.c = null;
-      this.s.clear();
-      this.U = null;
+      int var2 = (var1 == null ? 60 : var1.nominal().tick()) + this.h() + 20;
+      AutoPearlCatchModule.x var3 = new AutoPearlCatchModule.x(new HashSet<>(this.t), this.V, var1, this.n, this.w, this.w + var2);
+      var3.z = this.o;
+      this.v.add(var3);
+      this.o = null;
+      this.t.clear();
+      this.n = null;
    }
 
-   private void Z() {
-      Iterator var1 = this.q.iterator();
+   private void Y() {
+      Iterator var1 = this.v.iterator();
 
       while (var1.hasNext()) {
-         AutoPearlCatchModule.o var2 = (AutoPearlCatchModule.o)var1.next();
-         if (var2.T == null) {
-            var2.T = this.d(var2.o);
+         AutoPearlCatchModule.x var2 = (AutoPearlCatchModule.x)var1.next();
+         if (var2.z == null) {
+            var2.z = this.z(var2.i);
          }
 
-         ThrownEnderpearl var3 = var2.T;
-         if (var2.W < 0L && var3 != null && (var3.isRemoved() || mc.level.getEntity(var3.getId()) != var3)) {
-            var2.W = this.M;
+         ThrownEnderpearl var3 = var2.z;
+         if (var2.j < 0L && var3 != null && (var3.isRemoved() || mc.level.getEntity(var3.getId()) != var3)) {
+            var2.j = this.w;
          }
 
-         if (var2.I == null && !var2.y && var2.W < 0L && var3 != null) {
-            var2.I = h6.k(new h6.g(var3.position(), var3.getDeltaMovement(), 1 + var3.tickCount), this.o()).K();
+         if (var2.T == null && !var2.y && var2.j < 0L && var3 != null) {
+            var2.T = po.v(new po.a(var3.position(), var3.getDeltaMovement(), 1 + var3.tickCount), this.J()).m();
             var2.y = (boolean)1;
          }
 
-         if (var2.W >= 0L && this.M > var2.W) {
-            this.D(var2);
+         if (var2.j >= 0L && this.w > var2.j) {
+            this.f(var2);
             var1.remove();
-         } else if (this.M - var2.G >= 0L) {
+         } else if (this.w - var2.e >= 0L) {
             String var4 = var3 == null ? "Pearl not seen; the outcome is unknown" : "No catch observed in time";
-            r4.V("PearlCatch", "{}, {} ticks after the wind charge", var4, this.M - var2.V);
-            if (!this.y.R()) {
-               this.r = var4;
+            mt.K("PearlCatch", "{}, {} ticks after the wind charge", var4, this.w - var2.U);
+            if (!this.T.t()) {
+               this.K = var4;
             }
 
             var1.remove();
@@ -641,13 +664,13 @@ public final class AutoPearlCatchModule extends Module {
       }
    }
 
-   private ThrownEnderpearl d(Set<Integer> var1) {
+   private ThrownEnderpearl z(Set<Integer> var1) {
       for (Entity var3 : mc.level.entitiesForRendering()) {
          if (var3 instanceof ThrownEnderpearl var4
             && !var4.isRemoved()
-            && var4.getOwner() == this.P
+            && var4.getOwner() == this.r
             && !var1.contains(var4.getId())
-            && this.q.stream().noneMatch(var1x -> var1x.T == var4)) {
+            && this.v.stream().noneMatch(var1x -> var1x.z == var4)) {
             return var4;
          }
       }
@@ -655,275 +678,275 @@ public final class AutoPearlCatchModule extends Module {
       return null;
    }
 
-   private void D(AutoPearlCatchModule.o var1) {
-      Vec3 var2 = this.P.position();
-      Vec3 var3 = var1.e == null ? null : var1.e.nominal().point();
+   private void f(AutoPearlCatchModule.x var1) {
+      Vec3 var2 = this.r.position();
+      Vec3 var3 = var1.J == null ? null : var1.J.nominal().point();
       double var4 = var3 == null ? Double.NaN : var2.distanceTo(var3);
-      int var6 = var2.distanceTo(var1.q) > 1.0 ? 1 : 0;
+      int var6 = var2.distanceTo(var1.l) > 1.0 ? 1 : 0;
       String var7;
-      if (var1.I != null && var2.distanceTo(var1.I) <= 1.0) {
+      if (var1.T != null && var2.distanceTo(var1.T) <= 1.0) {
          var7 = "Missed: the pearl landed";
       } else if (var6 == 0 || var3 != null && !(var4 <= 3.0)) {
          if (var6 != 0) {
             var7 = String.format(
                Locale.ROOT,
                "Caught %.1f blocks out, %.1f up, %.1f blocks from the predicted point (a tick of server timing)",
-               var2.distanceTo(var1.q),
-               var2.y - var1.q.y,
+               var2.distanceTo(var1.l),
+               var2.y - var1.l.y,
                var4
             );
          } else {
             var7 = "No teleport: the pearl ended near where you threw it";
          }
       } else {
-         var7 = String.format(Locale.ROOT, "Caught %.1f blocks out, %.1f up", var2.distanceTo(var1.q), var2.y - var1.q.y);
+         var7 = String.format(Locale.ROOT, "Caught %.1f blocks out, %.1f up", var2.distanceTo(var1.l), var2.y - var1.l.y);
       }
 
-      r4.V(
+      mt.K(
          "PearlCatch",
          "{}; now at {}, expected {} ({} blocks off), {} ticks after the wind charge",
          var7,
-         r(var2),
-         var3 == null ? "unknown" : r(var3),
-         Double.isNaN(var4) ? "?" : Q(var4),
-         this.M - var1.V
+         I(var2),
+         var3 == null ? "unknown" : I(var3),
+         Double.isNaN(var4) ? "?" : k(var4),
+         this.w - var1.U
       );
-      if (!this.y.R()) {
-         this.r = var7;
+      if (!this.T.t()) {
+         this.K = var7;
       }
    }
 
-   private List<h6.q> R() {
-      if (this.g != this.M || this.l == null) {
-         this.l = this.k(this.i, this.L, this.F, (int)Math.max(1L, this.y.q(this.M)));
-         this.g = this.M;
+   private List<po.f> d() {
+      if (this.J != this.w || this.L == null) {
+         this.L = this.H(this.I, this.C, this.F, (int)Math.max(1L, this.T.l(this.w)));
+         this.J = this.w;
       }
 
-      return this.l;
+      return this.L;
    }
 
-   private void T() {
-      if (this.c == null) {
+   private void o() {
+      if (this.o == null) {
          for (Entity var2 : mc.level.entitiesForRendering()) {
-            if (var2 instanceof ThrownEnderpearl var3 && !var3.isRemoved() && var3.getOwner() == this.P && !this.s.contains(var3.getId())) {
-               this.c = var3;
-               r4.g("PearlCatch", "Own pearl seen {} ticks after the throw, {} client ticks old", this.y.q(this.M), var3.tickCount);
+            if (var2 instanceof ThrownEnderpearl var3 && !var3.isRemoved() && var3.getOwner() == this.r && !this.t.contains(var3.getId())) {
+               this.o = var3;
+               mt.U("PearlCatch", "Own pearl seen {} ticks after the throw, {} client ticks old", this.T.l(this.w), var3.tickCount);
                return;
             }
          }
       }
    }
 
-   private String r() {
-      if (!d8.a() || mc.gui.screen() != null) {
+   private String y() {
+      if (!_m.z() || mc.gui.screen() != null) {
          return "Paused: a screen is open";
       } else if (!mc.isWindowActive()) {
          return "Paused: the window lost focus";
-      } else if (rr.u() != rr.f.H && !rr.j(rr.f.H)) {
+      } else if (tq.l() != tq.y.N && !tq.y(tq.y.N)) {
          return "Paused: Freecam or Freelook holds the view";
-      } else if (this.P.isPassenger()) {
+      } else if (this.r.isPassenger()) {
          return "Not while riding";
       } else {
-         return !this.P.isEyeInFluid(FluidTags.WATER) && !this.P.isInLava() ? null : "Not with your head in water or lava";
+         return !this.r.isEyeInFluid(FluidTags.WATER) && !this.r.isInLava() ? null : "Not with your head in water or lava";
       }
    }
 
-   private String B() {
-      if (this.P.isUsingItem()) {
+   private String o() {
+      if (this.r.isUsingItem()) {
          return "Stop using your item first";
-      } else if (AuraModule.W()) {
+      } else if (AuraModule.i()) {
          return "Paused while Kill Aura lowers your shield";
-      } else if (com.larpclient.m.Q(Items.ENDER_PEARL, true) == -1) {
+      } else if (_d.B(Items.ENDER_PEARL, true) == -1) {
          return "No ender pearls in your hotbar or hands";
-      } else if (com.larpclient.m.Q(Items.WIND_CHARGE, true) == -1) {
+      } else if (_d.B(Items.WIND_CHARGE, true) == -1) {
          return "No wind charges in your hotbar or hands";
       } else {
-         return !this.P.getAbilities().invulnerable && this.P.getHealth() + this.P.getAbsorptionAmount() <= 5.0 ? "The 5 HP pearl hit would be lethal" : null;
+         return !this.r.getAbilities().invulnerable && this.r.getHealth() + this.r.getAbsorptionAmount() <= 5.0 ? "The 5 HP pearl hit would be lethal" : null;
       }
    }
 
-   private boolean n(Item var1) {
-      int var2 = com.larpclient.m.Q(var1, true);
+   private boolean L(Item var1) {
+      int var2 = _d.B(var1, true);
       if (var2 == -1) {
          return false;
       }
 
-      ItemStack var3 = var2 == -2 ? this.P.getOffhandItem() : this.P.getInventory().getItem(var2);
-      return var3.isItemEnabled(this.R.enabledFeatures()) && !this.P.getCooldowns().isOnCooldown(var3);
+      ItemStack var3 = var2 == -2 ? this.r.getOffhandItem() : this.r.getInventory().getItem(var2);
+      return var3.isItemEnabled(this.Y.enabledFeatures()) && !this.r.getCooldowns().isOnCooldown(var3);
    }
 
-   private boolean K(Item var1) {
-      int var2 = com.larpclient.m.Q(var1, true);
-      return var2 == -2 || var2 == this.P.getInventory().getSelectedSlot() || var2 >= 0 && o_.N(this);
+   private boolean R(Item var1) {
+      int var2 = _d.B(var1, true);
+      return var2 == -2 || var2 == this.r.getInventory().getSelectedSlot() || var2 >= 0 && ti.V(this);
    }
 
-   private boolean G(Item var1) {
+   private boolean X(Item var1) {
       try {
-         return this.Z(var1);
+         return this.B(var1);
       } finally {
-         this.U();
+         this.C();
       }
    }
 
-   private boolean Z(Item var1) {
-      int var2 = com.larpclient.m.Q(var1, true);
+   private boolean B(Item var1) {
+      int var2 = _d.B(var1, true);
       if (var2 == -1) {
          return false;
       }
 
       InteractionHand var3 = var2 == -2 ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-      if (var2 >= 0 && var2 != this.P.getInventory().getSelectedSlot() && !this.H.s(this.P, var2)) {
+      if (var2 >= 0 && var2 != this.r.getInventory().getSelectedSlot() && !this.X.e(this.r, var2)) {
          return false;
       }
 
-      boolean var4 = mc.gameMode.useItem(this.P, var3).consumesAction();
+      boolean var4 = mc.gameMode.useItem(this.r, var3).consumesAction();
       if (var4) {
-         hp.Q(this.P, var3);
-         ((qa1ad45ac3ead4599)mc).larpUseDelay(4);
+         _8.G(this.r, var3);
+         ((qb131e08b200c8a57)mc).larpUseDelay(4);
       }
 
       return var4;
    }
 
-   private void U() {
-      if (this.H.K()) {
-         int var1 = this.P == null ? -1 : this.P.getInventory().getSelectedSlot();
-         this.H.m(getMc(), this.e.getValue());
-         if (this.P != null && this.P == mc.player && mc.gameMode != null && var1 != this.P.getInventory().getSelectedSlot()) {
-            ((q143ef5d8ac4bd5b8)mc.gameMode).larpSyncCarriedItem();
+   private void C() {
+      if (this.X.k()) {
+         int var1 = this.r == null ? -1 : this.r.getInventory().getSelectedSlot();
+         this.X.W(getMc(), this.O.P());
+         if (this.r != null && this.r == mc.player && mc.gameMode != null && var1 != this.r.getInventory().getSelectedSlot()) {
+            ((q099a584e4baa1bb9)mc.gameMode).larpSyncCarriedItem();
          }
       }
    }
 
-   private float[] n() {
-      return !rr.e() ? new float[]{this.P.getYRot(), this.P.getXRot()} : rr.l(rr.j(), rr.T(), mc.options.getCameraType().isMirrored());
+   private float[] I() {
+      return !tq.q() ? new float[]{this.r.getYRot(), this.r.getXRot()} : tq.i(tq.J(), tq.F(), mc.options.getCameraType().isMirrored());
    }
 
-   private void S(float var1, float var2) {
-      rr.W(rr.f.H);
-      if (rr.u() == rr.f.H) {
-         float[] var3 = this.b.G(this.P.getYRot(), this.P.getXRot(), var1, var2, this.S.getValue(), this.E.getValue());
-         ep.t(this, ep.z.v, var3[0], var3[1], 1.0);
+   private void y(float var1, float var2) {
+      tq.i(tq.y.N);
+      if (tq.l() == tq.y.N) {
+         float[] var3 = this.R.V(this.r.getYRot(), this.r.getXRot(), var1, var2, this.P.P(), this.G.P());
+         m9.k(this, m9.s.H, var3[0], var3[1], 1.0);
       }
    }
 
-   private boolean j(float var1, float var2) {
-      return this.r(var1, var2, l0.t(this.E.getValue(), 0.05F, le.e()));
+   private boolean x(float var1, float var2) {
+      return this.U(var1, var2, h_.r(this.G.P(), 0.05F, dj.t()));
    }
 
-   private boolean r(float var1, float var2, float var3) {
-      return Math.abs(Mth.wrapDegrees(this.P.getYRot() - var1)) <= var3 && Math.abs(this.P.getXRot() - var2) <= var3;
+   private boolean U(float var1, float var2, float var3) {
+      return Math.abs(Mth.wrapDegrees(this.r.getYRot() - var1)) <= var3 && Math.abs(this.r.getXRot() - var2) <= var3;
    }
 
-   private Vec3 E() {
-      return this.P.onGround() ? new Vec3(this.z.x, 0.0, this.z.z) : this.z;
+   private Vec3 H() {
+      return this.r.onGround() ? new Vec3(this.g.x, 0.0, this.g.z) : this.g;
    }
 
-   private int R() {
+   private int h() {
       ClientPacketListener var1 = mc.getConnection();
-      PlayerInfo var2 = var1 != null && this.P != null ? var1.getPlayerInfo(this.P.getUUID()) : null;
+      PlayerInfo var2 = var1 != null && this.r != null ? var1.getPlayerInfo(this.r.getUUID()) : null;
       return var2 == null ? 0 : Math.max(0, Math.round(var2.getLatency() / 50.0F));
    }
 
-   private h6.z o() {
-      return new com.larpclient.l3(this.R, this.P);
+   private po.j J() {
+      return new m0(this.Y, this.r);
    }
 
-   private boolean w() {
-      return this.G.i("Up");
+   private boolean q() {
+      return this.y.S("Up");
    }
 
-   private boolean i() {
-      return this.a.i("Fixed Delay");
+   private boolean F() {
+      return this.c.S("Fixed Delay");
    }
 
-   private boolean W() {
-      return this.a.i("Instant");
+   private boolean C() {
+      return this.c.S("Instant");
    }
 
-   private static String Q(double var0) {
+   private static String k(double var0) {
       return String.format(Locale.ROOT, "%.2f", var0);
    }
 
-   private static String r(Vec3 var0) {
+   private static String I(Vec3 var0) {
       return String.format(Locale.ROOT, "(%.1f, %.1f, %.1f)", var0.x, var0.y, var0.z);
    }
 
-   private void C(String var1) {
-      this.r = var1;
-      r4.V("PearlCatch", "Catch refused: {}", var1);
+   private void M(String var1) {
+      this.K = var1;
+      mt.K("PearlCatch", "Catch refused: {}", var1);
    }
 
-   private void S(String var1) {
-      boolean var2 = this.y.R();
-      d8.K(this);
-      this.U();
-      this.k();
+   private void y(String var1) {
+      boolean var2 = this.T.t();
+      _m.w(this);
+      this.C();
+      this.z();
       if (var2) {
-         this.r = var1;
-         r4.V("PearlCatch", "Catch cancelled: {}", var1);
+         this.K = var1;
+         mt.K("PearlCatch", "Catch cancelled: {}", var1);
       }
    }
 
-   private void k() {
-      this.y.O();
-      rr.L(rr.f.H, this.b, this.O.getValue(), this.E.getValue());
-      this.s.clear();
-      this.c = null;
-      this.V = this.T = null;
-      this.l = null;
-      this.g = -1L;
-      this.U = null;
+   private void z() {
+      this.T.F();
+      tq.c(tq.y.N, this.R, this.H.P(), this.G.P());
+      this.t.clear();
+      this.o = null;
+      this.A = this.Z = null;
+      this.L = null;
+      this.J = -1L;
+      this.n = null;
    }
 
    @Override
    public void onEnable() {
-      this.P = null;
-      this.R = null;
-      this.k = null;
-      this.q.clear();
-      this.n = Long.MIN_VALUE;
-      this.k();
-      this.r = this.Q.getValue() < 0 ? "Set a Catch Bind" : "Ready";
-      r4.V(
+      this.r = null;
+      this.Y = null;
+      this.x = null;
+      this.v.clear();
+      this.q = Long.MIN_VALUE;
+      this.z();
+      this.K = this.W.P() < 0 ? "Set a Catch Bind" : "Ready";
+      mt.K(
          "PearlCatch",
          "Enabled; direction={}, timing={}, delay={}, turn speed={}, return speed={}, humanize={}",
-         this.G.getValue(),
-         this.a.getValue(),
-         this.p.getValue().intValue(),
-         this.S.getValue().intValue(),
-         this.O.getValue().intValue(),
-         this.E.getValue()
+         this.y.P(),
+         this.c.P(),
+         this.Q.P().intValue(),
+         this.P.P().intValue(),
+         this.H.P().intValue(),
+         this.G.P()
       );
    }
 
    @Override
    public void onDisable() {
-      this.S("Disabled");
-      this.q.clear();
-      this.P = null;
-      this.R = null;
-      r4.V("PearlCatch", "Disabled; pending throws and aim released");
+      this.y("Disabled");
+      this.v.clear();
+      this.r = null;
+      this.Y = null;
+      mt.K("PearlCatch", "Disabled; pending throws and aim released");
    }
 
-   private static final class o {
-      final Set<Integer> o;
-      final Vec3 q;
-      final h6.n e;
-      final long V;
-      final long G;
-      ThrownEnderpearl T;
-      Vec3 I;
+   private static final class x {
+      final Set<Integer> i;
+      final Vec3 l;
+      final po.n J;
+      final long U;
+      final long e;
+      ThrownEnderpearl z;
+      Vec3 T;
       boolean y;
-      long W = -1L;
+      long j = -1L;
 
-      o(Set<Integer> var1, Vec3 var2, h6.n var3, Vec3 var4, long var5, long var7) {
-         this.o = var1;
-         this.q = var2;
-         this.e = var3;
-         this.I = var4;
-         this.V = var5;
-         this.G = var7;
+      x(Set<Integer> var1, Vec3 var2, po.n var3, Vec3 var4, long var5, long var7) {
+         this.i = var1;
+         this.l = var2;
+         this.J = var3;
+         this.T = var4;
+         this.U = var5;
+         this.e = var7;
       }
    }
 }

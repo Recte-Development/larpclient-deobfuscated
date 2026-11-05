@@ -1,57 +1,75 @@
 package com.larpclient;
 
-import java.util.ArrayDeque;
+import com.mojang.blaze3d.platform.Window;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
 
 public final class ek {
-   public static List<ek.g> L(Set<Long> var0, int var1) {
-      if (var1 >= 0 && var1 <= 4 && var0.size() <= 1024) {
-         TreeSet var2 = new TreeSet(var0);
-         ArrayList var3 = new ArrayList();
+   private static final m6 r = new m6("ViewModel outline");
+   private static InteractionHand y;
+   private static InteractionHand k;
+   private static boolean q;
 
-         while (!var2.isEmpty()) {
-            HashSet var4 = new HashSet();
-            ArrayDeque var5 = new ArrayDeque();
-            long var6 = (Long)var2.first();
-            var2.remove(var6);
-            var5.add(var6);
-            double var8 = 0.0;
-            double var10 = 0.0;
+   public static void z(InteractionHand var0, InteractionHand var1) {
+      y = var0;
+      k = var1;
+   }
 
-            while (!var5.isEmpty()) {
-               long var12 = (Long)var5.removeFirst();
-               var4.add(var12);
-               ChunkPos var14 = ChunkPos.unpack(var12);
-               var8 += var14.getMinBlockX() + 8.0;
-               var10 += var14.getMinBlockZ() + 8.0;
+   private static boolean p() {
+      Minecraft var0 = Minecraft.getInstance();
+      return x3.B() && var0.options.getCameraType().isFirstPerson() && !var0.gameRenderer.gameRenderState().guiRenderState.isHudHidden;
+   }
 
-               for (int var15 = -var1; var15 <= var1; var15++) {
-                  for (int var16 = -var1; var16 <= var1; var16++) {
-                     long var17 = ChunkPos.pack(var14.x() + var15, var14.z() + var16);
-                     if (var2.remove(var17)) {
-                        var5.addLast(var17);
-                     }
-                  }
-               }
+   public static boolean q() {
+      if (!p()) {
+         Q();
+         return false;
+      } else {
+         q = (boolean)1;
+         return r.Y();
+      }
+   }
+
+   public static void c() {
+      if (!p()) {
+         Q();
+      } else {
+         Window var0 = Minecraft.getInstance().getWindow();
+         double var1 = (double)var0.getWidth() / Math.max(1, var0.getGuiScaledWidth());
+         float var3 = (float)Math.max(2.0, var1);
+         int var4 = (int)Math.ceil(var3 * 2.0F) + 2;
+         ArrayList var5 = new ArrayList(2);
+
+         for (InteractionHand var9 : InteractionHand.values()) {
+            x3.n var10 = x3.i(var9);
+            if (var10 != null) {
+               int var11 = var9 == y ? _3.A(f.C, 0.95) : (var9 == k ? -922746881 : 1627389951);
+               var5.add(
+                  new m6.h(
+                     (int)Math.floor(var10.x() * var1) - var4,
+                     (int)Math.floor(var10.y() * var1) - var4,
+                     (int)Math.ceil(var10.width() * var1) + var4 * 2,
+                     (int)Math.ceil(var10.height() * var1) + var4 * 2,
+                     new p3.p(var11, var11, var3, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, false)
+                  )
+               );
             }
-
-            var3.add(new ek.g(Set.copyOf(var4), var8 / var4.size(), var10 / var4.size()));
          }
 
-         return List.copyOf(var3);
-      } else {
-         throw new IllegalArgumentException("Invalid finding zone bounds");
+         r.b(var5);
+      }
+   }
+
+   public static void Q() {
+      if (q) {
+         q = (boolean)0;
+         k = null;
+         y = null;
+         r.close();
       }
    }
 
    private ek() {
-   }
-
-   public record g(Set<Long> members, double x, double z) {
    }
 }

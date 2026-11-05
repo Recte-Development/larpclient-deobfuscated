@@ -1,19 +1,19 @@
 package com.larpclient.module;
 
-import com.larp.obf.q5682c6a8aca9b6ec.qac882a24641eea19;
-import com.larpclient.d8;
-import com.larpclient.d_;
-import com.larpclient.e9;
-import com.larpclient.ep;
-import com.larpclient.hp;
-import com.larpclient.j5;
-import com.larpclient.l0;
+import com.larp.obf.qbac0b262827a15ac.q12d31c89547aa6a5;
+import com.larpclient._8;
+import com.larpclient._m;
+import com.larpclient.c2;
+import com.larpclient.eq;
+import com.larpclient.h_;
+import com.larpclient.hq;
 import com.larpclient.m9;
-import com.larpclient.o_;
-import com.larpclient.oz;
-import com.larpclient.r4;
-import com.larpclient.rr;
-import com.larpclient.ru;
+import com.larpclient.mt;
+import com.larpclient.p1;
+import com.larpclient.ti;
+import com.larpclient.tq;
+import com.larpclient.w7;
+import com.larpclient.xm;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.Locale;
 import java.util.Set;
@@ -40,36 +40,36 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class MaceModule extends Module {
-   private static MaceModule z;
-   private final ln W = this.addSetting(I("auto-swap", "Auto Swap", "Select a mace immediately before a smash hit", true));
-   private final lp N = this.addSetting(I("pick", "Pick", "Prefer damage or a Wind Burst mace for smash hits", "Damage", "Damage", "Wind Burst"));
-   private final ln l = this.addSetting(
-      I(
+   private static MaceModule r;
+   private final dh l = this.addSetting(D("auto-swap", "Auto Swap", "Select a mace immediately before a smash hit", true));
+   private final d6 X = this.addSetting(y("pick", "Pick", "Prefer damage or a Wind Burst mace for smash hits", "Damage", "Damage", "Wind Burst"));
+   private final dh K = this.addSetting(
+      D(
          "breach-swap",
          "Breach Swap",
          "Use a Breach mace for ordinary hits when expected damage improves by 15%. Skipped on Paper servers, which reset the charge on a swap",
          false
       )
    );
-   private final ln K = this.addSetting(I("swap-back", "Swap Back", "Return to the previous hotbar slot after the attack", true));
-   private final ln V = this.addSetting(I("smash-assist", "Smash Assist", "Attack the enemy under the crosshair during a qualifying fall", false));
-   private final lp O = this.addSetting(
-      I("smash-timing", "Smash Timing", "Delay while the next movement step can still reach the target", "Delayed", "Direct", "Delayed")
+   private final dh v = this.addSetting(D("swap-back", "Swap Back", "Return to the previous hotbar slot after the attack", true));
+   private final dh n = this.addSetting(D("smash-assist", "Smash Assist", "Attack the enemy under the crosshair during a qualifying fall", false));
+   private final d6 u = this.addSetting(
+      y("smash-timing", "Smash Timing", "Delay while the next movement step can still reach the target", "Delayed", "Direct", "Delayed")
    );
-   private final lc f = this.addSetting(new lc("min-fall", "Minimum fall distance for automatic smash hits", 3.0, 1.5, 30.0, 0.5) {
+   private final d9 R = this.addSetting(new d9("min-fall", "Minimum fall distance for automatic smash hits", 3.0, 1.5, 30.0, 0.5) {
       @Override
       public String getDisplayName() {
          return "Min Fall";
       }
    });
-   private final ln n = this.addSetting(I("mobs", "Mobs", "Allow smash assistance against non-player enemies", false));
-   private final ln D = this.addSetting(
-      I("silent-aim", "Silent Aim", "Turn toward a nearby enemy and smash it during a fall while your view stays free", false)
+   private final dh M = this.addSetting(D("mobs", "Mobs", "Allow smash assistance against non-player enemies", false));
+   private final dh V = this.addSetting(
+      D("silent-aim", "Silent Aim", "Turn toward a nearby enemy and smash it during a fall while your view stays free", false)
    );
-   private final lc S = this.addSetting(V("aim-range", "Aim Range", "Distance at which Silent Aim starts turning toward an enemy", 6.0, 3.0, 10.0, 0.5));
-   private final lc t = this.addSetting(V("turn-speed", "Turn Speed", "Maximum Silent Aim turn in degrees per tick", 60.0, 10.0, 180.0, 5.0));
-   private final lp e = this.addSetting(
-      I(
+   private final d9 i = this.addSetting(x("aim-range", "Aim Range", "Distance at which Silent Aim starts turning toward an enemy", 6.0, 3.0, 10.0, 0.5));
+   private final d9 m = this.addSetting(x("turn-speed", "Turn Speed", "Maximum Silent Aim turn in degrees per tick", 60.0, 10.0, 180.0, 5.0));
+   private final d6 L = this.addSetting(
+      y(
          "rotation",
          "Rotation",
          "Kill Aura rotation engine that turns the player toward the target; Legit moves most like a hand",
@@ -81,11 +81,11 @@ public final class MaceModule extends Module {
          "Legit"
       )
    );
-   private final ln y = this.addSetting(
-      I("lead-turn", "Lead Turn", "In a fast fall, start turning early enough that the turn finishes before the target is in reach", true)
+   private final dh e = this.addSetting(
+      D("lead-turn", "Lead Turn", "In a fast fall, start turning early enough that the turn finishes before the target is in reach", true)
    );
-   private final lp Y = this.addSetting(
-      I(
+   private final d6 b = this.addSetting(
+      y(
          "stun-slam",
          "Stun Slam",
          "When a smash target raises a shield, hit it with your best axe to disable the shield, then smash. Same Tick sends both hits at once; Next Tick smashes a tick later, which Grim's experimental packet order check does not flag",
@@ -95,8 +95,8 @@ public final class MaceModule extends Module {
          "Off"
       )
    );
-   private final lp w = this.addSetting(
-      I(
+   private final d6 S = this.addSetting(
+      y(
          "range-ring",
          "Range Ring",
          "Draw Silent Aim's reach on the ground below you: an enemy standing inside the ring is in range. In Air shows it only while you are off the ground",
@@ -106,16 +106,16 @@ public final class MaceModule extends Module {
          "Off"
       )
    );
-   private final ln F = this.addSetting(
-      I(
+   private final dh C = this.addSetting(
+      D(
          "target-mark",
          "Target Mark",
          "Outline the enemy Silent Aim is turning toward and mark where your real facing points; green once that facing is on the enemy",
          true
       )
    );
-   private final lc j = this.addSetting(
-      V(
+   private final d9 y = this.addSetting(
+      x(
          "return-speed",
          "Return Speed",
          "Most the player turns per tick back to your look after Silent Aim lets go, like a hand. 180 returns at once",
@@ -125,62 +125,62 @@ public final class MaceModule extends Module {
          5.0
       )
    );
-   private final l0 B = new l0();
-   private final o_ b = new o_(this);
-   private final l5 i = new l5();
-   private final l8 T = new l8();
-   private final lb h = new lb();
-   private final lu r = new lu();
-   private final lt p = new lt();
-   private lg Z;
-   private boolean R;
-   private boolean q;
-   private LocalPlayer d;
-   private Object I;
-   private int L = Integer.MIN_VALUE;
-   private LivingEntity o;
-   private String A = "Waiting";
-   private LivingEntity E;
-   private int G;
-   private int a;
-   private int H;
-   private double P;
-   private boolean m;
-   private LivingEntity c;
-   private int Q = Integer.MIN_VALUE;
-   private boolean u;
-   private String x = "";
-   private String s = "";
+   private final h_ f = new h_();
+   private final ti A = new ti(this);
+   private final i c = new i();
+   private final da W = new da();
+   private final x B = new x();
+   private final db O = new db();
+   private final di d = new di();
+   private t t;
+   private boolean H;
+   private boolean w;
+   private LocalPlayer h;
+   private Object E;
+   private int D = Integer.MIN_VALUE;
+   private LivingEntity I;
+   private String P = "Waiting";
+   private LivingEntity p;
+   private int x;
+   private int U;
+   private int Q;
+   private double Z;
+   private boolean g;
+   private LivingEntity T;
+   private int a = Integer.MIN_VALUE;
+   private boolean N;
+   private String q = "";
+   private String o = "";
 
    public MaceModule() {
       super("Mace", "Select a mace for smash hits, with optional smash assistance and Silent Aim", Category.COMBAT, -1);
-      z = this;
-      this.N.x(this.W::getValue);
-      this.l.x(this.W::getValue);
-      this.K.x(() -> this.W.getValue() || this.h());
-      this.O.x(this::h);
-      this.f.x(this::h);
-      this.n.x(this::h);
-      this.S.x(this.D::getValue);
-      this.y.x(this.D::getValue);
-      this.t.x(this.D::getValue);
-      this.e.x(this.D::getValue);
-      this.w.x(this.D::getValue);
-      this.F.x(this.D::getValue);
-      this.j.x(this.D::getValue);
-      this.D.W(var1 -> this.c());
+      r = this;
+      this.X.H(this.l::P);
+      this.K.H(this.l::P);
+      this.v.H(() -> this.l.P() || this.x());
+      this.u.H(this::x);
+      this.R.H(this::x);
+      this.M.H(this::x);
+      this.i.H(this.V::P);
+      this.e.H(this.V::P);
+      this.m.H(this.V::P);
+      this.L.H(this.V::P);
+      this.S.H(this.V::P);
+      this.C.H(this.V::P);
+      this.y.H(this.V::P);
+      this.V.h(var1 -> this.j());
    }
 
-   public static MaceModule Q() {
-      return z;
+   public static MaceModule c() {
+      return r;
    }
 
-   public l0 W() {
-      return this.B;
+   public h_ W() {
+      return this.f;
    }
 
-   public double z() {
-      return this.j.getValue();
+   public double A() {
+      return this.y.P();
    }
 
    @Override
@@ -189,107 +189,107 @@ public final class MaceModule extends Module {
    }
 
    @Override
-   public Module.b getTickPhase() {
-      return Module.b.w;
+   public Module.f getTickPhase() {
+      return Module.f.Z;
    }
 
-   private boolean h() {
-      return this.V.getValue() || this.D.getValue();
+   private boolean x() {
+      return this.n.P() || this.V.P();
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z);
    }
 
    @Override
    public String getStatus() {
-      return this.A;
+      return this.P;
    }
 
    @Override
    public void onEnable() {
-      this.z();
-      r4.V(
+      this.l();
+      mt.K(
          "Mace",
          "Active; autoSwap={}, smashAssist={}, silentAim={}, timing={}, minFall={}, stunSlam={}, leadTurn={}, rangeRing={}, targetMark={}, returnSpeed={}",
-         this.W.getValue(),
-         this.V.getValue(),
-         this.D.getValue(),
-         this.O.getValue(),
-         this.f.getValue(),
-         this.Y.getValue(),
-         this.y.getValue(),
-         this.w.getValue(),
-         this.F.getValue(),
-         this.j.getValue().intValue()
+         this.l.P(),
+         this.n.P(),
+         this.V.P(),
+         this.u.P(),
+         this.R.P(),
+         this.b.P(),
+         this.e.P(),
+         this.S.P(),
+         this.C.P(),
+         this.y.P().intValue()
       );
    }
 
    @Override
    public void onDisable() {
-      this.z();
-      this.c();
-      this.b.m(getMc(), this.K.getValue());
-      r4.g("Mace", "Disabled or context suspended; hotbar, view and sprint ownership released");
+      this.l();
+      this.j();
+      this.A.W(getMc(), this.v.P());
+      mt.U("Mace", "Disabled or context suspended; hotbar, view and sprint ownership released");
    }
 
-   public static void Q() {
-      if (z != null && z.isEnabled()) {
-         MaceModule var0 = z;
+   public static void z() {
+      if (r != null && r.isEnabled()) {
+         MaceModule var0 = r;
          if (var0 != null && var0.isRuntimeActive()) {
             Minecraft var1 = getMc();
-            var0.d = null;
-            var0.I = null;
-            var0.L = Integer.MIN_VALUE;
+            var0.h = null;
+            var0.E = null;
+            var0.D = Integer.MIN_VALUE;
             if (var1.player != null && var1.player.onGround()) {
-               var0.w();
+               var0.E();
             }
 
-            if (var0.c == null) {
-               var0.b.C(var1, var0.K.getValue());
+            if (var0.T == null) {
+               var0.A.r(var1, var0.v.P());
             }
          }
       }
    }
 
-   private void w() {
-      if (this.m) {
-         r4.V("Mace", "Landed before the server confirmed the smash on {}", K(this.E));
+   private void E() {
+      if (this.g) {
+         mt.K("Mace", "Landed before the server confirmed the smash on {}", k(this.p));
       }
 
-      this.R = this.m = (boolean)0;
-      this.E = null;
-      this.H = 0;
-      this.c = null;
-      this.x = "";
+      this.H = this.g = (boolean)0;
+      this.p = null;
+      this.Q = 0;
+      this.T = null;
+      this.q = "";
    }
 
-   public void s(LocalPlayer var1, Entity var2) {
+   public void L(LocalPlayer var1, Entity var2) {
       if (this.isEnabled()) {
          if (this.isRuntimeActive() && var1 == getMc().player && var2 instanceof LivingEntity var3) {
             boolean var4 = MaceItem.canSmashAttack(var1);
-            if (this.Y(var1, var2)) {
-               int var7 = j5.X(var1);
-               if (this.b.s(var1, var7)) {
-                  j5.h(var3);
-                  this.c = var3;
-                  this.Q = var1.tickCount;
-                  this.u = this.Y.i("Same Tick");
-                  this.A = "Stun Slam";
-                  r4.V("Mace", "Stun Slam on {}: axe slot {} for your hit, smash {}", K(var3), var7 + 1, this.u ? "in the same tick" : "next tick");
+            if (this.D(var1, var2)) {
+               int var7 = w7.W(var1);
+               if (this.A.e(var1, var7)) {
+                  w7.l(var3);
+                  this.T = var3;
+                  this.a = var1.tickCount;
+                  this.N = this.b.S("Same Tick");
+                  this.P = "Stun Slam";
+                  mt.K("Mace", "Stun Slam on {}: axe slot {} for your hit, smash {}", k(var3), var7 + 1, this.N ? "in the same tick" : "next tick");
                }
-            } else if (this.W.getValue() && (!j5.X(var3, var1) || j5.F(var3))) {
-               if (var4 || this.l.getValue() && !this.N("Breach Swap")) {
-                  int var5 = this.r(var1, var3, var4);
-                  if (var5 >= 0 && m9.b(var4, e(var1, var1.getInventory().getItem(var5), var3), e(var1, var1.getMainHandItem(), var3))) {
+            } else if (this.l.P() && (!w7.o(var3, var1) || w7.p(var3))) {
+               if (var4 || this.K.P() && !this.k("Breach Swap")) {
+                  int var5 = this.j(var1, var3, var4);
+                  if (var5 >= 0 && eq.x(var4, k(var1, var1.getInventory().getItem(var5), var3), k(var1, var1.getMainHandItem(), var3))) {
                      int var6 = var1.getInventory().getSelectedSlot();
-                     if (this.b.s(var1, var5) && var6 != var5) {
-                        r4.g("Mace", "Selected hotbar slot {} for {} hit", var5 + 1, var4 ? "smash" : "Breach");
+                     if (this.A.e(var1, var5) && var6 != var5) {
+                        mt.U("Mace", "Selected hotbar slot {} for {} hit", var5 + 1, var4 ? "smash" : "Breach");
                      }
 
                      if (var4) {
-                        this.Z(var1, var3);
+                        this.p(var1, var3);
                      }
                   }
                }
@@ -298,105 +298,105 @@ public final class MaceModule extends Module {
       }
    }
 
-   private boolean N(String var1) {
-      if (!oz.w()) {
+   private boolean k(String var1) {
+      if (!c2.C()) {
          return false;
       }
 
-      if (!var1.equals(this.s)) {
-         r4.V("Mace", "{} skipped: {} resets the charge on a swap", var1, oz.r());
+      if (!var1.equals(this.o)) {
+         mt.K("Mace", "{} skipped: {} resets the charge on a swap", var1, c2.v());
       }
 
-      this.s = var1;
+      this.o = var1;
       return true;
    }
 
-   public boolean Y(LocalPlayer var1, Entity var2) {
+   public boolean D(LocalPlayer var1, Entity var2) {
       if (!this.isEnabled()) {
          return false;
       } else if (this.isRuntimeActive()
-         && !this.Y.i("Off")
+         && !this.b.S("Off")
          && var1 == getMc().player
          && var2 instanceof Player var3
-         && !d8.E()
+         && !_m.w()
          && MaceItem.canSmashAttack(var1)) {
-         m9.a var4 = m9.y(this.Y.getValue(), j5.X(var3, var1), j5.F(var3), j5.X(var1) >= 0, this.X(var1, var3) >= 0);
-         return var4 == m9.a.j || var4 == m9.a.G;
+         eq.n var4 = eq.T(this.b.P(), w7.o(var3, var1), w7.p(var3), w7.W(var1) >= 0, this.Y(var1, var3) >= 0);
+         return var4 == eq.n.p || var4 == eq.n.Q;
       } else {
          return false;
       }
    }
 
-   public void Q(LocalPlayer var1, Entity var2) {
+   public void U(LocalPlayer var1, Entity var2) {
       if (this.isEnabled()) {
-         if (this.isRuntimeActive() && var2 == this.c && this.u && this.Q == var1.tickCount) {
-            LivingEntity var3 = this.c;
-            this.c = null;
-            this.q(getMc(), var1, var3, "Stun Slam smash after your axe hit");
+         if (this.isRuntimeActive() && var2 == this.T && this.N && this.a == var1.tickCount) {
+            LivingEntity var3 = this.T;
+            this.T = null;
+            this.c(getMc(), var1, var3, "Stun Slam smash after your axe hit");
          }
       }
    }
 
-   private boolean q(Minecraft var1, LocalPlayer var2, LivingEntity var3, String var4) {
-      int var5 = this.X(var2, var3);
-      if (var5 >= 0 && this.b.s(var2, var5)) {
-         boolean var6 = d8.j(this, var3, () -> {
+   private boolean c(Minecraft var1, LocalPlayer var2, LivingEntity var3, String var4) {
+      int var5 = this.Y(var2, var3);
+      if (var5 >= 0 && this.A.e(var2, var5)) {
+         boolean var6 = _m.q(this, var3, () -> {
             var1.gameMode.attack(var2, var3);
-            hp.o(var2, InteractionHand.MAIN_HAND);
+            _8.f(var2, InteractionHand.MAIN_HAND);
          });
          if (var6) {
-            this.Z(var2, var3);
-            r4.V("Mace", "{}: fall {}, mace slot {}", var4, Z(var2.fallDistance), var5 + 1);
+            this.p(var2, var3);
+            mt.K("Mace", "{}: fall {}, mace slot {}", var4, z(var2.fallDistance), var5 + 1);
          }
 
          return var6;
       } else {
-         r4.V("Mace", "{} skipped: no usable mace", var4);
+         mt.K("Mace", "{} skipped: no usable mace", var4);
          return false;
       }
    }
 
-   private int X(LocalPlayer var1, LivingEntity var2) {
+   private int Y(LocalPlayer var1, LivingEntity var2) {
       if (var1.getMainHandItem().is(Items.MACE) && !var1.getMainHandItem().nextDamageWillBreak()) {
          return var1.getInventory().getSelectedSlot();
       } else {
-         return this.W.getValue() ? this.r(var1, var2, true) : -1;
+         return this.l.P() ? this.j(var1, var2, true) : -1;
       }
    }
 
-   private int r(LocalPlayer var1, LivingEntity var2, boolean var3) {
-      m9.e[] var4 = new m9.e[Inventory.getSelectionSize()];
+   private int j(LocalPlayer var1, LivingEntity var2, boolean var3) {
+      eq.w[] var4 = new eq.w[Inventory.getSelectionSize()];
 
       for (int var5 = 0; var5 < var4.length; var5++) {
          ItemStack var6 = var1.getInventory().getItem(var5);
          if (var6.is(Items.MACE) && !var6.nextDamageWillBreak()) {
-            int var7 = S(var6, Enchantments.BREACH);
+            int var7 = E(var6, Enchantments.BREACH);
             if (var3 || var7 != 0) {
-               var4[var5] = new m9.e(var5, true, false, var7, S(var6, Enchantments.WIND_BURST), e(var1, var6, var2));
+               var4[var5] = new eq.w(var5, true, false, var7, E(var6, Enchantments.WIND_BURST), k(var1, var6, var2));
             }
          }
       }
 
-      return m9.q(var4, var3, this.N.i("Wind Burst"));
+      return eq.O(var4, var3, this.X.S("Wind Burst"));
    }
 
-   private static float e(LocalPlayer var0, ItemStack var1, LivingEntity var2) {
-      return m9.x(
-         j5.R(var0.getMainHandItem()),
-         j5.G(var0),
+   private static float k(LocalPlayer var0, ItemStack var1, LivingEntity var2) {
+      return eq.Y(
+         w7.c(var0.getMainHandItem()),
+         w7.B(var0),
          var0.fallDistance,
          var1.is(Items.MACE),
          MaceItem.canSmashAttack(var0),
-         S(var1, Enchantments.DENSITY),
-         j5.m(var0, var2),
-         S(var1, Enchantments.SHARPNESS),
+         E(var1, Enchantments.DENSITY),
+         w7.a(var0, var2),
+         E(var1, Enchantments.SHARPNESS),
          var2.getArmorValue(),
          (float)var2.getAttributeValue(Attributes.ARMOR_TOUGHNESS),
-         S(var1, Enchantments.BREACH)
+         E(var1, Enchantments.BREACH)
       );
    }
 
-   private static int S(ItemStack var0, ResourceKey<Enchantment> var1) {
+   private static int E(ItemStack var0, ResourceKey<Enchantment> var1) {
       for (Entry var3 : var0.getEnchantments().entrySet()) {
          if (((Holder)var3.getKey()).is(var1)) {
             return var3.getIntValue();
@@ -408,64 +408,70 @@ public final class MaceModule extends Module {
 
    @Override
    public void onTick() {
-      boolean var1 = this.q;
-      this.q = (boolean)0;
+      boolean var1 = this.w;
+      this.w = (boolean)0;
       Minecraft var2 = getMc();
       if (var2.player != null) {
-         this.C(var2.player);
+         this.w(var2.player);
       }
 
-      this.A = this.R ? (this.m ? "Waiting for the server" : "Smash used this fall") : "Waiting";
-      if (this.c != null && !this.u) {
-         this.s(var2);
+      String var18;
+      if (this.H) {
+         boolean var10 = false;
+         byte var9 = this.g;
+         int var10001 = Integer.signum(var9);
+         var18 = ((var10001 | -var10001) >>> 31 ^ 1) == 0 ? "Waiting for the server" : "Smash used this fall";
       } else {
-         LivingEntity var19;
+         var18 = "Waiting";
+      }
+
+      this.P = var18;
+      if (this.T != null && !this.N) {
+         this.B(var2);
+      } else {
          label120: {
-            boolean var10 = false;
-            byte var9 = this.u;
-            int var10001 = Integer.signum(var9);
-            if (((var10001 | -var10001) >>> 31 ^ 1) == 0 && this.c != null && var2.player != null) {
-               int var12 = var2.player.tickCount;
-               int var11 = this.Q;
-               int var18 = Integer.compare(var11, var12);
-               if ((var18 | -var18) >>> 31 == 0) {
-                  var19 = this.c;
+            if (this.N && this.T != null && var2.player != null) {
+               int var16 = var2.player.tickCount;
+               int var15 = this.a;
+               int var19 = Integer.compare(var15, var16);
+               if ((var19 | -var19) >>> 31 == 0) {
+                  var20 = this.T;
                   break label120;
                }
             }
 
-            var19 = null;
+            var20 = null;
          }
 
-         this.c = var19;
-         if (!this.h()) {
-            this.c();
+         this.T = var20;
+         if (!this.x()) {
+            this.j();
          } else {
-            LivingEntity var3 = this.D.getValue() ? this.A(var2) : null;
+            LivingEntity var3 = this.V.P() ? this.F(var2) : null;
             if (var3 == null) {
-               this.c();
+               this.j();
             }
 
-            if (j5.o(var2, rr.f.T) && o_.N(this)) {
+            if (w7.m(var2, tq.y.e) && ti.V(this)) {
                LocalPlayer var4 = var2.player;
-               EntityHitResult var5 = j5.R(var2);
-               LivingEntity var6 = this.K(var4, var5, var3);
+               EntityHitResult var5 = w7.q(var2);
+               LivingEntity var6 = this.y(var4, var5, var3);
                int var7 = var6 == null && var3 == null ? 0 : 1;
-               int var10000 = j5.n(var4);
-               boolean var20 = j5.V(var2);
-               boolean var10002 = j5.D(var2);
-               int var10003 = var3 == null && ep.f() ? 1 : 0;
-               boolean var10004 = j5.E(var2, var4);
+               int var10000 = w7.H(var4);
+               boolean var21 = w7.n(var2);
+               boolean var10002 = w7.s(var2);
+               int var10003 = var3 == null && m9.R() ? 1 : 0;
+               boolean var10004 = w7.f(var2, var4);
                int var10005 = var4.getDeltaMovement().y < 0.0 ? 1 : 0;
                boolean var10006 = MaceItem.canSmashAttack(var4);
                double var10007 = var4.fallDistance;
-               double var10008 = this.f.getValue();
-               boolean var16 = false;
-               byte var15 = this.R;
-               int var10009 = Integer.signum(var15);
-               String var8 = m9.K(
+               double var10008 = this.R.P();
+               boolean var12 = false;
+               byte var11 = this.H;
+               int var10009 = Integer.signum(var11);
+               String var8 = eq.v(
                   (boolean)var10000,
-                  var20,
+                  var21,
                   var10002,
                   (boolean)var10003,
                   var10004,
@@ -473,218 +479,213 @@ public final class MaceModule extends Module {
                   var10006,
                   var10007,
                   var10008,
-                  ((var10009 | -var10009) >>> 31 ^ 1) == 0 && !this.m,
-                  this.m,
-                  var6 != null && this.X(var4, var6) >= 0,
+                  ((var10009 | -var10009) >>> 31 ^ 1) == 0 && !this.g,
+                  this.g,
+                  var6 != null && this.Y(var4, var6) >= 0,
                   var6 != null
                );
                if (var8 == null) {
-                  this.G(var2, var4, var5, var6, var3, var1);
+                  this.i(var2, var4, var5, var6, var3, var1);
                } else if (var7 != 0) {
-                  this.c(var8, var4, var3);
+                  this.O(var8, var4, var3);
                }
 
-               label83:
                if (var3 != null) {
-                  if (this.R) {
-                     boolean var14 = false;
-                     byte var13 = this.m;
-                     var10000 = Integer.signum(var13);
-                     if ((var10000 | -var10000) >>> 31 == 0) {
-                        break label83;
+                  boolean var14 = false;
+                  byte var13 = this.H;
+                  var10000 = Integer.signum(var13);
+                  if (((var10000 | -var10000) >>> 31 ^ 1) != 0 || this.g) {
+                     if (!w7.H(var4)) {
+                        this.u(var2, var3);
                      }
-                  }
 
-                  if (!j5.n(var4)) {
-                     this.T(var2, var3);
+                     return;
                   }
-
-                  return;
                }
 
-               this.c();
+               this.j();
             } else {
-               this.c();
+               this.j();
             }
          }
       }
    }
 
-   private LivingEntity K(LocalPlayer var1, EntityHitResult var2, LivingEntity var3) {
+   private LivingEntity y(LocalPlayer var1, EntityHitResult var2, LivingEntity var3) {
       if (!(var2 != null && var2.getEntity() instanceof LivingEntity var4)) {
          return null;
-      } else if (!this.V.getValue() && var4 != var3) {
+      } else if (!this.n.P() && var4 != var3) {
          return null;
       } else {
-         return j5.p(var1, var4) && (var4 instanceof Player || this.n.getValue()) ? var4 : null;
+         return w7.E(var1, var4) && (var4 instanceof Player || this.M.P()) ? var4 : null;
       }
    }
 
-   private void c(String var1, LocalPlayer var2, LivingEntity var3) {
-      if (!var1.equals(this.x)) {
-         this.x = var1;
-         r4.V(
+   private void O(String var1, LocalPlayer var2, LivingEntity var3) {
+      if (!var1.equals(this.q)) {
+         this.q = var1;
+         mt.K(
             "Mace",
             "Smash held: {}; fall {}, speed {}{}",
             var1,
-            Z(var2.fallDistance),
-            Z(var2.getDeltaMovement().y),
-            var3 == null ? "" : ", Silent Aim target " + K(var3) + " at " + Z(d_.T(var2.getEyePosition(), var3.getBoundingBox()))
+            z(var2.fallDistance),
+            z(var2.getDeltaMovement().y),
+            var3 == null ? "" : ", Silent Aim target " + k(var3) + " at " + z(p1.X(var2.getEyePosition(), var3.getBoundingBox()))
          );
       }
    }
 
-   private void G(Minecraft var1, LocalPlayer var2, EntityHitResult var3, LivingEntity var4, LivingEntity var5, boolean var6) {
-      this.x = "";
-      m9.a var7 = m9.y(this.Y.getValue(), j5.X(var4, var2), j5.F(var4), j5.X(var2) >= 0, this.X(var2, var4) >= 0);
-      if ((var7 != m9.a.G || !P(var2, var4)) && var7 != m9.a.t) {
-         if (var7 == m9.a.c && j5.X(var4, var2) && !j5.F(var4)) {
-            this.c("raised shield and no axe in the hotbar", var2, var5);
-         } else if (this.o(var2, var4)) {
-            this.q = (boolean)1;
-            this.d = var2;
-            this.I = var1.level;
-            this.L = var2.tickCount;
+   private void i(Minecraft var1, LocalPlayer var2, EntityHitResult var3, LivingEntity var4, LivingEntity var5, boolean var6) {
+      this.q = "";
+      eq.n var7 = eq.T(this.b.P(), w7.o(var4, var2), w7.p(var4), w7.W(var2) >= 0, this.Y(var2, var4) >= 0);
+      if ((var7 != eq.n.Q || !Y(var2, var4)) && var7 != eq.n.c) {
+         if (var7 == eq.n.R && w7.o(var4, var2) && !w7.p(var4)) {
+            this.O("raised shield and no axe in the hotbar", var2, var5);
+         } else if (this.G(var2, var4)) {
+            this.w = (boolean)1;
+            this.h = var2;
+            this.E = var1.level;
+            this.D = var2.tickCount;
             var2.setSprinting(false);
-            j5.i(var1, Math.max(j5.w(var1), 1));
-            this.A = "Delaying smash";
+            w7.a(var1, Math.max(w7.O(var1), 1));
+            this.P = "Delaying smash";
             if (!var6) {
-               r4.g("Mace", "Delaying smash while the predicted next step remains in reach");
+               mt.U("Mace", "Delaying smash while the predicted next step remains in reach");
             }
-         } else if (var7 != m9.a.c) {
-            this.n(var1, var2, var4, var7);
+         } else if (var7 != eq.n.R) {
+            this.D(var1, var2, var4, var7);
          } else {
-            int var8 = this.X(var2, var4);
-            if (var8 == var2.getInventory().getSelectedSlot() || this.b.s(var2, var8)) {
-               if (j5.u(var1, var3)) {
-                  this.Z(var2, var4);
-                  j5.s(var1);
-                  r4.V("Mace", "Smash sent on {}: fall {}, speed {}, silent={}", K(var4), Z(var2.fallDistance), Z(var2.getDeltaMovement().y), var4 == var5);
+            int var8 = this.Y(var2, var4);
+            if (var8 == var2.getInventory().getSelectedSlot() || this.A.e(var2, var8)) {
+               if (w7.A(var1, var3)) {
+                  this.p(var2, var4);
+                  w7.B(var1);
+                  mt.K("Mace", "Smash sent on {}: fall {}, speed {}, silent={}", k(var4), z(var2.fallDistance), z(var2.getDeltaMovement().y), var4 == var5);
                } else {
-                  r4.V("Mace", "Smash attack refused by the client gate on {}", K(var4));
+                  mt.K("Mace", "Smash attack refused by the client gate on {}", k(var4));
                }
             }
          }
       } else {
-         this.n(var1, var2, var4, var7);
+         this.D(var1, var2, var4, var7);
       }
    }
 
-   private void n(Minecraft var1, LocalPlayer var2, LivingEntity var3, m9.a var4) {
-      int var5 = j5.X(var2);
-      int var6 = this.X(var2, var3);
-      if (this.b.s(var2, var5)) {
-         int var7 = var4 == m9.a.j ? 1 : 0;
-         boolean var8 = d8.z(this, var3, () -> {
+   private void D(Minecraft var1, LocalPlayer var2, LivingEntity var3, eq.n var4) {
+      int var5 = w7.W(var2);
+      int var6 = this.Y(var2, var3);
+      if (this.A.e(var2, var5)) {
+         int var7 = var4 == eq.n.p ? 1 : 0;
+         boolean var8 = _m.y(this, var3, () -> {
             var1.gameMode.attack(var2, var3);
-            hp.o(var2, InteractionHand.MAIN_HAND);
-            j5.h(var3);
-            if (var7 && this.b.s(var2, var6)) {
+            _8.f(var2, InteractionHand.MAIN_HAND);
+            w7.l(var3);
+            if (var7 && this.A.e(var2, var6)) {
                var1.gameMode.attack(var2, var3);
-               hp.o(var2, InteractionHand.MAIN_HAND);
+               _8.f(var2, InteractionHand.MAIN_HAND);
             }
          });
          if (!var8) {
-            this.b.m(var1, true);
-            r4.V("Mace", "Stun Slam refused: this tick's attack belongs to another owner");
+            this.A.W(var1, true);
+            mt.K("Mace", "Stun Slam refused: this tick's attack belongs to another owner");
          } else {
-            j5.s(var1);
+            w7.B(var1);
             if (var7 != 0) {
-               this.Z(var2, var3);
-               this.A = "Stun Slam";
-               r4.V("Mace", "Stun Slam on {}: axe slot {} then mace slot {} in one tick, fall {}", K(var3), var5 + 1, var6 + 1, Z(var2.fallDistance));
-            } else if (var4 == m9.a.G) {
-               this.c = var3;
-               this.Q = var2.tickCount;
-               this.u = (boolean)0;
-               this.A = "Stun Slam";
-               r4.V("Mace", "Stun Slam on {}: axe slot {} now, smash next tick", K(var3), var5 + 1);
+               this.p(var2, var3);
+               this.P = "Stun Slam";
+               mt.K("Mace", "Stun Slam on {}: axe slot {} then mace slot {} in one tick, fall {}", k(var3), var5 + 1, var6 + 1, z(var2.fallDistance));
+            } else if (var4 == eq.n.Q) {
+               this.T = var3;
+               this.a = var2.tickCount;
+               this.N = (boolean)0;
+               this.P = "Stun Slam";
+               mt.K("Mace", "Stun Slam on {}: axe slot {} now, smash next tick", k(var3), var5 + 1);
             } else {
-               this.A = "Shield break hit";
-               r4.V("Mace", "Shield break hit on {} with axe slot {}; no mace for the smash", K(var3), var5 + 1);
+               this.P = "Shield break hit";
+               mt.K("Mace", "Shield break hit on {} with axe slot {}; no mace for the smash", k(var3), var5 + 1);
             }
          }
       }
    }
 
-   private void s(Minecraft var1) {
+   private void B(Minecraft var1) {
       LocalPlayer var2 = var1.player;
-      LivingEntity var3 = this.c;
-      if (var2 != null && var2.tickCount == this.Q + 1) {
-         this.c = null;
-         EntityHitResult var4 = j5.R(var1);
+      LivingEntity var3 = this.T;
+      if (var2 != null && var2.tickCount == this.a + 1) {
+         this.T = null;
+         EntityHitResult var4 = w7.q(var1);
          if (var4 != null && var4.getEntity() == var3 && MaceItem.canSmashAttack(var2) && !var2.onGround()) {
-            int var5 = this.X(var2, var3);
-            if (var5 >= 0 && this.b.s(var2, var5)) {
-               boolean var6 = d8.z(this, var3, () -> {
+            int var5 = this.Y(var2, var3);
+            if (var5 >= 0 && this.A.e(var2, var5)) {
+               boolean var6 = _m.y(this, var3, () -> {
                   var1.gameMode.attack(var2, var3);
-                  hp.o(var2, InteractionHand.MAIN_HAND);
+                  _8.f(var2, InteractionHand.MAIN_HAND);
                });
                if (var6) {
-                  this.Z(var2, var3);
-                  j5.s(var1);
-                  r4.V("Mace", "Stun Slam smash on {} one tick after the axe: fall {}", K(var3), Z(var2.fallDistance));
+                  this.p(var2, var3);
+                  w7.B(var1);
+                  mt.K("Mace", "Stun Slam smash on {} one tick after the axe: fall {}", k(var3), z(var2.fallDistance));
                } else {
-                  r4.V("Mace", "Next Tick smash on {} refused: this tick's attack belongs to another owner", K(var3));
+                  mt.K("Mace", "Next Tick smash on {} refused: this tick's attack belongs to another owner", k(var3));
                }
             } else {
-               this.b.m(var1, this.K.getValue());
+               this.A.W(var1, this.v.P());
             }
          } else {
-            r4.V(
+            mt.K(
                "Mace",
                "Next Tick smash on {} skipped: {}",
-               K(var3),
+               k(var3),
                var2.onGround() ? "landed" : (!MaceItem.canSmashAttack(var2) ? "fall ended" : "facing left the target")
             );
-            this.b.m(var1, this.K.getValue());
+            this.A.W(var1, this.v.P());
          }
       } else {
-         if (var2 == null || var2.tickCount > this.Q + 1) {
-            this.c = null;
-            this.b.m(var1, this.K.getValue());
+         if (var2 == null || var2.tickCount > this.a + 1) {
+            this.T = null;
+            this.A.W(var1, this.v.P());
          }
       }
    }
 
-   private void Z(LocalPlayer var1, LivingEntity var2) {
-      this.R = this.m = (boolean)1;
-      this.E = var2;
-      this.G = var1.tickCount;
-      this.a = var2.hurtTime;
-      this.P = var1.getDeltaMovement().y;
-      this.A = "Waiting for the server";
+   private void p(LocalPlayer var1, LivingEntity var2) {
+      this.H = this.g = (boolean)1;
+      this.p = var2;
+      this.x = var1.tickCount;
+      this.U = var2.hurtTime;
+      this.Z = var1.getDeltaMovement().y;
+      this.P = "Waiting for the server";
    }
 
-   private void C(LocalPlayer var1) {
-      if (this.m && this.E != null) {
-         if (m9.q(this.P, var1.getDeltaMovement().y, this.a, this.E.hurtTime)) {
-            this.m = (boolean)0;
-            r4.V("Mace", "Smash confirmed on {} after {} ticks", K(this.E), var1.tickCount - this.G);
-         } else if (var1.tickCount - this.G >= m9.K(this.L(var1))) {
-            this.m = (boolean)0;
-            if (this.H < 1 && !var1.onGround() && MaceItem.canSmashAttack(var1)) {
-               this.H++;
-               this.R = (boolean)0;
-               r4.V("Mace", "No server confirmation for the smash on {} after {} ticks; retrying once this fall", K(this.E), var1.tickCount - this.G);
+   private void w(LocalPlayer var1) {
+      if (this.g && this.p != null) {
+         if (eq.l(this.Z, var1.getDeltaMovement().y, this.U, this.p.hurtTime)) {
+            this.g = (boolean)0;
+            mt.K("Mace", "Smash confirmed on {} after {} ticks", k(this.p), var1.tickCount - this.x);
+         } else if (var1.tickCount - this.x >= eq.K(this.k(var1))) {
+            this.g = (boolean)0;
+            if (this.Q < 1 && !var1.onGround() && MaceItem.canSmashAttack(var1)) {
+               this.Q++;
+               this.H = (boolean)0;
+               mt.K("Mace", "No server confirmation for the smash on {} after {} ticks; retrying once this fall", k(this.p), var1.tickCount - this.x);
             } else {
-               r4.V("Mace", "No server confirmation for the smash on {}; not retrying ({})", K(this.E), this.H >= 1 ? "already retried" : "fall ended");
+               mt.K("Mace", "No server confirmation for the smash on {}; not retrying ({})", k(this.p), this.Q >= 1 ? "already retried" : "fall ended");
             }
          }
       }
    }
 
-   private int L(LocalPlayer var1) {
+   private int k(LocalPlayer var1) {
       ClientPacketListener var2 = getMc().getConnection();
       PlayerInfo var3 = var2 == null ? null : var2.getPlayerInfo(var1.getUUID());
       return var3 == null ? 0 : Math.round(var3.getLatency() / 50.0F);
    }
 
-   private LivingEntity A(Minecraft var1) {
+   private LivingEntity F(Minecraft var1) {
       LocalPlayer var2 = var1.player;
-      if (var2 != null && var1.level != null && (!this.R || this.m) && !var2.onGround() && !(var2.getDeltaMovement().y >= 0.0) && rr.j(rr.f.T)) {
-         if (this.o != null && this.m(var2, this.o, this.y(var2, this.o))) {
-            return this.o;
+      if (var2 != null && var1.level != null && (!this.H || this.g) && !var2.onGround() && !(var2.getDeltaMovement().y >= 0.0) && tq.y(tq.y.e)) {
+         if (this.I != null && this.d(var2, this.I, this.H(var2, this.I))) {
+            return this.I;
          }
 
          Vec3 var3 = var2.getEyePosition();
@@ -692,11 +693,10 @@ public final class MaceModule extends Module {
          LivingEntity var6 = null;
          double var7 = Double.MAX_VALUE;
 
-         for (Entity var10 : var1.level
-            .getEntities(var2, var2.getBoundingBox().inflate(Math.max(this.S.getValue(), var4)), var0 -> var0 instanceof LivingEntity)) {
+         for (Entity var10 : var1.level.getEntities(var2, var2.getBoundingBox().inflate(Math.max(this.i.P(), var4)), var0 -> var0 instanceof LivingEntity)) {
             LivingEntity var11 = (LivingEntity)var10;
-            double var12 = d_.T(var3, var11.getBoundingBox());
-            if (var12 < var7 && this.m(var2, var11, this.y(var2, var11))) {
+            double var12 = p1.X(var3, var11.getBoundingBox());
+            if (var12 < var7 && this.d(var2, var11, this.H(var2, var11))) {
                var6 = var11;
                var7 = var12;
             }
@@ -708,169 +708,169 @@ public final class MaceModule extends Module {
       }
    }
 
-   private double y(LocalPlayer var1, LivingEntity var2) {
-      lx var3 = new lx(var1.getYRot(), var1.getXRot());
-      int var4 = this.V().ticksToReach(var3, le.p(u(var1, var2)));
-      return m9.T(this.S.getValue(), this.y.getValue(), -var1.getDeltaMovement().y, var4, var1.entityInteractionRange());
+   private double H(LocalPlayer var1, LivingEntity var2) {
+      d5 var3 = new d5(var1.getYRot(), var1.getXRot());
+      int var4 = this.R().ticksToReach(var3, dj.J(o(var1, var2)));
+      return eq.N(this.i.P(), this.e.P(), -var1.getDeltaMovement().y, var4, var1.entityInteractionRange());
    }
 
-   public double S(LocalPlayer var1) {
+   public double E(LocalPlayer var1) {
       if (!this.isEnabled()) {
          return 0.0;
-      } else if (this.isRuntimeActive() && this.D.getValue() && var1 != null && !this.w.i("Off") && (!this.w.i("In Air") || !var1.onGround())) {
-         lx var2 = new lx(var1.getYRot(), var1.getXRot());
-         int var3 = this.V().ticksToReach(var2, new lx(var1.getYRot(), 90.0F));
-         return m9.T(this.S.getValue(), this.y.getValue(), -var1.getDeltaMovement().y, var3, var1.entityInteractionRange());
+      } else if (this.isRuntimeActive() && this.V.P() && var1 != null && !this.S.S("Off") && (!this.S.S("In Air") || !var1.onGround())) {
+         d5 var2 = new d5(var1.getYRot(), var1.getXRot());
+         int var3 = this.R().ticksToReach(var2, new d5(var1.getYRot(), 90.0F));
+         return eq.N(this.i.P(), this.e.P(), -var1.getDeltaMovement().y, var3, var1.entityInteractionRange());
       } else {
          return 0.0;
       }
    }
 
-   public LivingEntity j() {
+   public LivingEntity T() {
       if (!this.isEnabled()) {
          return null;
       } else {
-         return this.F.getValue() && this.E() ? this.o : null;
+         return this.C.P() && this.k() ? this.I : null;
       }
    }
 
-   private boolean m(LocalPlayer var1, LivingEntity var2, double var3) {
+   private boolean d(LocalPlayer var1, LivingEntity var2, double var3) {
       Vec3 var5 = var1.getEyePosition();
-      return j5.p(var1, var2)
-         && (var2 instanceof Player || this.n.getValue())
-         && d_.T(var5, var2.getBoundingBox()) <= var3
-         && this.r(var1, var2)
-         && j5.D(var1, var5, u(var1, var2));
+      return w7.E(var1, var2)
+         && (var2 instanceof Player || this.M.P())
+         && p1.X(var5, var2.getBoundingBox()) <= var3
+         && this.E(var1, var2)
+         && w7.Z(var1, var5, o(var1, var2));
    }
 
-   private static Vec3 u(LocalPlayer var0, LivingEntity var1) {
+   private static Vec3 o(LocalPlayer var0, LivingEntity var1) {
       AABB var2 = var1.getBoundingBox();
       Vec3 var3 = var0.getEyePosition();
       AABB var4 = var2.deflate(Math.min(0.1, var2.getXsize() * 0.25), Math.min(0.1, var2.getYsize() * 0.25), Math.min(0.1, var2.getZsize() * 0.25));
       Vec3 var5 = new Vec3(Math.clamp(var3.x, var4.minX, var4.maxX), Math.clamp(var3.y, var4.minY, var4.maxY), Math.clamp(var3.z, var4.minZ, var4.maxZ));
       Vec3 var6 = new Vec3(var2.getCenter().x, var2.minY + var2.getYsize() * 0.6, var2.getCenter().z);
-      return d8.u(var1, var0.entityInteractionRange(), var6, e9.X(var2, var5)).orElse(var6);
+      return _m.z(var1, var0.entityInteractionRange(), var6, xm.Z(var2, var5)).orElse(var6);
    }
 
-   private lg V() {
-      return switch ((String)this.e.getValue()) {
-         case "FunTime" -> this.T;
-         case "Polar" -> this.h;
-         case "Matrix" -> this.r;
-         case "Legit" -> this.p;
-         default -> this.i;
+   private t R() {
+      return switch ((String)this.L.P()) {
+         case "FunTime" -> this.W;
+         case "Polar" -> this.B;
+         case "Matrix" -> this.O;
+         case "Legit" -> this.d;
+         default -> this.c;
       };
    }
 
-   private void T(Minecraft var1, LivingEntity var2) {
+   private void u(Minecraft var1, LivingEntity var2) {
       LocalPlayer var3 = var1.player;
-      if (!d8.m(this)) {
-         this.c();
+      if (!_m.f(this)) {
+         this.j();
       } else {
-         lg var4 = this.V();
-         if (var4 != this.Z) {
-            if (this.Z != null) {
-               this.Z.reset();
+         t var4 = this.R();
+         if (var4 != this.t) {
+            if (this.t != null) {
+               this.t.reset();
             }
 
-            this.Z = var4;
+            this.t = var4;
          }
 
          AABB var5 = var2.getBoundingBox();
-         if (var2 != this.o) {
-            this.Z.targetChanged(var2);
-            r4.V(
+         if (var2 != this.I) {
+            this.t.targetChanged(var2);
+            mt.K(
                "Mace",
                "Silent Aim target {} at {} blocks, falling {} blocks/tick, rotation={}",
-               K(var2),
-               Z(d_.T(var3.getEyePosition(), var5)),
-               Z(-var3.getDeltaMovement().y),
-               this.e.getValue()
+               k(var2),
+               z(p1.X(var3.getEyePosition(), var5)),
+               z(-var3.getDeltaMovement().y),
+               this.L.P()
             );
          }
 
-         this.o = var2;
-         rr.W(rr.f.T);
-         if (rr.u() != rr.f.T) {
-            this.o = null;
+         this.I = var2;
+         tq.i(tq.y.e);
+         if (tq.l() != tq.y.e) {
+            this.I = null;
          } else {
-            lx var6 = new lx(var3.getYRot(), var3.getXRot());
+            d5 var6 = new d5(var3.getYRot(), var3.getXRot());
             double var7 = var3.entityInteractionRange();
-            int var9 = d_.T(var3.getEyePosition(), var5) <= var7 ? 1 : 0;
-            qac882a24641eea19 var10 = (qac882a24641eea19)var3;
-            boolean var11 = lf.X(var3, var5.inflate(var2.getPickRadius()), var10.larpYRotLast(), var10.larpXRotLast(), var7 + 1.0, false);
-            lx var12 = this.Z.rotate(var6, le.p(u(var3, var2)), var2, (boolean)var9, var11);
-            float[] var13 = ru.Y(var6.z, var6.I, var12.z, var12.I, this.t.getValue());
-            var12 = new lx(var13[0], var13[1]);
-            var12 = this.Z == this.p ? this.p.C(var6, var12) : le.c(var6, var12);
-            ep.t(this, ep.z.J, var12.z, var12.I, 1.0);
-            if (!ep.W(ep.z.J)) {
-               r4.g("Mace", "Silent Aim yielded to a higher rotation owner");
-               this.c();
+            int var9 = p1.X(var3.getEyePosition(), var5) <= var7 ? 1 : 0;
+            q12d31c89547aa6a5 var10 = (q12d31c89547aa6a5)var3;
+            boolean var11 = k.I(var3, var5.inflate(var2.getPickRadius()), var10.larpYRotLast(), var10.larpXRotLast(), var7 + 1.0, false);
+            d5 var12 = this.t.rotate(var6, dj.J(o(var3, var2)), var2, (boolean)var9, var11);
+            float[] var13 = hq.A(var6.M, var6.G, var12.M, var12.G, this.m.P());
+            var12 = new d5(var13[0], var13[1]);
+            var12 = this.t == this.d ? this.d.J(var6, var12) : dj.W(var6, var12);
+            m9.k(this, m9.s.X, var12.M, var12.G, 1.0);
+            if (!m9.F(m9.s.X)) {
+               mt.U("Mace", "Silent Aim yielded to a higher rotation owner");
+               this.j();
             } else {
-               if (!this.q) {
-                  this.A = "Silent aim";
+               if (!this.w) {
+                  this.P = "Silent aim";
                }
             }
          }
       }
    }
 
-   private void c() {
-      if (this.o != null && this.Z != null) {
-         this.Z.reset();
+   private void j() {
+      if (this.I != null && this.t != null) {
+         this.t.reset();
       }
 
-      this.o = null;
-      rr.L(rr.f.T, this.B, this.j.getValue(), true);
+      this.I = null;
+      tq.c(tq.y.e, this.f, this.y.P(), true);
    }
 
-   public float P(float var1, float var2) {
+   public float R(float var1, float var2) {
       if (this.isEnabled()) {
-         return this.E() ? AuraModule.B(var1, var2, 35.0F, 0.25F) : var1;
+         return this.k() ? AuraModule.f(var1, var2, 35.0F, 0.25F) : var1;
       } else {
          return var1;
       }
    }
 
-   public boolean E() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.D.getValue() && this.o != null && this.o.isAlive() && !this.o.isRemoved() && d8.T(this);
+   public boolean k() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.V.P() && this.I != null && this.I.isAlive() && !this.I.isRemoved() && _m.B(this);
    }
 
-   public void L() {
+   public void M() {
       if (this.isEnabled()) {
-         this.R = (boolean)1;
-         this.A = "Smash used this fall";
+         this.H = (boolean)1;
+         this.P = "Smash used this fall";
       }
    }
 
-   public boolean r(LocalPlayer var1, LivingEntity var2) {
+   public boolean E(LocalPlayer var1, LivingEntity var2) {
       if (!this.isEnabled()) {
          return false;
       }
 
       boolean var3 = var1.getMainHandItem().is(Items.MACE);
       int var4 = !var3
-            && this.W.getValue()
+            && this.l.P()
             && this.isRuntimeActive()
-            && !this.R
+            && !this.H
             && MaceItem.canSmashAttack(var1)
-            && var1.fallDistance >= this.f.getValue()
-            && this.r(var1, var2, true) >= 0
+            && var1.fallDistance >= this.R.P()
+            && this.j(var1, var2, true) >= 0
          ? 1
          : 0;
-      return m9.G(this.isRuntimeActive(), this.R, MaceItem.canSmashAttack(var1), var1.fallDistance, this.f.getValue(), var3, this.W.getValue(), (boolean)var4);
+      return eq.n(this.isRuntimeActive(), this.H, MaceItem.canSmashAttack(var1), var1.fallDistance, this.R.P(), var3, this.l.P(), (boolean)var4);
    }
 
-   public boolean o(LocalPlayer var1, LivingEntity var2) {
+   public boolean G(LocalPlayer var1, LivingEntity var2) {
       return this.isEnabled()
-         ? m9.r(P(var1, var2), this.O.i("Delayed"), j5.G(var1), var1.getAttackStrengthScale(1.5F), var2.hurtTime, var1.isSprinting())
+         ? eq.h(Y(var1, var2), this.u.S("Delayed"), w7.B(var1), var1.getAttackStrengthScale(1.5F), var2.hurtTime, var1.isSprinting())
          : false;
    }
 
-   private static boolean P(LocalPlayer var0, LivingEntity var1) {
+   private static boolean Y(LocalPlayer var0, LivingEntity var1) {
       Vec3 var2 = var0.getDeltaMovement();
-      return m9.H(
+      return eq.r(
          var0.level().noCollision(var0, var0.getBoundingBox().move(var2)),
          var0.entityInteractionRange(),
          var0.getEyePosition(),
@@ -879,25 +879,25 @@ public final class MaceModule extends Module {
          var1.position().subtract(var1.xo, var1.yo, var1.zo),
          var1.getPickRadius(),
          var0.getViewVector(1.0F),
-         (var1x, var2x) -> j5.D(var0, var1x, var2x)
+         (var1x, var2x) -> w7.Z(var0, var1x, var2x)
       );
    }
 
-   public static boolean c() {
-      if (z != null && z.isEnabled()) {
-         MaceModule var0 = z;
-         if (var0 != null && var0.isRuntimeActive() && var0.h()) {
+   public static boolean f() {
+      if (r != null && r.isEnabled()) {
+         MaceModule var0 = r;
+         if (var0 != null && var0.isRuntimeActive() && var0.x()) {
             Minecraft var1 = getMc();
             if (var1.player == null) {
                return false;
             } else {
-               return rr.u() == rr.f.T
+               return tq.l() == tq.y.e
                   ? true
-                  : var1.player == var0.d
-                     && var1.level == var0.I
+                  : var1.player == var0.h
+                     && var1.level == var0.E
                      && var1.gui.screen() == null
-                     && var1.player.tickCount >= var0.L
-                     && (long)var1.player.tickCount - var0.L <= 1L;
+                     && var1.player.tickCount >= var0.D
+                     && (long)var1.player.tickCount - var0.D <= 1L;
             }
          } else {
             return false;
@@ -907,16 +907,16 @@ public final class MaceModule extends Module {
       }
    }
 
-   public static Input r(LocalPlayer var0, Input var1) {
-      if (z != null && z.isEnabled()) {
-         MaceModule var2 = z;
-         if (var2 != null && var2.isRuntimeActive() && var0 != null && var0 == getMc().player && rr.u() == rr.f.T) {
+   public static Input N(LocalPlayer var0, Input var1) {
+      if (r != null && r.isEnabled()) {
+         MaceModule var2 = r;
+         if (var2 != null && var2.isRuntimeActive() && var0 != null && var0 == getMc().player && tq.l() == tq.y.e) {
             if (var0.isSprinting()) {
                var0.setSprinting(false);
-               r4.g("Mace", "Silent Aim lock released sprint");
+               mt.U("Mace", "Silent Aim lock released sprint");
             }
 
-            return j5.g(var1);
+            return w7.E(var1);
          } else {
             return var1;
          }
@@ -925,29 +925,29 @@ public final class MaceModule extends Module {
       }
    }
 
-   private void z() {
-      this.R = this.m = (boolean)0;
-      this.q = (boolean)0;
+   private void l() {
+      this.H = this.g = (boolean)0;
+      this.w = (boolean)0;
+      this.p = null;
+      this.Q = 0;
+      this.T = null;
+      this.q = "";
+      this.h = null;
       this.E = null;
-      this.H = 0;
-      this.c = null;
-      this.x = "";
-      this.d = null;
-      this.I = null;
-      this.L = Integer.MIN_VALUE;
-      this.A = "Waiting";
+      this.D = Integer.MIN_VALUE;
+      this.P = "Waiting";
    }
 
-   private static String K(Entity var0) {
+   private static String k(Entity var0) {
       return var0 == null ? "?" : var0.getName().getString();
    }
 
-   private static String Z(double var0) {
+   private static String z(double var0) {
       return String.format(Locale.ROOT, "%.2f", var0);
    }
 
-   private static ln I(String var0, final String var1, String var2, boolean var3) {
-      return new ln(var0, var2, var3) {
+   private static dh D(String var0, final String var1, String var2, boolean var3) {
+      return new dh(var0, var2, var3) {
          @Override
          public String getDisplayName() {
             return var1;
@@ -955,8 +955,8 @@ public final class MaceModule extends Module {
       };
    }
 
-   private static lc V(String var0, final String var1, String var2, double var3, double var5, double var7, double var9) {
-      return new lc(var0, var2, var3, var5, var7, var9) {
+   private static d9 x(String var0, final String var1, String var2, double var3, double var5, double var7, double var9) {
+      return new d9(var0, var2, var3, var5, var7, var9) {
          @Override
          public String getDisplayName() {
             return var1;
@@ -964,8 +964,8 @@ public final class MaceModule extends Module {
       };
    }
 
-   private static lp I(String var0, final String var1, String var2, String var3, String... var4) {
-      return new lp(var0, var2, var3, var4) {
+   private static d6 y(String var0, final String var1, String var2, String var3, String... var4) {
+      return new d6(var0, var2, var3, var4) {
          @Override
          public String getDisplayName() {
             return var1;

@@ -1,38 +1,53 @@
 package com.larpclient;
 
-public record _k(String id, String title, String artist, String album, double duration, double position, boolean playing, long observedAt) {
-   public _k(String id, String title, String artist, String album, double duration, double position, boolean playing, long observedAt) {
-      if (id != null
-         && title != null
-         && artist != null
-         && album != null
-         && title.length() <= 512
-         && artist.length() <= 512
-         && album.length() <= 512
-         && id.length() <= 1024
-         && Double.isFinite(duration)
-         && Double.isFinite(position)
-         && !(duration < 0.0)
-         && !(position < 0.0)) {
-         this.id = id;
-         this.title = title;
-         this.artist = artist;
-         this.album = album;
-         this.duration = duration;
-         this.position = position;
-         this.playing = playing;
-         this.observedAt = observedAt;
+public final class _k {
+   public static m5.n t = m5.n.h;
+   private static m5.n s;
+   private static m5.n I;
+
+   public static int m(int var0) {
+      if (var0 <= 0) {
+         return 0;
+      }
+
+      double var1 = switch (t) {
+         case N, h -> 0.7;
+         case T -> 0.45;
+         case B -> 0.9;
+         case O -> 1.0;
+      };
+      return Math.max(1, (int)Math.ceil(var0 * var1));
+   }
+
+   public static boolean C() {
+      return t.ordinal() >= m5.n.h.ordinal();
+   }
+
+   public static void C(m5.n var0) {
+      if (s != null && t != I) {
+         s = t;
+      }
+
+      if (var0 == null) {
+         if (s != null) {
+            t = s;
+            I = null;
+            s = null;
+         }
       } else {
-         throw new IllegalArgumentException("Invalid media session metadata");
+         if (s == null) {
+            s = t;
+         }
+
+         t = var0.ordinal() < s.ordinal() ? var0 : s;
+         I = t;
       }
    }
 
-   public String key() {
-      return this.title + "\u001f" + this.artist + "\u001f" + this.album + "\u001f" + Math.round(this.duration);
+   public static m5.n b() {
+      return s != null && t == I ? s : t;
    }
 
-   public double positionAt(long var1) {
-      double var3 = this.playing ? Math.clamp((var1 - this.observedAt) / 1.0E9, 0.0, 3.0) : 0.0;
-      return this.duration > 0.0 ? Math.min(this.duration, this.position + var3) : this.position + var3;
+   private _k() {
    }
 }

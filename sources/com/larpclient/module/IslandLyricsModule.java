@@ -1,14 +1,14 @@
 package com.larpclient.module;
 
-import com.larpclient.de;
-import com.larpclient.oc;
-import com.larpclient.r4;
+import com.larpclient.mt;
+import com.larpclient.wj;
+import com.larpclient.zf;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public final class IslandLyricsModule extends Module {
-   private static IslandLyricsModule R;
-   private final de q = new de();
-   private oc x;
+   private static IslandLyricsModule K;
+   private final zf Q = new zf();
+   private wj G;
 
    public IslandLyricsModule() {
       super(
@@ -17,58 +17,58 @@ public final class IslandLyricsModule extends Module {
          Category.RENDER,
          -1
       );
-      R = this;
+      K = this;
    }
 
-   public static IslandLyricsModule g() {
-      return R;
+   public static IslandLyricsModule u() {
+      return K;
    }
 
-   public static boolean n() {
-      return R != null && R.isOperational();
+   public static boolean l() {
+      return K != null && K.isOperational();
    }
 
-   public static boolean e() {
-      return R != null && R.isEnabled() ? R != null && R.w() : false;
+   public static boolean p() {
+      return K != null && K.isEnabled() ? K != null && K.c() : false;
    }
 
    @Override
    public String getStatus() {
-      return this.x == null ? "Play a song in Spotify desktop" : this.x.z().status();
+      return this.G == null ? "Play a song in Spotify desktop" : this.G.U().status();
    }
 
    @Override
    public void onEnable() {
-      this.v();
-      this.x = oc.I(this);
-      r4.V("IslandLyrics", "Island Lyrics enabled; whole cue lines in the HUD element, shared Spotify worker");
+      this.O();
+      this.G = wj.O(this);
+      mt.K("IslandLyrics", "Island Lyrics enabled; whole cue lines in the HUD element, shared Spotify worker");
    }
 
    @Override
    public void onDisable() {
-      this.v();
-      r4.g("IslandLyrics", "Released the shared Spotify worker and reset the pill");
+      this.O();
+      mt.U("IslandLyrics", "Released the shared Spotify worker and reset the pill");
    }
 
-   private void v() {
-      if (this.x != null) {
-         oc.m(this);
-         this.x = null;
+   private void O() {
+      if (this.G != null) {
+         wj.U(this);
+         this.G = null;
       }
 
-      this.q.f();
+      this.Q.i();
    }
 
-   public boolean w() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.x != null && this.q.T(this.x.z(), System.nanoTime());
+   public boolean c() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.G != null && this.Q.d(this.G.U(), System.nanoTime());
    }
 
-   public void w(GuiGraphicsExtractor var1, int var2, int var3, int var4, boolean var5) {
+   public void b(GuiGraphicsExtractor var1, int var2, int var3, int var4, boolean var5) {
       long var6 = System.nanoTime();
       if (var5) {
-         this.q.A(var1, var2, var3, var4, var6);
-      } else if (this.isRuntimeActive() && this.x != null) {
-         this.q.q(var1, var2, var3, var4, this.x.z(), var6);
+         this.Q.F(var1, var2, var3, var4, var6);
+      } else if (this.isRuntimeActive() && this.G != null) {
+         this.Q.b(var1, var2, var3, var4, this.G.U(), var6);
       }
    }
 }

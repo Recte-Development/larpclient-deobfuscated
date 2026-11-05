@@ -1,14 +1,14 @@
 package com.larpclient.module;
 
 import com.larpclient.LarpClient;
-import com.larpclient.fr;
-import com.larpclient.fs;
-import com.larpclient.oh;
-import com.larpclient.pn;
-import com.larpclient.pu;
-import com.larpclient.r4;
-import com.larpclient.rf;
-import com.larpclient.u7;
+import com.larpclient._3;
+import com.larpclient.c7;
+import com.larpclient.ef;
+import com.larpclient.ho;
+import com.larpclient.mt;
+import com.larpclient.o2;
+import com.larpclient.uj;
+import com.larpclient.xv;
 import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.NativeImage.Format;
@@ -34,20 +34,20 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 public final class MenuBackgroundModule extends Module {
-   public static final String g = "config/larp-client/backgrounds";
-   public static final String u = "None";
-   private static final long F = 67108864L;
-   private static final long a = 40000000L;
-   private static final long i = 30000000000L;
-   private static final int d = 8192;
-   private static final int x = 256;
-   private static MenuBackgroundModule z;
-   private static final ExecutorService t = Executors.newSingleThreadExecutor(var0 -> {
+   public static final String s = "config/larp-client/backgrounds";
+   public static final String W = "None";
+   private static final long S = 67108864L;
+   private static final long d = 40000000L;
+   private static final long Q = 30000000000L;
+   private static final int a = 8192;
+   private static final int T = 256;
+   private static MenuBackgroundModule o;
+   private static final ExecutorService x = Executors.newSingleThreadExecutor(var0 -> {
       Thread var1 = new Thread(var0, "Larp-MenuWallpaper");
       var1.setDaemon(true);
       return var1;
    });
-   private final lp m = this.addSetting(new lp("Image", "Choose a PNG or JPG from the backgrounds folder", "None", "None") {
+   private final d6 G = this.addSetting(new d6("Image", "Choose a PNG or JPG from the backgrounds folder", "None", "None") {
       @Override
       public boolean isSearchable() {
          return true;
@@ -55,155 +55,155 @@ public final class MenuBackgroundModule extends Module {
 
       @Override
       public boolean acceptsValue(String var1) {
-         return super.acceptsValue(var1) || MenuBackgroundModule.J(var1);
+         return super.acceptsValue(var1) || MenuBackgroundModule.n(var1);
       }
 
       @Override
       public void setValue(String var1) {
-         if (!this.X().contains(var1) && MenuBackgroundModule.J(var1)) {
-            ArrayList var2 = new ArrayList<>(this.X());
+         if (!this.N().contains(var1) && MenuBackgroundModule.n(var1)) {
+            ArrayList var2 = new ArrayList<>(this.N());
             var2.add(var1);
-            this.u(var2);
+            this.Y(var2);
          }
 
          super.setValue(var1);
       }
    });
-   private final lp E = this.addSetting(
-      new lp("Fit", "Fill covers the screen and crops the edges, Fit shows the whole image, Stretch ignores its shape", "Fill", "Fill", "Fit", "Stretch")
+   private final d6 Y = this.addSetting(
+      new d6("Fit", "Fill covers the screen and crops the edges, Fit shows the whole image, Stretch ignores its shape", "Fill", "Fill", "Fit", "Stretch")
    );
-   private final lc T = this.addSetting(new lc("Dim", "Darkens the image so buttons and text stay readable, in percent", 25.0, 0.0, 80.0, 1.0));
-   private final lp W = this.addSetting(
-      new lp("Show On", "Main menu only, or every out-of-world client menu such as world and server lists", "Main menu", "Main menu", "All menus")
+   private final d9 b = this.addSetting(new d9("Dim", "Darkens the image so buttons and text stay readable, in percent", 25.0, 0.0, 80.0, 1.0));
+   private final d6 l = this.addSetting(
+      new d6("Show On", "Main menu only, or every out-of-world client menu such as world and server lists", "Main menu", "Main menu", "All menus")
    );
-   private final ln c = this.addSetting(new ln("Side Waves", "Keep the menu's monochrome side waves over the image", false));
-   private final AtomicLong y = new AtomicLong();
-   private final u7 l = new u7(0.0);
-   private Identifier N;
-   private int J;
-   private int V;
-   private String I = "";
-   private String X = "";
-   private long n;
-   private long q;
-   private boolean k;
+   private final dh z = this.addSetting(new dh("Side Waves", "Keep the menu's monochrome side waves over the image", false));
+   private final AtomicLong n = new AtomicLong();
+   private final ef L = new ef(0.0);
+   private Identifier D;
+   private int F;
+   private int P;
+   private String k = "";
+   private String j = "";
+   private long v;
+   private long e;
    private boolean A;
-   private volatile String o = "Add a PNG or JPG to the backgrounds folder";
+   private boolean t;
+   private volatile String r = "Add a PNG or JPG to the backgrounds folder";
 
    public MenuBackgroundModule() {
       super("Menu Background", "Use your own PNG or JPG as the main menu background", Category.VISUALS, -1);
-      z = this;
-      this.m.W(var1 -> {
-         this.n = 0L;
-         this.A = (boolean)0;
-         this.I = "";
+      o = this;
+      this.G.h(var1 -> {
+         this.v = 0L;
+         this.t = (boolean)0;
+         this.k = "";
       });
    }
 
-   public static MenuBackgroundModule H() {
-      return z;
+   public static MenuBackgroundModule R() {
+      return o;
    }
 
    @Override
    public String getStatus() {
-      return this.o;
+      return this.r;
    }
 
-   private static Path M() {
+   private static Path x() {
       return getMc().gameDirectory.toPath().resolve("config/larp-client/backgrounds");
    }
 
-   public static boolean b(GuiGraphicsExtractor var0, int var1, int var2, double var3) {
-      return z != null && z.isEnabled() ? z != null && z.z(var0, var1, var2, var3) : false;
+   public static boolean R(GuiGraphicsExtractor var0, int var1, int var2, double var3) {
+      return o != null && o.isEnabled() ? o != null && o.f(var0, var1, var2, var3) : false;
    }
 
-   public static boolean e() {
-      return z != null && z.c.getValue();
+   public static boolean p() {
+      return o != null && o.z.P();
    }
 
-   private boolean z(GuiGraphicsExtractor var1, int var2, int var3, double var4) {
+   private boolean f(GuiGraphicsExtractor var1, int var2, int var3, double var4) {
       if (!this.isOperational()) {
-         if (this.N != null || !this.I.isEmpty()) {
-            this.i("Module off or not authorized");
+         if (this.D != null || !this.k.isEmpty()) {
+            this.T("Module off or not authorized");
          }
 
          return false;
       } else {
-         if (!this.k) {
-            this.k = (boolean)1;
-            this.Z();
+         if (!this.A) {
+            this.A = (boolean)1;
+            this.N();
          }
 
-         String var6 = this.m.getValue();
+         String var6 = this.G.P();
          if (var6.equals("None")) {
-            if (this.N != null || !this.I.isEmpty()) {
-               this.i("No image selected");
+            if (this.D != null || !this.k.isEmpty()) {
+               this.T("No image selected");
             }
 
-            this.o = "Choose an image";
+            this.r = "Choose an image";
             return false;
          } else {
-            if ((this.A || !var6.equals(this.I)) && System.nanoTime() >= this.n) {
-               this.T(var6);
+            if ((this.t || !var6.equals(this.k)) && System.nanoTime() >= this.v) {
+               this.V(var6);
             }
 
-            if (this.W.i("Main menu") && !(getMc().gui.screen() instanceof rf)) {
+            if (this.l.S("Main menu") && !(getMc().gui.screen() instanceof uj)) {
                return false;
             }
 
-            if (this.N != null && var2 > 0 && var3 > 0) {
-               fs var7 = LarpClient.y().v().E();
-               double var8 = (var7.o ? this.l.y(1.0, 260) : 1.0) * Math.clamp(var4, 0.0, 1.0);
+            if (this.D != null && var2 > 0 && var3 > 0) {
+               xv var7 = LarpClient.F().f().t();
+               double var8 = (var7.V ? this.L.m(1.0, 260) : 1.0) * Math.clamp(var4, 0.0, 1.0);
                if (var8 <= 0.001) {
                   return true;
                }
 
-               int var10 = oh.i(-1, var8);
+               int var10 = _3.A(-1, var8);
 
                try {
-                  switch ((String)this.E.getValue()) {
+                  switch ((String)this.Y.P()) {
                      case "Stretch":
-                        var1.blit(RenderPipelines.GUI_TEXTURED, this.N, 0, 0, 0.0F, 0.0F, var2, var3, this.J, this.V, this.J, this.V, var10);
+                        var1.blit(RenderPipelines.GUI_TEXTURED, this.D, 0, 0, 0.0F, 0.0F, var2, var3, this.F, this.P, this.F, this.P, var10);
                         break;
                      case "Fit":
-                        double var19 = Math.min((double)var2 / this.J, (double)var3 / this.V);
-                        int var15 = Math.max(1, (int)Math.round(this.J * var19));
-                        int var16 = Math.max(1, (int)Math.round(this.V * var19));
+                        double var19 = Math.min((double)var2 / this.F, (double)var3 / this.P);
+                        int var15 = Math.max(1, (int)Math.round(this.F * var19));
+                        int var16 = Math.max(1, (int)Math.round(this.P * var19));
                         var1.blit(
                            RenderPipelines.GUI_TEXTURED,
-                           this.N,
+                           this.D,
                            (var2 - var15) / 2,
                            (var3 - var16) / 2,
                            0.0F,
                            0.0F,
                            var15,
                            var16,
-                           this.J,
-                           this.V,
-                           this.J,
-                           this.V,
+                           this.F,
+                           this.P,
+                           this.F,
+                           this.P,
                            var10
                         );
                         break;
                      default:
-                        pu var13 = pu.cover(var2, var3, this.J, this.V, 1.0, 0.0, 0.0);
+                        o2 var13 = o2.cover(var2, var3, this.F, this.P, 1.0, 0.0, 0.0);
                         var1.blit(
-                           RenderPipelines.GUI_TEXTURED, this.N, 0, 0, var13.u(), var13.v(), var2, var3, var13.width(), var13.height(), this.J, this.V, var10
+                           RenderPipelines.GUI_TEXTURED, this.D, 0, 0, var13.u(), var13.v(), var2, var3, var13.width(), var13.height(), this.F, this.P, var10
                         );
                   }
                } catch (RuntimeException var17) {
-                  r4.r("MenuWallpaper", "Draw failed; standard backdrop restored until a new selection", var17);
-                  this.i("Draw failed");
-                  this.I = var6;
-                  this.A = (boolean)1;
-                  this.n = Long.MAX_VALUE;
-                  this.o = "Could not draw " + var6;
+                  mt.P("MenuWallpaper", "Draw failed; standard backdrop restored until a new selection", var17);
+                  this.T("Draw failed");
+                  this.k = var6;
+                  this.t = (boolean)1;
+                  this.v = Long.MAX_VALUE;
+                  this.r = "Could not draw " + var6;
                   return false;
                }
 
-               double var18 = this.T.getValue() / 100.0 * var8;
+               double var18 = this.b.P() / 100.0 * var8;
                if (var18 > 0.001) {
-                  fr.k(var1, 0, 0, var2, var3, oh.i(-16777216, var18));
+                  c7.s(var1, 0, 0, var2, var3, _3.A(-16777216, var18));
                }
 
                return true;
@@ -214,29 +214,29 @@ public final class MenuBackgroundModule extends Module {
       }
    }
 
-   public void e() {
-      Path var1 = M();
-      t.execute(() -> {
+   public void A() {
+      Path var1 = x();
+      x.execute(() -> {
          try {
             Files.createDirectories(var1);
             getMc().execute(() -> Blaze3D.openPath(var1));
          } catch (Exception var3) {
-            this.o = "Could not open the backgrounds folder";
-            r4.r("MenuWallpaper", "Folder stage failed", var3);
+            this.r = "Could not open the backgrounds folder";
+            mt.P("MenuWallpaper", "Folder stage failed", var3);
          }
       });
    }
 
-   public void I() {
-      if (this.q == 0L || System.nanoTime() - this.q >= 1000000000L) {
-         this.Z();
+   public void f() {
+      if (this.e == 0L || System.nanoTime() - this.e >= 1000000000L) {
+         this.N();
       }
    }
 
-   public void Z() {
-      this.q = System.nanoTime();
-      Path var1 = M();
-      t.execute(
+   public void N() {
+      this.e = System.nanoTime();
+      Path var1 = x();
+      x.execute(
          () -> {
             try {
                Files.createDirectories(var1);
@@ -245,7 +245,7 @@ public final class MenuBackgroundModule extends Module {
                try (Stream var3 = Files.list(var1)) {
                   var2 = var3.filter(var0 -> Files.isRegularFile(var0))
                      .map(var0 -> var0.getFileName().toString())
-                     .filter(MenuBackgroundModule::J)
+                     .filter(MenuBackgroundModule::n)
                      .sorted(String.CASE_INSENSITIVE_ORDER)
                      .limit(256L)
                      .toList();
@@ -255,34 +255,34 @@ public final class MenuBackgroundModule extends Module {
                var9.add("None");
                var9.addAll(var2);
                getMc().execute(() -> {
-                  this.m.u(var9);
-                  if (this.I.equals(this.m.getValue()) && !this.I.equals("None")) {
-                     this.I = "";
-                     this.A = (boolean)0;
-                     this.n = 0L;
+                  this.G.Y(var9);
+                  if (this.k.equals(this.G.P()) && !this.k.equals("None")) {
+                     this.k = "";
+                     this.t = (boolean)0;
+                     this.v = 0L;
                   }
                });
-               r4.V("MenuWallpaper", "Backgrounds folder lists {} image(s)", var2.size());
+               mt.K("MenuWallpaper", "Backgrounds folder lists {} image(s)", var2.size());
             } catch (Exception var8) {
-               this.o = "Could not read the backgrounds folder";
-               r4.r("MenuWallpaper", "Library stage failed", var8);
+               this.r = "Could not read the backgrounds folder";
+               mt.P("MenuWallpaper", "Library stage failed", var8);
             }
          }
       );
    }
 
-   private void T(String var1) {
-      this.I = var1;
-      this.A = (boolean)0;
-      long var2 = this.y.incrementAndGet();
-      this.o = "Loading " + var1;
-      Path var4 = M();
-      t.execute(() -> {
+   private void V(String var1) {
+      this.k = var1;
+      this.t = (boolean)0;
+      long var2 = this.n.incrementAndGet();
+      this.r = "Loading " + var1;
+      Path var4 = x();
+      x.execute(() -> {
          List var5 = List.of();
 
          try {
             Path var6 = var4.resolve(var1).normalize();
-            if (!J(var1) || !var4.normalize().equals(var6.getParent())) {
+            if (!n(var1) || !var4.normalize().equals(var6.getParent())) {
                throw new IOException("Choose a PNG or JPG from the backgrounds folder");
             }
 
@@ -292,83 +292,83 @@ public final class MenuBackgroundModule extends Module {
             }
 
             long var16 = System.nanoTime();
-            var5 = pn.U(W(var7));
+            var5 = ho.j(E(var7));
             List var10 = var5;
             long var11 = (System.nanoTime() - var16) / 1000000L;
-            getMc().execute(() -> this.g(var2, var1, var10, var11));
+            getMc().execute(() -> this.M(var2, var1, var10, var11));
          } catch (Exception | OutOfMemoryError var15) {
-            pn.e(new ArrayList<>(var5));
+            ho.G(new ArrayList<>(var5));
             getMc().execute(() -> {
-               if (var2 == this.y.get()) {
-                  this.A = (boolean)1;
-                  this.n = System.nanoTime() + 30000000000L;
-                  this.o = "Could not load " + var1 + ": " + var15.getMessage();
-                  r4.m("MenuWallpaper", "Load failed for {}; standard backdrop kept, retry in 30 s or on refresh: {}", var1, var15.toString());
+               if (var2 == this.n.get()) {
+                  this.t = (boolean)1;
+                  this.v = System.nanoTime() + 30000000000L;
+                  this.r = "Could not load " + var1 + ": " + var15.getMessage();
+                  mt.T("MenuWallpaper", "Load failed for {}; standard backdrop kept, retry in 30 s or on refresh: {}", var1, var15.toString());
                }
             });
          }
       });
    }
 
-   private void g(long var1, String var3, List<NativeImage> var4, long var5) {
+   private void M(long var1, String var3, List<NativeImage> var4, long var5) {
       try {
-         if (var1 == this.y.get() && this.isOperational() && var3.equals(this.m.getValue())) {
+         if (var1 == this.n.get() && this.isOperational() && var3.equals(this.G.P())) {
             NativeImage var7 = (NativeImage)var4.getFirst();
             Identifier var8 = Identifier.fromNamespaceAndPath("larp-client", "menu-wallpaper/" + var1);
-            pn var9 = new pn("Larp menu background " + var3, var4);
+            ho var9 = new ho("Larp menu background " + var3, var4);
             getMc().getTextureManager().register(var8, var9);
-            this.E();
-            this.N = var8;
-            this.J = var7.getWidth();
-            this.V = var7.getHeight();
-            if (!var3.equals(this.X)) {
-               this.l.c(0.0);
+            this.i();
+            this.D = var8;
+            this.F = var7.getWidth();
+            this.P = var7.getHeight();
+            if (!var3.equals(this.j)) {
+               this.L.Q(0.0);
             }
 
-            this.X = var3;
-            this.o = var3 + " (" + this.J + "x" + this.V + ")";
-            r4.V("MenuWallpaper", "Showing {} at {}x{} with {} mip levels; prepared in {} ms", var3, this.J, this.V, var4.size(), var5);
+            this.j = var3;
+            this.r = var3 + " (" + this.F + "x" + this.P + ")";
+            mt.K("MenuWallpaper", "Showing {} at {}x{} with {} mip levels; prepared in {} ms", var3, this.F, this.P, var4.size(), var5);
             return;
          }
       } catch (RuntimeException var13) {
-         this.A = (boolean)1;
-         this.n = System.nanoTime() + 30000000000L;
-         this.o = "Could not upload " + var3;
-         r4.r("MenuWallpaper", "GPU upload failed; previous background kept", var13);
+         this.t = (boolean)1;
+         this.v = System.nanoTime() + 30000000000L;
+         this.r = "Could not upload " + var3;
+         mt.P("MenuWallpaper", "GPU upload failed; previous background kept", var13);
          return;
       } finally {
-         pn.e(new ArrayList<>(var4));
+         ho.G(new ArrayList<>(var4));
       }
    }
 
-   private void i(String var1) {
-      this.y.incrementAndGet();
-      int var2 = this.N != null ? 1 : 0;
-      this.E();
-      this.I = this.X = "";
-      this.A = (boolean)0;
-      this.n = 0L;
+   private void T(String var1) {
+      this.n.incrementAndGet();
+      int var2 = this.D != null ? 1 : 0;
+      this.i();
+      this.k = this.j = "";
+      this.t = (boolean)0;
+      this.v = 0L;
       if (var2 != 0) {
-         r4.V("MenuWallpaper", "Background released: {}", var1);
+         mt.K("MenuWallpaper", "Background released: {}", var1);
       }
    }
 
-   private void E() {
-      if (this.N != null) {
-         getMc().getTextureManager().release(this.N);
+   private void i() {
+      if (this.D != null) {
+         getMc().getTextureManager().release(this.D);
       }
 
-      this.N = null;
-      this.J = this.V = 0;
+      this.D = null;
+      this.F = this.P = 0;
    }
 
    @Override
    public void onDisable() {
-      this.i("Module disabled");
-      this.o = "Standard menu background";
+      this.T("Module disabled");
+      this.r = "Standard menu background";
    }
 
-   public static boolean J(String var0) {
+   public static boolean n(String var0) {
       if (var0 != null
          && var0.length() > 4
          && var0.length() <= 128
@@ -383,17 +383,17 @@ public final class MenuBackgroundModule extends Module {
       }
    }
 
-   public static MenuBackgroundModule.v G(byte[] var0) throws IOException {
+   public static MenuBackgroundModule.u Q(byte[] var0) throws IOException {
       if (var0.length >= 8 && ByteBuffer.wrap(var0).getLong() == -8552249625308161526L) {
-         return MenuBackgroundModule.v.a;
+         return MenuBackgroundModule.u.v;
       } else if (var0.length >= 3 && (var0[0] & 255) == 255 && (var0[1] & 255) == 216 && (var0[2] & 255) == 255) {
-         return MenuBackgroundModule.v.t;
+         return MenuBackgroundModule.u.i;
       } else {
          throw new IOException("Not a PNG or JPEG image");
       }
    }
 
-   public static void F(long var0, long var2, long var4) throws IOException {
+   public static void R(long var0, long var2, long var4) throws IOException {
       if (var0 > 67108864L) {
          throw new IOException("Image must be at most 64 MiB");
       } else if (var2 < 1L || var4 < 1L || var2 > 8192L || var4 > 8192L || var2 * var4 > 40000000L) {
@@ -401,12 +401,12 @@ public final class MenuBackgroundModule extends Module {
       }
    }
 
-   private static NativeImage W(byte[] var0) throws IOException {
+   private static NativeImage E(byte[] var0) throws IOException {
       if (var0.length > 67108864L) {
          throw new IOException("Image must be at most 64 MiB");
       }
 
-      MenuBackgroundModule.v var1 = G(var0);
+      MenuBackgroundModule.u var1 = Q(var0);
       ByteBuffer var2 = MemoryUtil.memAlloc(var0.length);
 
       try {
@@ -424,8 +424,8 @@ public final class MenuBackgroundModule extends Module {
                   throw new IOException("Unreadable image: " + STBImage.stbi_failure_reason());
                }
 
-               F(var0.length, var4.get(0), var5.get(0));
-               if (var1 == MenuBackgroundModule.v.a) {
+               R(var0.length, var4.get(0), var5.get(0));
+               if (var1 == MenuBackgroundModule.u.v) {
                   var26 = NativeImage.read(new ByteArrayInputStream(var0));
                   break label171;
                }
@@ -473,8 +473,8 @@ public final class MenuBackgroundModule extends Module {
       }
    }
 
-   public enum v {
-      a,
-      t;
+   public enum u {
+      v,
+      i;
    }
 }

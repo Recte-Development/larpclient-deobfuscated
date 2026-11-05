@@ -13,7 +13,10 @@ import com.larpclient.module.SwordModelsModule;
 import com.larpclient.module.WTapModule;
 import com.larpclient.module.WindChargeHopModule;
 import com.larpclient.module.WorldMenuModule;
-import com.larpclient.module.l1;
+import com.larpclient.module.d4;
+import com.larpclient.module.df;
+import com.larpclient.module.dh;
+import com.larpclient.module.dz;
 import com.larpclient.update.UpdateRuntime;
 import com.mojang.blaze3d.platform.InputConstants.Key;
 import com.mojang.blaze3d.platform.InputConstants.Type;
@@ -34,138 +37,138 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LarpClient implements ClientModInitializer {
-   public static final String H = "larp-client";
-   public static final String L = xo.y;
-   public static final Logger V = LoggerFactory.getLogger("larp-client");
-   public static boolean N = (boolean)0;
-   private static LarpClient A;
-   private com.larpclient.module.ly s;
-   private mo w;
-   private fl C;
-   private o8 F;
-   private KeyMapping E;
-   private KeyMapping v;
-   private final hs<Module> t = new hs<>(349);
-   private final hs<m5.w> h = new hs<>(349);
-   private boolean o = (boolean)0;
+   public static final String Z = "larp-client";
+   public static final String t = zq.x;
+   public static final Logger U = LoggerFactory.getLogger("larp-client");
+   public static boolean h = (boolean)0;
+   private static LarpClient L;
+   private dz D;
+   private w9 f;
+   private _t Q;
+   private mq P;
+   private KeyMapping u;
+   private KeyMapping N;
+   private final cq<Module> r = new cq<>(349);
+   private final cq<um.w> d = new cq<>(349);
+   private boolean w = (boolean)0;
    private boolean W = (boolean)0;
-   private volatile boolean M;
-   public static final Category l = Category.register(Identifier.fromNamespaceAndPath("larp-client", "main"));
-   public static final Category u = Category.register(Identifier.fromNamespaceAndPath("larp-client", "editing"));
+   private volatile boolean s;
+   public static final Category c = Category.register(Identifier.fromNamespaceAndPath("larp-client", "main"));
+   public static final Category m = Category.register(Identifier.fromNamespaceAndPath("larp-client", "editing"));
 
    public void onInitializeClient() {
-      A = this;
-      V.info("LarpClient v{} by Tobias - loading...", L);
-      com.larpclient.h.P();
-      this.s = new com.larpclient.module.ly();
-      this.s.P();
-      this.w = new mo();
-      this.w.x();
+      L = this;
+      U.info("LarpClient v{} by Tobias - loading...", t);
+      e.B();
+      this.D = new dz();
+      this.D.w();
+      this.f = new w9();
+      this.f.g();
       MicrosoftAccounts.INSTANCE.start(Minecraft.getInstance());
       UpdateRuntime.start();
-      this.C = new fl(this.w.E().L);
-      this.F = new o8();
-      this.F.K();
-      hg.B().K();
-      l1.O();
-      com.larpclient.module.l2.K();
+      this.Q = new _t(this.f.t().d);
+      this.P = new mq();
+      this.P.G();
+      oj.K().p();
+      d4.F();
+      com.larpclient.module.c.N();
       ClientLifecycleEvents.CLIENT_STOPPING.register((ClientStopping)var1 -> {
-         this.C.close();
-         com.larpclient.h.K();
-         this.M = (boolean)1;
-         this.f();
-         this.w.U();
+         this.Q.close();
+         e.g();
+         this.s = (boolean)1;
+         this.C();
+         this.f.y();
          MicrosoftAccounts.INSTANCE.stop();
          UpdateRuntime.stop();
       });
-      f8.L();
-      y3.R();
-      this.E = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.larp-client.open_gui", Type.KEYBOARD, r7.e(344), l));
-      this.v = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.larp-client.open_editor", Type.KEYBOARD, r7.e(-1), u));
-      r4.V("Input", "Module shortcuts use ClickGUI/profile keybinds only; legacy Minecraft module shortcuts are ignored");
+      com.larpclient.h.s();
+      k.i();
+      this.u = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.larp-client.open_gui", Type.KEYBOARD, mo.f(344), c));
+      this.N = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.larp-client.open_editor", Type.KEYBOARD, mo.f(-1), m));
+      mt.K("Input", "Module shortcuts use ClickGUI/profile keybinds only; legacy Minecraft module shortcuts are ignored");
       ClientPlayConnectionEvents.DISCONNECT.register((Disconnect)(var1, var2) -> {
-         com.larpclient.h.J();
-         if (!this.M) {
+         e.J();
+         if (!this.s) {
             var2.execute(() -> {
-               if (!this.M && (var2.getConnection() == null || var2.getConnection() == var1)) {
-                  this.f();
+               if (!this.s && (var2.getConnection() == null || var2.getConnection() == var1)) {
+                  this.C();
                }
             });
          }
       });
-      ClientTickEvents.END_CLIENT_TICK.register(this::e);
-      V.info("LarpClient v{} loaded! {} modules registered.", L, this.s.X().size());
-      V.info("Press RIGHT SHIFT to open the GUI.");
+      ClientTickEvents.END_CLIENT_TICK.register(this::L);
+      U.info("LarpClient v{} loaded! {} modules registered.", t, this.D.C().size());
+      U.info("Press RIGHT SHIFT to open the GUI.");
    }
 
-   public void s(boolean var1) {
-      if (this.C != null) {
-         this.C.d(var1);
+   public void a(boolean var1) {
+      if (this.Q != null) {
+         this.Q.K(var1);
       }
    }
 
-   private void f() {
-      this.t.x();
-      this.h.x();
+   private void C() {
+      this.r.u();
+      this.d.u();
 
-      for (Module var2 : this.s.X()) {
+      for (Module var2 : this.D.C()) {
          var2.suspendForDisconnect();
       }
 
-      this.w.j();
+      this.f.b();
    }
 
-   public void b(int var1) {
-      xc.f(var1);
-      CustomCrosshairModule.j(var1);
-      ClickPulseModule.j(var1);
-      int var2 = pe.h(var1);
+   public void B(int var1) {
+      kp.j(var1);
+      CustomCrosshairModule.E(var1);
+      ClickPulseModule.J(var1);
+      int var2 = cc.M(var1);
       if (var2 != -1) {
-         if (WorldMenuModule.Y()) {
-            this.t.T(var2);
-            this.h.T(var2);
+         if (WorldMenuModule.d()) {
+            this.r.x(var2);
+            this.d.x(var2);
          } else {
-            this.N(var2);
+            this.S(var2);
          }
       }
    }
 
-   public void N(int var1) {
+   public void S(int var1) {
       Minecraft var2 = Minecraft.getInstance();
-      if (!this.M && var2.player != null && var2.gui.screen() == null && var2.gui.overlay() == null && var2.isWindowActive() && !WorldMenuModule.w()) {
-         this.t.Y(var1);
-         this.h.Y(var1);
-         LungeSwapModule.l(var1);
-         AutoPearlCatchModule.K(var1);
-         WindChargeHopModule.C(var1);
-         SwordModelsModule var3 = SwordModelsModule.t();
+      if (!this.s && var2.player != null && var2.gui.screen() == null && var2.gui.overlay() == null && var2.isWindowActive() && !WorldMenuModule.K()) {
+         this.r.k(var1);
+         this.d.k(var1);
+         LungeSwapModule.T(var1);
+         AutoPearlCatchModule.v(var1);
+         WindChargeHopModule.W(var1);
+         SwordModelsModule var3 = SwordModelsModule.n();
          if (var3 != null) {
-            var3.B(var1);
+            var3.j(var1);
          }
       } else {
-         this.t.T(var1);
-         this.h.T(var1);
+         this.r.x(var1);
+         this.d.x(var1);
       }
    }
 
-   private void e(Minecraft var1) {
-      FreecamModule.y();
-      FreelookModule.k();
+   private void L(Minecraft var1) {
+      FreecamModule.o();
+      FreelookModule.o();
 
-      for (Module var3 : this.s.X()) {
+      for (Module var3 : this.D.C()) {
          var3.validateHeldBind();
       }
 
-      this.s.Z();
-      AimAssistModule.U();
-      WTapModule.b();
-      o8.C(var1);
-      com.larpclient.h.C(var1);
-      _7.W();
-      o2.N(var1);
-      hl.E.e();
+      this.D.P();
+      AimAssistModule.R();
+      WTapModule.z();
+      mq.Z(var1);
+      e.M(var1);
+      _r.f();
+      uo.n(var1);
+      cm.R.m();
       if (var1.gui.screen() instanceof TitleScreen) {
-         N = (boolean)1;
+         h = (boolean)1;
       }
 
       if (!this.W && var1.gui.screen() instanceof TitleScreen) {
@@ -175,61 +178,61 @@ public class LarpClient implements ClientModInitializer {
       if (this.W && var1.gui.screen() instanceof TitleScreen) {
       }
 
-      this.t.R();
+      this.r.F();
       long var13 = var1.getWindow().handle();
 
-      for (Module var5 : this.s.X()) {
+      for (Module var5 : this.D.C()) {
          int var6 = var5.getKeyBind();
-         if (pe.F(var6)) {
-            this.t.I(var5, var6, pe.A(var13, var6));
+         if (cc.N(var6)) {
+            this.r.B(var5, var6, cc.N(var13, var6));
          }
       }
 
-      List var14 = this.t.g();
-      this.h.R();
+      List var14 = this.r.y();
+      this.d.F();
 
-      for (m5.w var17 : this.w.E().B.O(this.s.X())) {
-         this.h.I(var17, var17.code(), pe.A(var13, var17.code()));
+      for (um.w var17 : this.f.t().s.l(this.D.C())) {
+         this.d.B(var17, var17.code(), cc.N(var13, var17.code()));
       }
 
-      List var16 = this.h.g();
-      int var18 = var1.gui.screen() == null && var1.gui.overlay() == null && var1.isWindowActive() && !WorldMenuModule.w() ? 1 : 0;
-      boolean var7 = this.E.consumeClick();
+      List var16 = this.d.y();
+      int var18 = var1.gui.screen() == null && var1.gui.overlay() == null && var1.isWindowActive() && !WorldMenuModule.K() ? 1 : 0;
+      boolean var7 = this.u.consumeClick();
       byte var8 = 0;
 
-      while (this.v.consumeClick()) {
+      while (this.N.consumeClick()) {
          var8 = 1;
       }
 
       if (var1.player != null) {
          if (var8 != 0 && var18 != 0 && !var7 && var1.level != null) {
-            var1.gui.setScreen(new ps(null));
+            var1.gui.setScreen(new hu(null));
          } else {
-            if (!this.o) {
-               this.o = (boolean)1;
+            if (!this.w) {
+               this.w = (boolean)1;
                var1.options.fovEffectScale().set(0.0);
                var1.options.bobView().set(false);
-               V.info("Applied LARP defaults: dynamic FOV off, view bobbing off");
+               U.info("Applied LARP defaults: dynamic FOV off, view bobbing off");
             }
 
             if (var7) {
-               if (var1.gui.screen() instanceof p0 var9) {
+               if (var1.gui.screen() instanceof hw var9) {
                   var9.onClose();
-               } else if (var1.gui.screen() instanceof pc var10) {
+               } else if (var1.gui.screen() instanceof h1 var10) {
                   var10.onClose();
-               } else if (!WorldMenuModule.Q()) {
-                  var1.gui.setScreen(pc.o(null));
+               } else if (!WorldMenuModule.W()) {
+                  var1.gui.setScreen(h1.G(null));
                }
             }
 
             if (var18 != 0 && !var7 && var1.gui.screen() == null) {
                for (Module var21 : var14) {
-                  if (var21 instanceof FreecamModule var24 && var24.t()) {
-                     if (!var24.O()) {
+                  if (var21 instanceof FreecamModule var24 && var24.w()) {
+                     if (!var24.Q()) {
                         continue;
                      }
-                  } else if (var21 instanceof FreelookModule var12 && var12.o()) {
-                     if (!var12.P()) {
+                  } else if (var21 instanceof FreelookModule var12 && var12.g()) {
+                     if (!var12.s()) {
                         continue;
                      }
                   } else if (var21.holdsKeybind()) {
@@ -240,76 +243,76 @@ public class LarpClient implements ClientModInitializer {
                      var21.toggle();
                   }
 
-                  hg.B().G(var21.getDisplayName(), var21.isEnabled());
+                  oj.K().r(var21.getDisplayName(), var21.isEnabled());
                }
 
-               for (m5.w var22 : var16) {
-                  X(var22);
+               for (um.w var22 : var16) {
+                  M(var22);
                }
             }
          }
       }
    }
 
-   private static void X(m5.w var0) {
-      com.larpclient.module.l6 var1 = var0.setting();
+   private static void M(um.w var0) {
+      df var1 = var0.setting();
       String var2 = var0.module().getDisplayName() + " " + var1.getDisplayName();
-      if (!var1.R()) {
-         r4.g("Input", "Setting shortcut {} skipped while the setting is hidden", var2);
+      if (!var1.B()) {
+         mt.U("Input", "Setting shortcut {} skipped while the setting is hidden", var2);
       } else {
          try {
-            if (var1 instanceof com.larpclient.module.ln var3) {
-               var3.S();
-               hg.B().G(var2, var3.getValue());
-            } else if (var1 instanceof com.larpclient.module.lp var4) {
-               var4.F();
-               hg.B().J(var4.getModeLabel(var4.getValue()), var2, hg.u.U, 2000L);
+            if (var1 instanceof dh var3) {
+               var3.T();
+               oj.K().r(var2, var3.P());
+            } else if (var1 instanceof com.larpclient.module.d6 var4) {
+               var4.f();
+               oj.K().v(var4.getModeLabel(var4.P()), var2, oj.u.O, 2000L);
             }
 
-            r4.g("Input", "Setting shortcut changed {} to {}", var2, var1.getValueAsString());
+            mt.U("Input", "Setting shortcut changed {} to {}", var2, var1.getValueAsString());
          } catch (RuntimeException var5) {
-            r4.m("Input", "Setting shortcut for {} was rejected: {}", var2, var5.toString());
+            mt.T("Input", "Setting shortcut for {} was rejected: {}", var2, var5.toString());
          }
       }
    }
 
-   public static LarpClient y() {
-      return A;
+   public static LarpClient F() {
+      return L;
    }
 
-   public com.larpclient.module.ly e() {
-      return this.s;
+   public dz x() {
+      return this.D;
    }
 
-   public mo v() {
-      return this.w;
+   public w9 f() {
+      return this.f;
    }
 
-   public int b() {
-      if (this.E == null) {
+   public int R() {
+      if (this.u == null) {
          return 344;
       }
 
-      Key var1 = KeyMappingHelper.getBoundKeyOf(this.E);
+      Key var1 = KeyMappingHelper.getBoundKeyOf(this.u);
 
       return switch (var1.getType()) {
-         case KEYBOARD -> r7.u(var1.getValue());
-         case MOUSE -> pe.h(r7.w(var1.getValue()));
+         case KEYBOARD -> mo.X(var1.getValue());
+         case MOUSE -> cc.M(mo.j(var1.getValue()));
          default -> -1;
       };
    }
 
-   public void X(int var1) {
-      if (this.E != null && var1 >= -1 && var1 <= 348) {
-         this.E.setKey(pe.o(var1) ? Type.MOUSE.getOrCreate(r7.y(pe.H(var1))) : Type.KEYBOARD.getOrCreate(r7.e(var1)));
-         this.E.setDown(false);
+   public void g(int var1) {
+      if (this.u != null && var1 >= -1 && var1 <= 348) {
+         this.u.setKey(cc.h(var1) ? Type.MOUSE.getOrCreate(mo.A(cc.T(var1))) : Type.KEYBOARD.getOrCreate(mo.f(var1)));
+         this.u.setDown(false);
          KeyMapping.resetMapping();
 
-         while (this.E.consumeClick()) {
+         while (this.u.consumeClick()) {
          }
 
          Minecraft.getInstance().options.save();
-         r4.V("Input", "ClickUI shortcut changed to {}", this.E.getTranslatedKeyMessage().getString());
+         mt.K("Input", "ClickUI shortcut changed to {}", this.u.getTranslatedKeyMessage().getString());
       }
    }
 }

@@ -1,213 +1,111 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.ShaderSource;
-import com.mojang.renderpearl.api.pipeline.ShaderType;
-import com.mojang.renderpearl.api.pipeline.UniformType;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Builder;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.resources.Identifier;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public final class mk {
-   static final Identifier T = Identifier.fromNamespaceAndPath("larp-client", "temple/sodium_terrain");
-   private static final Pattern w = Pattern.compile("\\bvoid\\s+main\\s*\\(\\s*(?:void\\s*)?\\)");
-   private static final Pattern G = Pattern.compile("fragColor\\s*=\\s*_linearFog\\(\\s*color\\s*,");
-   private static final List<String> z = List.of("_vert_position", "u_RegionOffset", "_get_draw_translation", "_draw_id", "_vert_tex_light_coord");
-   private static final List<String> q = List.of("v_Color", "v_FragDistance", "u_FogColor", "u_RenderFog", "fragColor");
-   private static final int r = 600;
-   private static final IdentityHashMap<RenderPipeline, mk.k> W = new IdentityHashMap<>();
-   private static final List<RenderPipeline> a = new ArrayList<>();
-   private static boolean t;
-   private static int c;
+   private static final Vector3f[] j = new Vector3f[]{new Vector3f(-0.031F, 0.08F, -0.067F), new Vector3f(0.088F, 0.08F, -0.067F)};
+   private static final Vector3f[] K = new Vector3f[]{new Vector3f(-0.038F, 0.002F, -0.068F), new Vector3f(0.096F, 0.002F, -0.068F)};
+   private static final Vector3f[] O = new Vector3f[]{new Vector3f(0.001F, -0.105F, -0.062F), new Vector3f(0.055F, -0.105F, -0.062F)};
+   private static final Vector3f[] G = new Vector3f[]{new Vector3f(-0.001F, -0.194F, -0.067F), new Vector3f(0.057F, -0.194F, -0.067F)};
+   private static final float w = 0.002F;
+   private static final float B = -0.194F;
+   private static final float k = 0.9F;
+   private static final float Y = 0.7F;
+   private final _y.w P;
+   private final _y.w f;
+   private final int[] c;
+   private final float[] N;
+   private final Matrix4f[] n = new Matrix4f[]{new Matrix4f(), new Matrix4f(), new Matrix4f(), new Matrix4f()};
+   private final Matrix4f[] h = new Matrix4f[]{new Matrix4f(), new Matrix4f(), new Matrix4f(), new Matrix4f()};
+   private final Vector3f C = new Vector3f();
+   private final Vector3f L = new Vector3f();
+   private float b;
 
-   static boolean o() {
-      return !FabricLoader.getInstance().isModLoaded("iris") && Z().startsWith("0.9.");
+   public mk(_y.w var1) {
+      kz.l var2 = kz.D(var1);
+      this.P = var1;
+      this.f = var2.mesh();
+      this.c = var2.joints();
+      this.N = (float[])this.f.vertices().clone();
    }
 
-   static String Z() {
-      return FabricLoader.getInstance().getModContainer("sodium").map(var0 -> var0.getMetadata().getVersion().getFriendlyString()).orElse("");
+   public _y.w L() {
+      return this.P;
    }
 
-   static void t() {
-      t = (boolean)1;
+   public _y.w b() {
+      return this.f;
    }
 
-   static boolean v() {
-      return !t && c >= 600;
+   public float[] Y() {
+      return this.N;
    }
 
-   static void V() {
-      if (!t && ++c == 600) {
-         r4.m("TerrainMaterials", "Sodium {} drew no terrain through the Wet Ground hook in {} frames; keeping Sodium output", Z(), 600);
-      }
+   private static void e(Matrix4f var0, Matrix4f var1, Vector3f var2, float var3) {
+      var0.set(var1).translate(var2).rotateX(var3).translate(-var2.x, -var2.y, -var2.z);
    }
 
-   static RenderPipeline h(RenderPipeline var0) {
-      if (v(var0)) {
-         return var0;
-      }
-
-      mk.k var1 = W.get(var0);
-      if (var1 != null) {
-         return var1.pipeline();
-      }
-
-      if (!a.contains(var0)) {
-         a.add(var0);
-      }
-
-      return var0;
+   private static float A(float var0) {
+      var0 = Math.clamp(var0, 0.0F, 1.0F);
+      return var0 * var0 * (3.0F - 2.0F * var0);
    }
 
-   static boolean U(RenderPipeline var0) {
-      for (mk.k var2 : W.values()) {
-         if (var2.pipeline() == var0) {
-            return true;
-         }
-      }
+   public float[] L(float var1, float var2) {
+      float var3 = Math.clamp(var2, 0.0F, 1.0F);
+      float var4 = var1 * 0.6662F;
+      float var5 = (float)Math.cos(var4) * var3;
+      float var6 = (float)Math.sin(var4) * var3;
+      float[] var7 = new float[]{var5 * 0.9F, -var5 * 0.9F};
+      float[] var8 = new float[]{-var5 * 0.7F, var5 * 0.7F};
+      float[] var9 = new float[]{Math.max(0.0F, var6) * 0.9F, Math.max(0.0F, -var6) * 0.9F};
+      Matrix4f var10 = new Matrix4f();
 
-      return false;
-   }
-
-   static void s() {
-      for (RenderPipeline var1 : a) {
-         mk.k var2 = y(var1);
-         p(var2);
-         W.put(var1, var2);
-         r4.V("TerrainMaterials", "Wet Ground draws Sodium pass {} through {}", var1.getLocation(), var2.pipeline().getLocation());
+      for (int var11 = 0; var11 < 2; var11++) {
+         float var12 = -0.3F * var3 - (var11 == 0 ? Math.max(0.0F, var8[var11]) : 0.0F);
+         e(this.n[var11], var10, j[var11], var8[var11]);
+         e(this.h[var11], this.n[var11], K[var11], var12);
+         e(this.n[var11 + 2], var10, O[var11], var7[var11]);
+         e(this.h[var11 + 2], this.n[var11 + 2], G[var11], var9[var11]);
       }
 
-      a.clear();
+      float[] var21 = this.f.vertices();
+      float var22 = Float.POSITIVE_INFINITY;
 
-      for (mk.k var4 : W.values()) {
-         p(var4);
-      }
-   }
-
-   static void b() {
-      W.clear();
-      a.clear();
-   }
-
-   public static String G(String var0, String var1, ShaderType var2) {
-      return V(var0, var1, var2, "larp_wet");
-   }
-
-   public static String V(String var0, String var1, ShaderType var2, String var3) {
-      for (String var5 : var2 == ShaderType.VERTEX ? z : q) {
-         if (!var0.contains(var5)) {
-            throw new IllegalStateException("Sodium " + var2.getName() + " chunk shader no longer provides " + var5);
-         }
-      }
-
-      Matcher var9 = w.matcher(var0);
-      if (!var9.find()) {
-         throw new IllegalStateException("Sodium " + var2.getName() + " chunk shader has no main()");
-      } else {
-         int var10 = var9.start();
-         int var6 = var9.end();
-         if (var9.find()) {
-            throw new IllegalStateException("Sodium " + var2.getName() + " chunk shader has more than one main()");
-         } else {
-            String var7 = var0.substring(0, var10) + var1 + "\nvoid larp_sodium_main()" + var0.substring(var6);
-            if (var2 == ShaderType.VERTEX) {
-               return var7;
-            } else {
-               Matcher var8 = G.matcher(var7);
-               if (!var8.find()) {
-                  throw new IllegalStateException("Sodium fragment chunk shader no longer fogs color through _linearFog");
-               } else {
-                  var10 = var8.start();
-                  var6 = var8.end();
-                  if (var8.find()) {
-                     throw new IllegalStateException("Sodium fragment chunk shader fogs color more than once");
-                  } else {
-                     return var7.substring(0, var10) + "fragColor = _linearFog(" + var3 + "(color)," + var7.substring(var6);
-                  }
-               }
+      for (int var13 = 0; var13 < this.c.length; var13++) {
+         int var14 = var13 * 5;
+         int var15 = this.c[var13];
+         float var16 = var21[var14];
+         float var17 = var21[var14 + 1];
+         float var18 = var21[var14 + 2];
+         this.C.set(var16, var17, var18);
+         if (var15 > 0) {
+            int var19 = var15 >= 3 ? 1 : 0;
+            int var20 = (var15 - 1) % 2 + (var19 != 0 ? 2 : 0);
+            this.L.set(this.C);
+            this.n[var20].transformPosition(this.C);
+            this.h[var20].transformPosition(this.L);
+            this.C.lerp(this.L, A(((var19 != 0 ? -0.194F : 0.002F) + 0.013F - var17) / 0.026F));
+            if (var19 != 0) {
+               var22 = Math.min(var22, this.C.y);
             }
          }
-      }
-   }
 
-   private static mk.k y(RenderPipeline var0) {
-      ShaderSource var1 = of.v();
-      String var2 = G(y(var1.getShader(of.C(var0), ShaderType.VERTEX), of.C(var0)), y(var1.getShader(T, ShaderType.VERTEX), T), ShaderType.VERTEX);
-      String var3 = G(y(var1.getShader(of.b(var0), ShaderType.FRAGMENT), of.b(var0)), y(var1.getShader(T, ShaderType.FRAGMENT), T), ShaderType.FRAGMENT);
-      Builder var4 = RenderPipeline.builder(new Snippet[0])
-         .withLocation(Identifier.fromNamespaceAndPath("larp-sodium", "wet_ground/" + var0.getLocation().getPath()))
-         .withVertexShader(T)
-         .withFragmentShader(T)
-         .withCull(var0.isCull())
-         .withPolygonMode(var0.getPolygonMode())
-         .withPrimitiveTopology(var0.getPrimitiveTopology())
-         .withDepthStencilState(Optional.ofNullable(var0.getDepthStencilState()));
-
-      for (BindGroupLayout var6 : var0.getBindGroupLayouts()) {
-         var4.withBindGroupLayout(var6);
+         this.N[var14] = this.C.x;
+         this.N[var14 + 1] = this.C.y;
+         this.N[var14 + 2] = this.C.z;
       }
 
-      var4.withBindGroupLayout(BindGroupLayout.builder().withUniform("LarpMaterial", UniformType.UNIFORM_BUFFER).build());
-      List var8 = of.J(var0);
+      this.b = var22 - this.f.minimumY();
 
-      for (int var9 = 0; var9 < var8.size(); var9++) {
-         var4.withColorTargetState(var9, (ColorTargetState)var8.get(var9));
+      for (byte var23 = 1; var23 < this.N.length; var23 += 5) {
+         this.N[var23] = this.N[var23] - this.b;
       }
 
-      List var10 = of.m(var0);
-
-      for (int var7 = 0; var7 < var10.size(); var7++) {
-         var4.withVertexBinding(var7, (VertexFormat)var10.get(var7));
-      }
-
-      var0.getShaderDefines().flags().forEach(var4::withShaderDefine);
-      var0.getShaderDefines().values().forEach((var1x, var2x) -> var4.withShaderDefine(var1x, Float.parseFloat(var2x)));
-      ShaderSource var11 = of.A((var3x, var4x) -> !var3x.equals(T) ? var1.getShader(var3x, var4x) : (var4x == ShaderType.VERTEX ? var2 : var3));
-      return new mk.k(var4.build(), var11);
+      return this.N;
    }
 
-   static String y(String var0, Identifier var1) {
-      if (var0 == null) {
-         throw new IllegalStateException("Shader source " + var1 + " is not loaded");
-      } else {
-         return var0;
-      }
-   }
-
-   private static void p(mk.k var0) {
-      t(var0.pipeline(), var0.source());
-   }
-
-   static void t(RenderPipeline var0, ShaderSource var1) {
-      if (!of.k(var0, var1)) {
-         throw new IllegalStateException("Pipeline " + var0.getLocation() + " failed; diagnostics=" + RenderSystem.getDevice().getLastDebugMessages());
-      }
-   }
-
-   static boolean v(RenderPipeline var0) {
-      for (ColorTargetState var2 : var0.getColorTargetStates()) {
-         if (var2 != null && var2.blendFunction().isPresent()) {
-            return true;
-         }
-      }
-
-      return false;
-   }
-
-   private mk() {
-   }
-
-   private record k(RenderPipeline pipeline, ShaderSource source) {
+   public Vector3f w(boolean var1, Vector3f var2) {
+      return this.h[var1 ? 0 : 1].transformPosition(var2).sub(0.0F, this.b, 0.0F);
    }
 }

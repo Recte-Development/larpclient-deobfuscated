@@ -1,167 +1,157 @@
 package com.larpclient;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+public final class mg {
+   private final int[] N = new int[36];
+   private final boolean[] E = new boolean[36];
+   private long x = -1L;
+   private long P = -1L;
+   private long X;
+   private int[] m;
 
-final class mg {
-   static Map<Integer, mg.x> k(int[] var0, int[] var1, List<mg.g> var2) {
-      return d(var0, var1, var2, Map.of());
+   public mg() {
+      int var1 = 0;
+
+      while (var1 < 36) {
+         this.N[var1] = var1++;
+      }
    }
 
-   static Map<Integer, mg.x> d(int[] var0, int[] var1, List<mg.g> var2, Map<Integer, mg.x> var3) {
-      ArrayList var4 = new ArrayList();
-      int[] var5 = new int[var0.length];
+   public int[] W(long var1, long var3) {
+      if (this.m != null && var1 == this.x && var3 == this.P) {
+         return this.m;
+      }
 
-      for (mg.g var7 : var2) {
-         if (var7.source >= 0 && var7.source < var0.length && var0[var7.source] == var7.real && var7.count > 0) {
-            int var8 = Math.min(var7.count, var1[var7.source] - var5[var7.source]);
-            if (var8 > 0) {
-               var5[var7.source] = var5[var7.source] + var8;
-               var4.add(new mg.g(var7.source, var7.real, var7.shown, var8));
+      boolean[] var5 = new boolean[36];
+      boolean[] var6 = new boolean[36];
+
+      for (int var7 = 0; var7 < 36; var7++) {
+         var5[var7] = (boolean)((var1 & 1L << var7) != 0L ? 1 : 0);
+         var6[var7] = (boolean)((var3 & 1L << var7) != 0L ? 1 : 0);
+      }
+
+      this.Z(var5, var6);
+      this.x = var1;
+      this.P = var3;
+      this.m = this.l(var6);
+      this.X++;
+      return this.m;
+   }
+
+   public long p() {
+      return this.X;
+   }
+
+   public void O(int[] var1) {
+      if (var1.length != 36) {
+         throw new IllegalArgumentException("Expected 36 slots");
+      }
+
+      System.arraycopy(var1, 0, this.N, 0, 36);
+      this.m = null;
+   }
+
+   public void Z(boolean[] var1, boolean[] var2) {
+      this.m = null;
+      if (var1.length == 36 && var2.length == 36) {
+         boolean[] var3 = new boolean[36];
+
+         for (int var4 = 0; var4 < 36; var4++) {
+            int var5 = this.N[var4];
+            if (var5 >= 0 && !var2[var5] && !var3[var5]) {
+               var3[var5] = (boolean)1;
+            } else {
+               this.N[var4] = -1;
+               this.E[var4] = (boolean)0;
             }
          }
+
+         for (int var7 = 0; var7 < 9; var7++) {
+            if (this.N[var7] < 0) {
+               for (int var9 = 9; var9 < 36; var9++) {
+                  int var6 = this.N[var9];
+                  if (var6 >= 0 && var1[var6] && !this.E[var9]) {
+                     this.N[var7] = var6;
+                     this.N[var9] = -1;
+                     break;
+                  }
+               }
+            }
+         }
+
+         for (int var8 = 0; var8 < 36; var8++) {
+            if (!var2[var8] && !var3[var8]) {
+               int var10 = this.N[var8] < 0 ? var8 : this.o();
+               if (var10 < 0) {
+                  break;
+               }
+
+               this.N[var10] = var8;
+               var3[var8] = (boolean)1;
+            }
+         }
+      } else {
+         throw new IllegalArgumentException("Expected 36 slots");
       }
+   }
 
-      ArrayList var20 = new ArrayList();
-
-      for (int var21 = 0; var21 < var0.length; var21++) {
-         if (var0[var21] >= 0 && var1[var21] > var5[var21]) {
-            var20.add(new mg.g(var21, var0[var21], var0[var21], var1[var21] - var5[var21]));
+   private int o() {
+      for (int var1 = 0; var1 < 36; var1++) {
+         if (this.N[var1] < 0) {
+            return var1;
          }
       }
 
-      var20.addAll(var4);
-      LinkedHashMap var22 = new LinkedHashMap();
+      return -1;
+   }
 
-      for (mg.g var9 : var20) {
-         List var10 = var22.computeIfAbsent(var9.shown, var0x -> new ArrayList());
-         int var11 = -1;
+   public int[] l(boolean[] var1) {
+      int[] var2 = (int[])this.N.clone();
 
-         for (int var12 = 0; var12 < var10.size(); var12++) {
-            if (((mg.g)var10.get(var12)).source == var9.source && ((mg.g)var10.get(var12)).real == var9.real) {
-               var11 = var12;
+      for (int var3 = 0; var3 < 36; var3++) {
+         if (var2[var3] >= 0 && var1[var2[var3]]) {
+            var2[var3] = -1;
+         }
+      }
+
+      return var2;
+   }
+
+   public void F(int var1, int var2) {
+      if (var1 >= 0 && var1 < 36 && var2 >= 0 && var2 < 36) {
+         this.m = null;
+         int var3 = this.N[var1];
+         byte var4 = 0;
+
+         for (int var5 = 0; var5 < 36; var5++) {
+            if (var5 != var1 && this.N[var5] == var2) {
+               this.N[var5] = var3;
+               this.E[var5] = (boolean)0;
+               var4 = 1;
                break;
             }
          }
 
-         if (var11 < 0) {
-            var10.add(var9);
-         } else {
-            mg.g var29 = (mg.g)var10.get(var11);
-            var10.set(var11, new mg.g(var9.source, var9.real, var9.shown, var29.count + var9.count));
-         }
-      }
-
-      LinkedHashMap var24 = new LinkedHashMap();
-      LinkedHashSet var25 = new LinkedHashSet();
-
-      for (int var26 = 0; var26 < var0.length; var26++) {
-         if (var1[var26] == 0 || var0[var26] >= 0) {
-            var25.add(var26);
-         }
-      }
-
-      LinkedHashMap var27 = new LinkedHashMap();
-      HashMap var28 = new HashMap();
-      var22.forEach((var1x, var2x) -> var28.put(var1x, (var2x.stream().mapToInt(mg.g::count).sum() + 63) / 64));
-      var3.forEach((var3x, var4x) -> {
-         if (var4x.count > 0 && var25.contains(var3x) && var28.getOrDefault(var4x.shown, 0) > 0) {
-            var27.put(var3x, var4x.shown);
-            var28.merge(var4x.shown, -1, Integer::sum);
-         }
-      });
-
-      for (Entry var13 : var22.entrySet()) {
-         for (mg.g var15 : (List)var13.getValue()) {
-            if ((Integer)var28.get(var13.getKey()) > 0) {
-               int var16 = var15.source;
-               if (!var3.isEmpty()) {
-                  for (int var18 : var25) {
-                     if (var18 < var15.source && (var18 < 9 ? 1 : 0) == (var15.source < 9 ? 1 : 0) && !var27.containsKey(var18)) {
-                        mg.x var19 = (mg.x)var3.get(var18);
-                        if (var19 == null || var19.count == 0) {
-                           var16 = var18;
-                           break;
-                        }
-                     }
-                  }
-               }
-
-               if (var25.contains(var16) && !var27.containsKey(var16)) {
-                  var27.put(var16, (Integer)var13.getKey());
-                  var28.merge((Integer)var13.getKey(), -1, Integer::sum);
-               }
+         this.N[var1] = var2;
+         this.E[var1] = (boolean)1;
+         if (var4 == 0 && var3 >= 0 && var3 != var2) {
+            int var6 = this.o();
+            if (var6 >= 0) {
+               this.N[var6] = var3;
+               this.E[var6] = (boolean)0;
             }
          }
       }
-
-      for (Entry var33 : var22.entrySet()) {
-         ArrayDeque var34 = new ArrayDeque((Collection)var33.getValue());
-
-         while (!var34.isEmpty()) {
-            int var35 = -1;
-
-            for (Entry var39 : var27.entrySet()) {
-               if (((Integer)var39.getValue()).equals(var33.getKey()) && var25.contains(var39.getKey())) {
-                  var35 = (Integer)var39.getKey();
-                  break;
-               }
-            }
-
-            if (var35 < 0) {
-               for (int var37 = 0; var37 < 2 && var35 < 0; var37++) {
-                  for (int var42 : var25) {
-                     if (!var27.containsKey(var42)
-                        && (var37 != 0 || (var42 < 9 ? 1 : 0) == (((mg.g)var34.getFirst()).source < 9 ? 1 : 0))
-                        && (var37 != 1 || var42 >= 9)) {
-                        var35 = var42;
-                        break;
-                     }
-                  }
-               }
-            }
-
-            if (var35 < 0) {
-               return Map.of();
-            }
-
-            var25.remove(var35);
-            ArrayList var38 = new ArrayList();
-            int var41 = 0;
-
-            while (!var34.isEmpty() && var41 < 64) {
-               mg.g var43 = (mg.g)var34.removeFirst();
-               int var44 = Math.min(64 - var41, var43.count);
-               var38.add(new mg.g(var43.source, var43.real, var43.shown, var44));
-               var41 += var44;
-               if (var44 < var43.count) {
-                  var34.addFirst(new mg.g(var43.source, var43.real, var43.shown, var43.count - var44));
-               }
-            }
-
-            var24.put(var35, new mg.x((Integer)var33.getKey(), var41, List.copyOf(var38)));
-         }
-      }
-
-      for (int var32 = 0; var32 < var0.length; var32++) {
-         if (var0[var32] >= 0 && var1[var32] > 0) {
-            var24.putIfAbsent(var32, new mg.x(-1, 0, List.of()));
-         }
-      }
-
-      return var24;
    }
 
-   record g(int source, int real, int shown, int count) {
-   }
+   public void B(int var1, int var2) {
+      this.m = null;
 
-   record x(int shown, int count, List<mg.g> portions) {
+      for (int var3 = 0; var3 < 36; var3++) {
+         if (this.N[var3] == var1) {
+            this.N[var3] = var2;
+         } else if (this.N[var3] == var2) {
+            this.N[var3] = var1;
+         }
+      }
    }
 }

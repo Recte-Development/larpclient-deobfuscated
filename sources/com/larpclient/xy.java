@@ -1,101 +1,112 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
-import java.io.IOException;
-import java.io.InputStream;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
+import org.joml.Matrix3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public final class xy {
-   private static final String p = "models/halloween/pumpkin/";
-   private static final RenderType D = Q(false);
-   private static final RenderType y = Q(true);
-   private static xr.h H;
-   private static long N = -1L;
+   public static final double L = 1.7;
+   public static final double c = 0.85;
+   public static final double l = 1.85;
+   public static final double w = 1.02;
+   public static final xy.b y = new xy.b(new Vec3(1.0, 0.0, 0.0), new Vec3(0.0, 1.0, 0.0), new Vec3(0.0, 0.0, 1.0));
 
-   private static Identifier w(String var0) {
-      return Identifier.fromNamespaceAndPath("larp-client", var0);
+   public static double Y(double var0) {
+      return ta.k((var0 - 0.85) / 1.0);
    }
 
-   private static RenderType Q(boolean var0) {
-      RenderPipeline var1 = RenderPipeline.builder(new Snippet[]{RenderPipelines.GUI_TEXTURED_SNIPPET})
-         .withLocation(w(var0 ? "pumpkin_emission" : "pumpkin"))
-         .withFragmentShader(w("particle/sprite"))
-         .withShaderDefine("DITHER_FADE")
-         .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
-         .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, !var0))
-         .withColorTargetState(var0 ? new ColorTargetState(BlendFunction.LIGHTNING) : ColorTargetState.DEFAULT)
-         .withCull(true)
-         .build();
-      return RenderType.create(
-         var0 ? "larp_pumpkin_emission" : "larp_pumpkin",
-         RenderSetup.builder(var1).withTexture("Sampler0", w("models/halloween/pumpkin/" + (var0 ? "emission.png" : "albedo.png"))).createRenderSetup()
-      );
+   public static Vec3 c(ta var0, double var1) {
+      double var3 = Math.sin(Math.max(0.0, var1 - 1.85) * 2.4) * 0.045;
+      return var0.J.add(0.0, 2.75 + var3, 0.0);
    }
 
-   public static void j() {
-      if (H == null || N != jk.v) {
-         H = null;
-
-         try (InputStream var0 = Minecraft.getInstance().getResourceManager().getResourceOrThrow(w("models/halloween/pumpkin/mesh.bin")).open()) {
-            ResourceManager var1 = Minecraft.getInstance().getResourceManager();
-            var1.getResourceOrThrow(w("models/halloween/pumpkin/albedo.png"));
-            var1.getResourceOrThrow(w("models/halloween/pumpkin/emission.png"));
-            xr.h var2 = xr.b(var0);
-            e4.U(D.pipeline());
-            e4.U(y.pipeline());
-            H = var2;
-            N = jk.v;
-            r4.g("Halloween", "Intact pumpkin ready: {} original triangles, {} static mesh groups, generation={}", var2.triangles(), var2.chunks().size(), N);
-         } catch (IOException var5) {
-            throw new IllegalStateException("Halloween pumpkin asset failed; existing cosmetic quarantine retries after resource reload", var5);
-         }
+   public static xy.b s(Vec3 var0, Vec3 var1, Vec3 var2, Vec3 var3) {
+      Vec3 var4 = var1.subtract(var0);
+      if (var4.lengthSqr() < 1.0E-10) {
+         var4 = var2.cross(var3);
       }
+
+      if (var4.lengthSqr() < 1.0E-10) {
+         var4 = y.normal;
+      }
+
+      var4 = var4.normalize();
+      Vec3 var5 = var2.subtract(var4.scale(var2.dot(var4)));
+      if (var5.lengthSqr() < 1.0E-10) {
+         var5 = var3.cross(var4);
+      }
+
+      if (var5.lengthSqr() < 1.0E-10) {
+         Vec3 var6 = Math.abs(var4.y) < 0.9 ? new Vec3(0.0, 1.0, 0.0) : new Vec3(0.0, 0.0, 1.0);
+         var5 = var6.cross(var4);
+      }
+
+      var5 = var5.normalize();
+      return new xy.b(var5, var4.cross(var5).normalize(), var4);
    }
 
-   public static void c(PoseStack var0, y2 var1, ri.z var2, Vec3 var3, boolean var4) {
-      if (H != null && N == jk.v && var2.pumpkin() != null) {
-         if (!var4) {
-            x(var0, var1, var2, var3, false);
-         }
-
-         x(var0, var1, var2, var3, true);
-      }
+   public static xy.p g(ta var0, double var1, xy.b var3, int var4) {
+      zg.r var5 = x9.x.get(var4);
+      Vec3 var6 = c(var0, var1).add(var3.normal.scale(var4 < 3 ? 0.035 : -0.035));
+      return new xy.p(t(var6, var3, var5.from()), t(var6, var3, var5.to()));
    }
 
-   private static void x(PoseStack var0, y2 var1, ri.z var2, Vec3 var3, boolean var4) {
-      VertexConsumer var5 = var1.a(var4 ? y : D);
-      Matrix4f var6 = new Matrix4f(var0.last().pose()).mul(ri.J(var2, var3));
+   private static Vec3 t(Vec3 var0, xy.b var1, Vec3 var2) {
+      return var0.add(var1.right.scale(var2.x * 1.02)).add(var1.up.scale(-var2.z * 1.02));
+   }
 
-      for (int var7 = 0; var7 < H.chunks().size(); var7++) {
-         xr.n var8 = H.chunks().get(var7);
-         float[] var9 = var8.vertices();
-         int[] var10 = var8.colors();
+   private static Quaternionf W(xy.b var0) {
+      Vec3 var1 = var0.right.scale(-1.0);
+      Vec3 var2 = var0.up;
+      Vec3 var3 = var0.normal.scale(-1.0);
+      return new Quaternionf()
+         .setFromNormalized(
+            new Matrix3f()
+               .setColumn(0, new Vector3f((float)var1.x, (float)var1.y, (float)var1.z))
+               .setColumn(1, new Vector3f((float)var2.x, (float)var2.y, (float)var2.z))
+               .setColumn(2, new Vector3f((float)var3.x, (float)var3.y, (float)var3.z))
+         );
+   }
 
-         for (int var11 = 0; var11 < var10.length; var11++) {
-            int var12 = var11 * 5;
-            int var13 = oh.i(var4 ? -9416661 : var10[var11], var2.pumpkin().alpha());
-            var5.addVertex(var6, var9[var12], var9[var12 + 1], var9[var12 + 2]).setUv(var9[var12 + 3], var9[var12 + 4]).setColor(var13);
-         }
-
-         h_.A(var4 ? "Halloween pumpkin emission triangles" : "Halloween pumpkin triangles", var8.triangles());
-      }
+   public static ta.y v(ta var0, int var1, double var2, xy.b var4) {
+      double var5 = Y(var2);
+      double var7 = 1.7 * ta.k(var2 / 0.85);
+      double var9 = ta.Z(var1, var0.T) / 16.0 * 0.9375;
+      double var11 = (24.0 - ta.Q[var1][1]) / 16.0 * 0.9375;
+      Vec3 var13 = var0.J.add(0.0, 1.05 + var7, 0.0).add(var4.right.scale(var9)).add(var4.up.scale(var11 - 1.05));
+      xy.p var14 = g(var0, var2, var4, var1);
+      double var15 = var1 < 2 ? 0.5 : (!var0.T || var1 != 2 && var1 != 3 ? 0.25 : 0.1875);
+      double var17 = var1 == 0 ? 0.5 : 0.75;
+      double var19 = var1 == 0 ? 0.5 : 0.25;
+      double var21 = var1 == 1 ? 0.22 : 0.18;
+      Vec3 var23 = new Vec3(var21 / (var15 * 0.9375), var14.length() / (var17 * 0.9375), 0.14 / (var19 * 0.9375));
+      zg.r var24 = x9.x.get(var1);
+      Vec3 var25 = var24.to().subtract(var24.from()).normalize();
+      double var26 = Math.atan2(-var25.x, var25.z);
+      Quaternionf var28 = W(var4).rotateZ((float)(var26 * var5));
+      Vec3 var29 = var13.lerp(var14.center(), var5).add(var4.normal.scale(Math.sin(var5 * Math.PI) * 0.18 * (var1 < 3 ? 1 : -1)));
+      double var30 = ta.k((4.6 - var2) / 0.75);
+      return new ta.y(var29, 0.0, 0.0, 0.0, 1.0, var30, 0.0, false, var28, new Vec3(1.0, 1.0, 1.0).lerp(var23, var5));
    }
 
    private xy() {
+   }
+
+   public record b(Vec3 right, Vec3 up, Vec3 normal) {
+   }
+
+   public record p(Vec3 from, Vec3 to) {
+      public Vec3 center() {
+         return this.from.lerp(this.to, 0.5);
+      }
+
+      public Vec3 tangent() {
+         return this.to.subtract(this.from).normalize();
+      }
+
+      public double length() {
+         return this.from.distanceTo(this.to);
+      }
    }
 }

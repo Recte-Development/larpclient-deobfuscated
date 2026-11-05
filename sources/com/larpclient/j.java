@@ -1,135 +1,126 @@
 package com.larpclient;
 
-import com.larpclient.module.PlayerModelModule;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.PoseStack.Pose;
-import java.io.IOException;
-import java.io.InputStream;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
+import java.util.Optional;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.HumanoidArm;
-import org.joml.Matrix3f;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public final class j {
-   private static final Identifier M = f("models/emotes/ak47/mesh.bin");
-   private static final Identifier J = f("models/emotes/ak47/albedo.png");
-   private static final int V = 15728880;
-   private static float[] x;
-   private static long b = -1L;
-   private static long h = -1L;
+   private static final RenderType W = RenderType.create(
+      "larp_glyphs",
+      RenderSetup.builder(
+            RenderPipeline.builder(new Snippet[]{RenderPipelines.DEBUG_FILLED_SNIPPET})
+               .withLocation(Identifier.fromNamespaceAndPath("larp-client", "larp/glyphs"))
+               .withDepthStencilState(Optional.empty())
+               .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+               .withCull(false)
+               .build()
+         )
+         .createRenderSetup()
+   );
+   private static final RenderType K = RenderType.create(
+      "larp_pearls",
+      RenderSetup.builder(
+            RenderPipeline.builder(new Snippet[]{RenderPipelines.GUI_TEXTURED_SNIPPET})
+               .withLocation(Identifier.fromNamespaceAndPath("larp-client", "larp/pearls"))
+               .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "larp/pearl"))
+               .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+               .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+               .withCull(false)
+               .build()
+         )
+         .withTexture("Sampler0", Identifier.fromNamespaceAndPath("larp-client", "shaders/larp/pearl_bloom.png"))
+         .createRenderSetup()
+   );
+   private static final int[] T = new int[]{-1, 1, 1, -1};
+   private static final int[] o = new int[]{1, 1, -1, -1};
+   private static int F = -1;
+   private final xh U;
+   private final Matrix4f Y;
+   private final Vec3 i;
+   private final Vector3f B;
+   private final Vector3f q;
 
-   private j() {
+   public j(PoseStack var1, xh var2, CameraRenderState var3) {
+      if (F != m5.k) {
+         ea.z(W.pipeline());
+         ea.z(K.pipeline());
+         F = m5.k;
+      }
+
+      this.U = var2;
+      this.Y = var1.last().pose();
+      this.i = var3.pos;
+      this.B = new Vector3f(1.0F, 0.0F, 0.0F).rotate(var3.orientation);
+      this.q = new Vector3f(0.0F, 1.0F, 0.0F).rotate(var3.orientation);
    }
 
-   private static Identifier f(String var0) {
-      return Identifier.fromNamespaceAndPath("larp-client", var0);
+   private void r(VertexConsumer var1, double var2, double var4, double var6, int var8) {
+      var1.addVertex(this.Y, (float)(var2 - this.i.x), (float)(var4 - this.i.y), (float)(var6 - this.i.z)).setColor(var8);
    }
 
-   public static boolean C(PlayerModel var0, AvatarRenderState var1, PoseStack var2, SubmitNodeCollector var3, int var4) {
-      yo var5 = (yo)var1;
-      float var6 = var5.larp$emoteWeight();
-      if (!(var6 <= 0.0F) && "ak47".equals(var5.larp$emoteProp())) {
-         PlayerModelModule var7 = PlayerModelModule.r();
-         if (var7 != null && var7.v(var1)) {
-            return false;
+   public void H(Vec3 var1, Vec3 var2, double var3, int var5, int var6) {
+      double var7 = var2.x + -var1.x;
+      double var9 = var2.y + -var1.y;
+      double var11 = var2.z + -var1.z;
+      if (!(var7 * var7 + var9 * var9 + var11 * var11 < 1.0E-10)) {
+         double var13 = this.i.x + -var1.x;
+         double var15 = this.i.y + -var1.y;
+         double var17 = this.i.z + -var1.z;
+         double var19 = var9 * var17 - var11 * var15;
+         double var21 = var11 * var13 - var7 * var17;
+         double var23 = var7 * var15 - var9 * var13;
+         if (var19 * var19 + var21 * var21 + var23 * var23 < 1.0E-10) {
+            var19 = this.B.x;
+            var21 = this.B.y;
+            var23 = this.B.z;
          }
 
-         if (!E()) {
-            return false;
+         double var25 = Math.sqrt(var19 * var19 + var21 * var21 + var23 * var23);
+         if (var25 < 1.0E-5F) {
+            var23 = 0.0;
+            var21 = 0.0;
+            var19 = 0.0;
+         } else {
+            var19 /= var25;
+            var21 /= var25;
+            var23 /= var25;
          }
 
-         float[] var8 = var5.larp$emoteSample();
-         int var9 = jc.z.Y.ordinal() * 10;
-         double var10 = g(var8[var9 + 7], 1.0) * var6;
-         if (var10 < 0.001) {
-            return true;
-         }
-
-         int var12 = g(var8[var9 + 9], 0.0) >= 0.5 ? 1 : 0;
-         var2.pushPose();
-
-         try {
-            if (var12 != 0) {
-               var0.translateToHand(var1, HumanoidArm.RIGHT, var2);
-            } else {
-               var0.root().translateAndRotate(var2);
-               var0.body.translateAndRotate(var2);
-            }
-
-            o4.V(var2, (boolean)var12, g(var8[var9 + 3], 0.0), g(var8[var9 + 4], 0.0), g(var8[var9 + 5], 0.0), var10);
-            float[] var13 = x;
-            var3.submitCustomGeometry(var2, RenderTypes.entitySolid(J), (var2x, var3x) -> B(var13, var2x, var3x, var4));
-            h_.S("Rifle quads", var13.length / 8 / 4);
-            if (var12 != 0 && var6 >= 0.999F) {
-               c(var2, var3, var4, var5.larp$emoteCycle());
-            }
-         } finally {
-            var2.popPose();
-         }
-
-         return true;
-      } else {
-         return false;
+         double var27 = var3 * 0.5;
+         var19 *= var27;
+         var21 *= var27;
+         var23 *= var27;
+         VertexConsumer var29 = this.U.U(W);
+         this.r(var29, var1.x + var19, var1.y + var21, var1.z + var23, var5);
+         this.r(var29, var2.x + var19, var2.y + var21, var2.z + var23, var6);
+         this.r(var29, var2.x + -var19, var2.y + -var21, var2.z + -var23, var6);
+         this.r(var29, var1.x + -var19, var1.y + -var21, var1.z + -var23, var5);
       }
    }
 
-   private static void c(PoseStack var0, SubmitNodeCollector var1, int var2, float var3) {
-      float[] var4 = o4.o(var3);
-      if (var4.length > 0) {
-         var1.order(1).submitCustomGeometry(var0, RenderTypes.eyes(J), (var1x, var2x) -> B(var4, var1x, var2x, 15728880));
-      }
+   public void U(Vec3 var1, double var2, int var4) {
+      VertexConsumer var5 = this.U.U(K);
+      float var6 = (float)(var2 * 0.5);
 
-      Vector3f var5 = new Matrix3f(var0.last().normal()).invert().transform(new Vector3f(0.0F, -1.0F, 0.0F));
-      if (var5.lengthSquared() > 1.0E-8F) {
-         float[] var6 = o4.u(var3, var5.normalize());
-         if (var6.length > 0) {
-            var1.submitCustomGeometry(var0, RenderTypes.entitySolid(J), (var2x, var3x) -> B(var6, var2x, var3x, var2));
-         }
-      }
-   }
-
-   private static double g(float var0, double var1) {
-      return Float.isNaN(var0) ? var1 : var0;
-   }
-
-   private static void B(float[] var0, Pose var1, VertexConsumer var2, int var3) {
-      for (byte var4 = 0; var4 < var0.length; var4 += 8) {
-         var2.addVertex(var1, var0[var4], var0[var4 + 1], var0[var4 + 2])
-            .setColor(-1)
-            .setUv(var0[var4 + 3], var0[var4 + 4])
-            .setOverlay(OverlayTexture.NO_OVERLAY)
-            .setLight(var3)
-            .setNormal(var1, var0[var4 + 5], var0[var4 + 6], var0[var4 + 7]);
-      }
-   }
-
-   private static boolean E() {
-      if (h == jk.v) {
-         return false;
-      }
-
-      if (x != null && b == jk.v) {
-         return true;
-      }
-
-      try (InputStream var0 = Minecraft.getInstance().getResourceManager().getResourceOrThrow(M).open()) {
-         Minecraft.getInstance().getResourceManager().getResourceOrThrow(J);
-         x = o4.i(m2.A(var0));
-         b = jk.v;
-         r4.V("Emotes", "Rifle ready: {} quads, resource generation {}", x.length / 8 / 4, b);
-         return true;
-      } catch (IOException | RuntimeException var5) {
-         h = jk.v;
-         x = null;
-         r4.r("Emotes", "Rifle model unavailable; AK Spray shows held items until resource reload", var5);
-         return false;
+      for (int var7 = 0; var7 < 4; var7++) {
+         float var8 = (float)(var1.x - this.i.x) + (this.B.x * T[var7] + this.q.x * o[var7]) * var6;
+         float var9 = (float)(var1.y - this.i.y) + (this.B.y * T[var7] + this.q.y * o[var7]) * var6;
+         float var10 = (float)(var1.z - this.i.z) + (this.B.z * T[var7] + this.q.z * o[var7]) * var6;
+         var5.addVertex(this.Y, var8, var9, var10).setUv(T[var7] < 0 ? 0.0F : 1.0F, o[var7] < 0 ? 0.0F : 1.0F).setColor(var4);
       }
    }
 }

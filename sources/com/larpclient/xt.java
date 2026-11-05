@@ -1,47 +1,57 @@
 package com.larpclient;
 
 public final class xt {
-   public static final double s = 0.14;
-   private static final xt.i M = new xt.i(0.0F, 0.0F);
-   private float F;
-   private float v;
-   private float W;
-   private double x = Double.NaN;
+   public static final int b = 240;
+   private long V = -1L;
+   private double n;
+   private boolean p;
+   private boolean k;
+   private m8.w I = m8.w.REST;
 
-   public void N() {
-      this.F = this.v = this.W = 0.0F;
-      this.x = Double.NaN;
+   public m8.w j() {
+      return this.I;
    }
 
-   public xt.i y(xh.n var1, double var2) {
-      if (var1.k == 2) {
-         this.x = Double.NaN;
-         this.F = var1.r;
-         this.v = rc.X(this.F);
-         return new xt.i(this.F, this.v);
-      }
-
-      if (var1.K && this.v > 0.0F) {
-         this.x = var2;
-         this.W = this.v;
-         r4.g("SwordModels", "Watch inspect interrupted at phase {}, releasing over {}s", String.format("%.2f", this.F), 0.14);
-      }
-
-      this.v = 0.0F;
-      if (Double.isFinite(this.x) && Double.isFinite(var2)) {
-         float var4 = (float)Math.clamp((var2 - this.x) / 0.14, 0.0, 1.0);
-         if (!(var4 >= 1.0F) && !(var2 < this.x)) {
-            float var5 = 1.0F - var4 * var4 * (3.0F - 2.0F * var4);
-            return new xt.i(this.F, this.W * var5);
-         } else {
-            this.x = Double.NaN;
-            return M;
-         }
-      } else {
-         return M;
-      }
+   public double w() {
+      return this.n;
    }
 
-   public record i(float phase, float weight) {
+   public boolean W() {
+      return this.k;
+   }
+
+   public m8.w s(long var1, boolean var3, boolean var4) {
+      if (this.k) {
+         return this.I;
+      }
+
+      if (!var4) {
+         this.r();
+         return this.I;
+      }
+
+      if (var3 && this.p && this.V >= 0L && var1 >= this.V && var1 - this.V <= 500000000L) {
+         this.n = this.n + (var1 - this.V) / 1000000.0;
+      }
+
+      this.V = var1;
+      this.p = var3;
+      if (this.n >= 240.0) {
+         this.r();
+         return this.I;
+      }
+
+      if (var3) {
+         double var5 = ef.q.N.k(this.n / 240.0);
+         this.I = new m8.w(0.965 + 0.035 * var5, 7.0 * (1.0 - var5));
+      }
+
+      return this.I;
+   }
+
+   public void r() {
+      this.k = (boolean)1;
+      this.n = 240.0;
+      this.I = m8.w.REST;
    }
 }

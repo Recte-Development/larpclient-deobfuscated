@@ -1,223 +1,335 @@
 package com.larpclient;
 
-import java.util.function.Consumer;
+import com.larpclient.module.MotionBlurModule;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout.Builder;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import java.nio.ByteBuffer;
+import java.util.Optional;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
 
-public final class x6 extends Button {
-   private final x6.v l;
-   private final u7 Q = new u7(0.0);
-   private hi.t c = hi.t.REST;
-   private double s;
-   private float H;
-   private float D;
-   private long a;
-   public Consumer<GuiGraphicsExtractor> F;
-   public static final int n = -16777216;
-   public static final float G = 0.55F;
-   public static final j_.w t = j_.w.t;
-   public static final float w = 1.375F;
-   public static final float N = 4.6F;
-   public static final float I = 10.2F;
-   public static final float m = 2.6F;
-   public static final float r = 56.0F;
-   public static final float O = 3.0F;
-   public static final float V = 56.0F;
-   public static final float j = 90.0F;
+public final class x6 {
+   static final float Q = 0.033333335F;
+   static final float w = 0.1F;
+   static final float r = 0.03F;
+   static final float g = 60.0F;
+   private static final RenderPipeline X = I("motion_blur", "motion_blur", true, true, ColorTargetState.DEFAULT);
+   private static final RenderPipeline A = I(
+      "motion_accumulate", "motion_accumulate", true, true, new ColorTargetState(Optional.empty(), GpuFormat.RGBA16_FLOAT, 15)
+   );
+   private static final RenderPipeline J = I("motion_present", "motion_present", false, false, ColorTargetState.DEFAULT);
+   private static final e4 x = new e4();
+   private static final e4 k = new e4(GpuFormat.RGBA16_FLOAT);
+   private static GpuBuffer i;
+   private static int E = -1;
+   private static int K;
+   private static int p;
+   private static int s;
+   private static boolean L;
+   private static boolean h;
+   private static boolean Z;
+   private static long F;
+   private static float l;
+   private static float q;
+   private static float Y;
+   private static float C;
 
-   public x6(Component var1, x6.v var2, Runnable var3, o6.b var4) {
-      super(var4.x(), var4.y(), var4.width(), var4.height(), var1, var1x -> var3.run(), DEFAULT_NARRATION);
-      this.l = var2;
-   }
-
-   public static int w(x6.v var0, double var1) {
-      int var3 = switch (var0) {
-         case W -> -2171170;
-         case S -> -5592406;
-         case L -> -6513508;
-         case A -> -3618616;
-      };
-      return oh.j(var3, -657931, var1);
-   }
-
-   public static int D(double var0, boolean var2) {
-      return var2 ? -657931 : oh.i(-3092272, var0 * 0.65);
-   }
-
-   public static float N(x6.v var0) {
-      return switch (var0) {
-         case W -> 1.2F;
-         case S -> 1.12F;
-         case L, A -> 1.05F;
-      };
-   }
-
-   public static double T(double var0, double var2) {
-      double var4 = Math.clamp(1.0 - var0 / var2, 0.0, 1.0);
-      return var4 * var4 * (3.0 - 2.0 * var4);
-   }
-
-   public static void h(GuiGraphicsExtractor var0, float var1, int var2, float var3, int var4) {
-      if (!(var3 <= 0.0F) && var4 >>> 24 != 0) {
-         var0.pose().pushMatrix();
-
-         try {
-            var0.pose().translate(var1, var2);
-            var0.pose().scale(var3 / 2.0F, 1.0F);
-            var0.fill(-1, 0, 1, 1, var4);
-         } finally {
-            var0.pose().popMatrix();
-         }
-      }
-   }
-
-   public void P(hi.t var1) {
-      this.c = var1;
-   }
-
-   public double z() {
-      return this.c.alpha();
-   }
-
-   public double B() {
-      return this.s;
-   }
-
-   protected void extractContents(GuiGraphicsExtractor var1, int var2, int var3, float var4) {
-      if (!(this.c.alpha() <= 0.0)) {
-         var1.pose().pushMatrix();
-
-         try {
-            float var5 = this.getX() + this.getWidth() / 2.0F;
-            float var6 = this.getY() + this.getHeight() / 2.0F;
-            var1.pose().translate((float)(var5 + this.c.x()), (float)(var6 + this.c.y()));
-            var1.pose().rotate((float)this.c.rotation());
-            var1.pose().scale((float)this.c.scaleX(), (float)this.c.scaleY());
-            var1.pose().translate(-var5, -var6);
-            this.y(var1, var2, var3);
-         } finally {
-            var1.pose().popMatrix();
-         }
-      }
-   }
-
-   private void y(GuiGraphicsExtractor var1, int var2, int var3) {
-      boolean var4 = LarpClient.y().v().E().o;
-      boolean var5 = Minecraft.getInstance().getLastInputType().isKeyboard();
-      int var6 = this.active && this.isFocused() && var5 ? 1 : 0;
-      double var7 = this.active && this.isHovered() && !var5 ? 1.0 : 0.0;
-      double var9 = var4 ? this.Q.y(var7, 140) : var7;
-      if (var6 != 0) {
-         var9 = 1.0;
-      }
-
-      this.s = var9;
-      if (this.F != null) {
-         this.F.accept(var1);
-      } else {
-         int var11 = this.getX();
-         int var12 = this.getY();
-         int var13 = this.getWidth();
-         int var14 = this.getHeight();
-         double var15 = this.c.alpha();
-         float var17 = Math.min(N(this.l), (var14 - 4) / 9.0F) * 1.375F;
-         String var18 = j_.Y(this.getMessage().getString(), (int)((var13 - 40) / var17), t);
-         float var19 = j_.E(var18, t) * var17;
-         float var20 = var11 + (var13 - var19) / 2.0F;
-         float var21 = var12 + var14 / 2.0F - 4.6F * var17;
-         int var22 = this.active && var2 >= 0 && var3 >= 0 && !var5 ? 1 : 0;
-         float var23 = var20 + var19 / 2.0F;
-         float var24 = var12 + var14 / 2.0F;
-         this.k(var22 != 0 && var4, var2, var3, var20, var21, var19, 11.0F * var17, var23, var24);
-         var20 += this.H;
-         var21 += this.D;
-         n(var1, var18, var20, var21, var17, var6 != 0 ? 1.0 : 0.0, var22 != 0 ? var2 : Float.NaN, var22 != 0 ? var3 : Float.NaN, var15);
-         var1.pose().pushMatrix();
-
-         try {
-            var1.pose().translate(var20, var21);
-            var1.pose().scale(var17, var17);
-            j_.Q(var1, var18, 0, 0, oh.S(w(this.l, var9), var15), oh.S(-16777216, var15), 0.55F, t);
-         } finally {
-            var1.pose().popMatrix();
+   public static void t() {
+      Minecraft var0 = Minecraft.getInstance();
+      MotionBlurModule var1 = MotionBlurModule.U();
+      if (var0.level != null && var1 != null && var1.isRuntimeActive()) {
+         if (E != m5.k) {
+            o();
+            L = (boolean)0;
+            E = m5.k;
          }
 
-         if (var9 > 0.0) {
-            h(
-               var1,
-               var11 + var13 / 2.0F + this.H,
-               (int)Math.min(var21 + 10.2F * var17, var12 + var14 - 1),
-               (float)(var19 * var9),
-               oh.S(D(var9, (boolean)var6), var15)
-            );
-         }
-      }
-   }
+         if (!L) {
+            Camera var2 = var0.gameRenderer.mainCamera();
+            long var3 = System.nanoTime();
+            float var5 = Z ? (float)(var3 - F) / 1.0E9F : 0.0F;
+            float var6 = var2.yRot();
+            float var7 = var2.xRot();
+            int var8 = System.identityHashCode(var0.level) * 31 + System.identityHashCode(var2.entity());
+            float var9 = Mth.wrapDegrees(var6 - l);
+            float var10 = var7 - q;
+            if (Z && var8 == s && !(var5 <= 0.0F) && !(var5 > 0.25F) && !(Math.abs(var9) > 60.0F) && !(Math.abs(var10) > 60.0F)) {
+               Y = x(Y, var9 / var5, var5);
+               C = x(C, var10 / var5, var5);
+            } else {
+               C = 0.0F;
+               Y = 0.0F;
+               h = (boolean)0;
+            }
 
-   private void k(boolean var1, int var2, int var3, float var4, float var5, float var6, float var7, float var8, float var9) {
-      float var10 = 0.0F;
-      float var11 = 0.0F;
-      if (var1) {
-         double var12 = Math.max(0.0F, Math.max(var4 - var2, var2 - (var4 + var6)));
-         double var14 = Math.max(0.0F, Math.max(var5 - var3, var3 - (var5 + var7)));
-         double var16 = T(Math.hypot(var12, var14), 56.0);
-         double var18 = var2 - var8;
-         double var20 = var3 - var9;
-         double var22 = Math.hypot(var18, var20);
-         if (var16 > 0.0 && var22 > 0.001) {
-            double var24 = 3.0 * var16 * Math.min(1.0, var22 / 24.0);
-            var10 = (float)(var18 / var22 * var24);
-            var11 = (float)(var20 / var22 * var24 * 0.6);
-         }
-      }
-
-      long var26 = System.nanoTime();
-      float var27 = this.a == 0L ? 1.0F : (float)(1.0 - Math.exp(-(var26 - this.a) / 1000000.0 / 90.0));
-      this.a = var26;
-      this.H = this.H + (var10 - this.H) * var27;
-      this.D = this.D + (var11 - this.D) * var27;
-      if (Math.abs(this.H) < 0.01F && Math.abs(this.D) < 0.01F && var10 == 0.0F && var11 == 0.0F) {
-         this.H = this.D = 0.0F;
-      }
-   }
-
-   private static void n(GuiGraphicsExtractor var0, String var1, float var2, float var3, float var4, double var5, float var7, float var8, double var9) {
-      if (!(var5 <= 0.0) || !Float.isNaN(var7)) {
-         int var11 = rv.e | 0xFF000000;
-         float var12 = var3 + 4.6F * var4;
-         float var13 = 0.0F;
-         int var14 = 0;
-
-         while (var14 < var1.length()) {
-            int var15 = var1.codePointAt(var14);
-            String var16 = var1.substring(var14, var14 + Character.charCount(var15));
-            var14 += var16.length();
-            float var17 = j_.U(var16, t);
-            double var18 = Float.isNaN(var7) ? 0.0 : T(Math.hypot(var7 - (var2 + (var13 + var17 / 2.0F) * var4), var8 - var12), 56.0);
-            double var20 = Math.max(var5 * 0.8, var18) * var9;
-            if (var20 > 0.01 && !var16.isBlank()) {
-               var0.pose().pushMatrix();
-
-               try {
-                  var0.pose().translate(var2 + var13 * var4, var3);
-                  var0.pose().scale(var4, var4);
-                  j_.d(var0, var16, 0, 0, oh.i(var11, var20), 2.6F, t);
-               } finally {
-                  var0.pose().popMatrix();
+            Z = (boolean)1;
+            s = var8;
+            F = var3;
+            l = var6;
+            q = var7;
+            float var11 = var1.K.P().floatValue();
+            boolean var12 = var1.n.P().equals("Classic");
+            float var13 = var11 * 0.033333335F;
+            if (var12) {
+               x.close();
+               h = (boolean)(h & (k.b != null ? 1 : 0));
+            } else {
+               k.close();
+               h = (boolean)0;
+               if (Math.max(Math.abs(Y), Math.abs(C)) * var13 < 0.02F) {
+                  return;
                }
             }
 
-            var13 += var17;
+            long var14 = kx.G();
+            String var16 = "resources";
+
+            try {
+               if (i == null) {
+                  for (RenderPipeline var20 : new RenderPipeline[]{X, A, J}) {
+                     ea.z(var20);
+                  }
+
+                  i = RenderSystem.getDevice().createBuffer(() -> "Larp MotionBlur parameters", 136, 96L);
+                  mt.K("MotionBlur", "Motion blur shaders loaded");
+               }
+
+               RenderTarget var49 = var0.gameRenderer.mainRenderTarget();
+               CommandEncoder var50 = RenderSystem.getDevice().createCommandEncoder();
+               float var51 = (float)Math.tan(Math.toRadians(var2.getFov()) / 2.0);
+               MemoryStack var52 = MemoryStack.stackPush();
+
+               try {
+                  ByteBuffer var21 = var52.malloc(96);
+                  e(var6, var7, var6 - Y * var13, var7 - C * var13).get(var21);
+                  var21.position(64);
+                  var21.putFloat(var51 * var49.width / Math.max(1, var49.height))
+                     .putFloat(var51)
+                     .putFloat(var1.V.P().floatValue() / 100.0F)
+                     .putFloat(Y(var1.v.P()));
+                  var21.putFloat(1.0F / var49.width).putFloat(1.0F / var49.height).putFloat(h ? K(var5, var11) : 0.0F).putFloat(h ? 0.0F : 1.0F);
+                  var21.flip();
+                  var50.writeToBuffer(i.slice(), var21);
+               } catch (Throwable var46) {
+                  if (var52 != null) {
+                     try {
+                        var52.close();
+                     } catch (Throwable var42) {
+                        var46.addSuppressed(var42);
+                     }
+                  }
+
+                  throw var46;
+               }
+
+               if (var52 != null) {
+                  var52.close();
+               }
+
+               GpuSampler var53 = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR);
+               GpuSampler var54 = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
+               if (var12) {
+                  var16 = "accumulate";
+                  if (var49.width != K || var49.height != p) {
+                     h = (boolean)0;
+                  }
+
+                  k.e(var49.width, var49.height, 1, e4.o.x);
+                  K = var49.width;
+                  p = var49.height;
+                  RenderPass var22 = var50.createRenderPass(() -> "Larp MotionBlur accumulate", k.v.getColorTextureView(), Optional.empty());
+
+                  try {
+                     hj.P(var22, A);
+                     var22.setUniform("MotionBlur", i.slice());
+                     hj.u(var22, "Source", var49.getColorTextureView(), var54);
+                     hj.u(var22, "History", k.b.getColorTextureView(), var54);
+                     hj.u(var22, "Depth", var49.getDepthTextureView(), var54);
+                     var22.draw(3, 1, 0, 0);
+                  } catch (Throwable var45) {
+                     if (var22 != null) {
+                        try {
+                           var22.close();
+                        } catch (Throwable var41) {
+                           var45.addSuppressed(var41);
+                        }
+                     }
+
+                     throw var45;
+                  }
+
+                  if (var22 != null) {
+                     var22.close();
+                  }
+
+                  TextureTarget var55 = k.v;
+                  k.v = k.b;
+                  k.b = var55;
+                  h = (boolean)1;
+                  var16 = "present";
+                  RenderPass var23 = var50.createRenderPass(() -> "Larp MotionBlur present", var49.getColorTextureView(), Optional.empty());
+
+                  try {
+                     hj.P(var23, J);
+                     hj.u(var23, "History", var55.getColorTextureView(), var54);
+                     hj.u(var23, "Depth", var49.getDepthTextureView(), var54);
+                     var23.draw(3, 1, 0, 0);
+                  } catch (Throwable var44) {
+                     if (var23 != null) {
+                        try {
+                           var23.close();
+                        } catch (Throwable var40) {
+                           var44.addSuppressed(var40);
+                        }
+                     }
+
+                     throw var44;
+                  }
+
+                  if (var23 != null) {
+                     var23.close();
+                  }
+               } else {
+                  var16 = "streak";
+                  x.e(var49.width, var49.height, 1, e4.o.c);
+                  m5.l(ea.m, var49, x.b);
+                  RenderPass var56 = var50.createRenderPass(() -> "Larp MotionBlur streaks", var49.getColorTextureView(), Optional.empty());
+
+                  try {
+                     hj.P(var56, X);
+                     var56.setUniform("MotionBlur", i.slice());
+                     hj.u(var56, "Source", x.b.getColorTextureView(), var53);
+                     hj.u(var56, "Depth", var49.getDepthTextureView(), var54);
+                     var56.draw(3, 1, 0, 0);
+                  } catch (Throwable var43) {
+                     if (var56 != null) {
+                        try {
+                           var56.close();
+                        } catch (Throwable var39) {
+                           var43.addSuppressed(var39);
+                        }
+                     }
+
+                     throw var43;
+                  }
+
+                  if (var56 != null) {
+                     var56.close();
+                  }
+               }
+            } catch (RuntimeException var47) {
+               L = (boolean)1;
+
+               try {
+                  o();
+               } catch (RuntimeException var38) {
+                  var47.addSuppressed(var38);
+               }
+
+               mt.P("MotionBlur", "MotionBlurRenderer stage=" + var16 + " mode=" + var1.n.P() + " framebuffer=scene; disabled until resource reload", var47);
+            } finally {
+               kx.u("MotionBlur", var14);
+            }
+         }
+      } else {
+         b();
+      }
+   }
+
+   static float x(float var0, float var1, float var2) {
+      return var0 + (var1 - var0) * (1.0F - (float)Math.exp(-var2 / 0.03F));
+   }
+
+   static float K(float var0, float var1) {
+      return (float)Math.exp(-var0 / (var1 * 0.1F));
+   }
+
+   static int Y(String var0) {
+      return switch (var0) {
+         case "Low" -> 8;
+         case "High" -> 20;
+         default -> 12;
+      };
+   }
+
+   static Matrix4f e(float var0, float var1, float var2, float var3) {
+      return k(var2, var3).mul(k(var0, var1).transpose());
+   }
+
+   private static Matrix4f k(float var0, float var1) {
+      return new Matrix4f().rotateX((float)Math.toRadians(var1)).rotateY((float)Math.toRadians(var0) + (float) Math.PI);
+   }
+
+   private static void b() {
+      h = (boolean)0;
+      Z = (boolean)0;
+      C = 0.0F;
+      Y = 0.0F;
+   }
+
+   public static void o() {
+      b();
+
+      try {
+         x.close();
+         k.close();
+      } finally {
+         if (i != null) {
+            i.close();
+            i = null;
          }
       }
    }
 
-   public enum v {
-      W,
-      S,
-      L,
-      A;
+   private static RenderPipeline I(String var0, String var1, boolean var2, boolean var3, ColorTargetState var4) {
+      Builder var5 = BindGroupLayout.builder();
+      if (var2) {
+         var5.withUniform("Source", hj.G);
+      }
+
+      if (var1.equals("motion_blur")) {
+         var5.withUniform("Depth", hj.G);
+      } else {
+         var5.withUniform("History", hj.G).withUniform("Depth", hj.G);
+      }
+
+      if (var3) {
+         var5.withUniform("MotionBlur", UniformType.UNIFORM_BUFFER);
+      }
+
+      return RenderPipeline.builder(new Snippet[0])
+         .withLocation(T(var0))
+         .withVertexShader(T("post/fullscreen"))
+         .withFragmentShader(T("post/" + var1))
+         .withBindGroupLayout(var5.build())
+         .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
+         .withColorTargetState(var4)
+         .withCull(false)
+         .build();
+   }
+
+   private static Identifier T(String var0) {
+      return Identifier.fromNamespaceAndPath("larp-client", var0);
+   }
+
+   private x6() {
    }
 }

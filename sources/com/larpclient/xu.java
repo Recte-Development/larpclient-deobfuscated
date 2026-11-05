@@ -1,327 +1,366 @@
 package com.larpclient;
 
-import com.larpclient.module.ChinaHatModule;
-import com.larpclient.module.WingsModule;
-import java.util.Locale;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.player.PlayerCapeModel;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.resources.Identifier;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.player.PlayerModelType;
-import net.minecraft.world.entity.player.PlayerSkin;
+import java.util.Arrays;
 
 public final class xu {
-   static final double m = 1.45;
-   private static final double T = 4.5;
-   private static final double J = 0.09;
-   private final og N;
-   private final e8 l = new e8();
-   private mn w;
-   private mn S;
-   private PlayerCapeModel H;
-   private int e = -1;
-   private int Q = -1;
-   private og.e Y;
-   private double i;
-   private og.s B;
-   private og.u c;
-   private mn W;
-   private Identifier r;
-   private double j;
-   private long o;
+   public static final float a = 0.9F;
+   public static final float d = 4.8F;
+   public static final float v = 12.0F;
+   public static final int e = 64;
+   private static final float[][] Y = new float[][]{
+      {0.9F, 0.64F}, {1.4F, 0.57F}, {2.06F, 0.51F}, {2.73F, 0.46F}, {3.39F, 0.39F}, {3.97F, 0.3F}, {4.39F, 0.18F}
+   };
+   private static final float[] M = new float[]{1.0F, 0.86F, 0.95F, 1.08F, 0.9F, 0.97F};
+   private static final float P = 0.88F;
+   private static final float S = 0.24F;
+   private static final float A = 0.08F;
+   private static final float m = 0.4F;
+   private static xu.a O;
 
-   public xu(og var1) {
-      this.N = var1;
+   private xu() {
    }
 
-   public static og.u V(_q var0) {
-      return og.p(var0, e8.C(e8.P(), e8.r()));
-   }
-
-   public void q(GuiGraphicsExtractor var1, _q var2, hi var3, yd var4, int var5, int var6, boolean var7, boolean var8) {
-      Minecraft var9 = Minecraft.getInstance();
-      this.B = null;
-      if (this.N.L() && eo.Y(var9.getWindow().handle(), 0) != 1) {
-         this.N.g();
+   public static synchronized xu.a x() {
+      if (O == null) {
+         O = O();
       }
 
-      ChinaHatModule.j var10 = e8.P();
-      WingsModule.u var11 = e8.r();
-      og.u var12 = og.p(var2, e8.C(var10, var11));
-      int var13 = var12.visible() && var9.gui.overlay() == null && var9.isWindowActive() ? 1 : 0;
-      long var14 = System.nanoTime();
-      og.s var16 = this.N.D(var14, (boolean)var13, var7, var8, var3.K(), var12, var2.width(), var5, var6);
-      this.i = var16.nameOpacity();
-      this.L(var16);
-      if (var12.visible() && var16.stage() != og.e.H) {
-         og.q var17 = var16.toy();
-         if (var17 != null) {
-            this.p(var9, var17, var14);
+      return O;
+   }
+
+   static xu.a O() {
+      xu.y var0 = new xu.y();
+      var0.y(0.3F, -0.05F, 0.05F, 1.0F, 0.9F, 0.95F, 8, 5, 11);
+      var0.y(-0.45F, 0.4F, -0.1F, 0.6F, 0.55F, 0.58F, 7, 4, 23);
+      int var1 = M.length;
+      int[] var2 = null;
+
+      for (int var3 = 0; var3 < Y.length; var3++) {
+         float var4 = Y[var3][0];
+         float var5 = Y[var3][1];
+         float var6 = U(var4);
+         float var7 = b(var6, true);
+         float var8 = b(var6, false);
+         float var9 = Y[Math.max(0, var3 - 1)][1];
+         float var10 = var3 + 1 < Y.length ? Y[var3 + 1][1] : 0.0F;
+         float var11 = (var3 + 1 < Y.length ? Y[var3 + 1][0] : 4.8F) - Y[Math.max(0, var3 - 1)][0];
+         float var12 = (var9 - var10) / var11;
+         int[] var13 = new int[var1 + 1];
+
+         for (int var14 = 0; var14 <= var1; var14++) {
+            double var15 = (Math.PI * 2) * var14 / var1 + 0.4F * var6;
+            float var17 = var5 * M[var14 % var1];
+            float var18 = var7 + (float)Math.cos(var15) * var17;
+            float var19 = var8 + (float)Math.sin(var15) * var17 * 0.88F;
+            var13[var14] = var0.F(
+               var18,
+               var4,
+               var19,
+               (float)Math.cos(var15),
+               var12,
+               (float)Math.sin(var15) / 0.88F,
+               V((float)var14 / var1),
+               s(0.25F + 0.75F * var6),
+               0.1F + 0.9F * var6,
+               1.0F
+            );
          }
 
-         o6.b var18 = var12.model();
-         int var19 = Math.round(var12.centerX() + (float)var16.xOffset());
-         double var20 = e8.P(var10, var11);
-         int var22 = Math.max(var12.renderWidth(), (int)Math.ceil(2.0 * var20 * var12.scale()));
-         int var23 = var19 - var22 / 2;
-         int var24 = og.T(var12, e8.C(var10, var11));
-         if (var17 == null) {
-            var1.enableScissor(var2.navigation(0).x() + var2.menuWidth() + 8, var24, var2.width(), var18.y() + var18.height() + 8);
-         }
+         if (var2 != null) {
+            for (int var30 = 0; var30 < var1; var30++) {
+               var0.o(var2[var30], var13[var30], var13[var30 + 1], var2[var30 + 1]);
+            }
+         } else {
+            int var29 = var0.F(var7, var4, var8, 0.0F, -1.0F, 0.0F, V(0.5F), s(0.25F), 0.1F, 1.0F);
+            float[] var31 = new float[]{0.0F, -1.0F, 0.0F};
+            int[] var16 = new int[var1 + 1];
 
-         try {
-            if (var17 == null) {
-               A(var1, var19, var12.floorY(), Math.min(var18.width() * 0.3F, var12.scale() * 0.62F), 1.0);
+            for (int var32 = 0; var32 <= var1; var32++) {
+               var16[var32] = var0.t(var13[var32], var31);
             }
 
-            if (!this.v(var9)) {
-               if (var17 == null) {
-                  int var31 = Math.min(48, var18.width() / 2);
-                  var4.n(var1, var19 - var31 / 2, var18.y() + var18.height() / 3, var31);
+            for (int var33 = 0; var33 < var1; var33++) {
+               var0.o(var29, var16[var33], var16[var33 + 1], var16[var33 + 1]);
+            }
+         }
+
+         var2 = var13;
+      }
+
+      float var20 = b(1.0F, true);
+      float var21 = b(1.0F, false);
+
+      for (int var22 = 0; var22 < var1; var22++) {
+         int var23 = var2[var22];
+         int var24 = var2[var22 + 1];
+         float[] var25 = var0.J(var23, var24, var20, 4.8F, var21);
+         int var26 = var0.t(var23, var25);
+         int var27 = var0.t(var24, var25);
+         int var28 = var0.F(var20, 4.8F, var21, var25[0], var25[1], var25[2], V((var22 + 0.5F) / var1), s(1.0F), 1.0F, 1.0F);
+         var0.o(var26, var28, var28, var27);
+      }
+
+      return var0.b();
+   }
+
+   static float V(float var0) {
+      return (0.5F + 31.0F * var0) / 64.0F;
+   }
+
+   static float s(float var0) {
+      return (0.5F + 63.0F * var0) / 64.0F;
+   }
+
+   static float U(float var0) {
+      return Math.clamp((var0 - 0.9F) / 3.9F, 0.0F, 1.0F);
+   }
+
+   private static float b(float var0, boolean var1) {
+      return var1 ? 0.08F * var0 : -0.24F * (float)Math.sin(Math.PI * var0);
+   }
+
+   public static float G(float var0, float var1, double var2) {
+      return var0 + (var0 - 0.9F) * (float)(var2 - 1.0) * var1;
+   }
+
+   public static double H() {
+      return 2.846154F;
+   }
+
+   public static void I(xu.a var0, int var1, double var2, double var4, boolean var6, float[] var7) {
+      float var8 = var0.positions[var1 * 3];
+      float var9 = var0.positions[var1 * 3 + 1];
+      float var10 = var0.positions[var1 * 3 + 2];
+      float var11 = var0.stretch[var1];
+      float var12 = (float)var4;
+      float var13 = var6 ? -1.0F : 1.0F;
+      int var14 = var11 > 0.0F ? 1 : 0;
+      float var15 = var14 != 0 ? 1.0F + (float)(var2 - 1.0) * var11 : var12;
+      var7[0] = var8 * var12 * var13;
+      var7[1] = var14 != 0 ? G(var9, var11, var2) : var9 * var12;
+      var7[2] = var10 * var12;
+      float var16 = var0.normals[var1 * 3] / var12 * var13;
+      float var17 = var0.normals[var1 * 3 + 1] / var15;
+      float var18 = var0.normals[var1 * 3 + 2] / var12;
+      float var19 = (float)Math.sqrt(var16 * var16 + var17 * var17 + var18 * var18);
+      var7[3] = var16 / var19;
+      var7[4] = var17 / var19;
+      var7[5] = var18 / var19;
+   }
+
+   public static int r(int var0, int var1, float var2) {
+      float var3 = Math.clamp((var2 - 0.1F) / 0.9F, 0.0F, 1.0F);
+      int var4 = -16777216;
+
+      for (byte var5 = 16; var5 >= 0; var5 -= 8) {
+         int var6 = var0 >> var5 & 0xFF;
+         int var7 = var1 >> var5 & 0xFF;
+         var4 |= Math.round(var6 + (var7 - var6) * var3) << var5;
+      }
+
+      return var4;
+   }
+
+   public static float z(float var0) {
+      float var1 = Math.clamp((var0 - 0.45F) / 0.55F, 0.0F, 1.0F);
+      return var1 * var1 * (3.0F - 2.0F * var1);
+   }
+
+   public static int G(int var0, double var1, float var3) {
+      float var4 = (float)(Math.clamp(var1, 0.0, 1.0) * z(var3) * 2.2);
+      int var5 = -16777216;
+
+      for (byte var6 = 16; var6 >= 0; var6 -= 8) {
+         var5 |= Math.min(255, Math.round((var0 >> var6 & 0xFF) * var4)) << var6;
+      }
+
+      return var5;
+   }
+
+   public static int[] W() {
+      byte var0 = 64;
+      int var1 = var0 / 2;
+      int var2 = var0 / 4;
+      int[] var3 = new int[var0 * var0];
+
+      for (int var4 = 0; var4 < var0; var4++) {
+         for (int var5 = 0; var5 < var1; var5++) {
+            float var6;
+            float var7;
+            if (var4 < var2) {
+               var6 = 0.8F + 0.07F * F(var5, var4, 5);
+               var7 = 0.0F;
+            } else {
+               float var8 = (var4 - var2 + 0.5F) / (var0 - var2);
+               float var9 = (var5 + 0.5F) / var1;
+               float var10 = 0.0F;
+
+               for (int var11 = 0; var11 < 3; var11++) {
+                  float var12 = (float)(var11 * 0.33 + 0.12 + 0.05 * Math.sin(var8 * 9.0F + var11 * 2.1));
+                  float var13 = Math.abs(var9 - (var12 - (float)Math.floor(var12)));
+                  var13 = Math.min(var13, 1.0F - var13) * var1;
+                  float var14 = (float)(0.55 + 0.45 * Math.sin(var8 * 13.0F + var11 * 1.7));
+                  var10 += (float)Math.exp(-var13 * var13 / 1.2) * var14;
                }
 
-               return;
+               var10 = Math.min(1.0F, var10);
+               var6 = Math.min(1.0F, 0.86F + 0.05F * F(var5, var4, 9) + 0.2F * var10);
+               var7 = (float)Math.pow(Math.clamp((var8 - 0.45F) / 0.55F, 0.0F, 1.0F), 1.5) * (0.35F + 0.65F * var10);
             }
 
-            PlayerSkin var25 = e8.r(var9.getGameProfile().id(), var4.O());
-            mn var26 = var25.model() == PlayerModelType.SLIM ? this.S : this.w;
-            var26.o(var16.pose(), var17 == null ? null : var17.limbs());
-            fd var27 = e8.E();
-            if (var27 != null && !fa.t()) {
-               var27 = null;
-            }
-
-            var26.L(this.l.Q(e8.x(var25), var10, var11, e8.J(), var27, var16.pose(), this.H));
-            if (var17 == null) {
-               var26.y(0.0F, 0.0F, 0.0F);
-               var1.skin(
-                  var26,
-                  var25.body().texturePath(),
-                  var12.scale(),
-                  0.0F,
-                  var16.pose().bodyYaw(),
-                  -1.0625F,
-                  var23,
-                  var24,
-                  var23 + var22,
-                  var18.y() + var18.height()
-               );
-               return;
-            }
-
-            this.B = var16;
-            this.c = var12;
-            this.W = var26;
-            this.r = var25.body().texturePath();
-            this.j = Math.max(1.45, Math.max(0.85 + e8.C(var10, var11) + 0.1, Math.hypot(var20, 0.6) + 0.05));
-         } finally {
-            if (var17 == null) {
-               var1.disableScissor();
-            }
+            var3[var4 * var0 + var5] = Z(var6);
+            var3[var4 * var0 + var5 + var1] = Z(var7);
          }
+      }
+
+      return var3;
+   }
+
+   static float F(int var0, int var1, int var2) {
+      int var3 = var0 * 374761393 + var1 * 668265263 + var2 * Integer.MAX_VALUE;
+      var3 = (var3 ^ var3 >>> 13) * 1274126177;
+      var3 ^= var3 >>> 16;
+      return (var3 & 65535) / 32767.5F - 1.0F;
+   }
+
+   private static int Z(float var0) {
+      int var1 = Math.round(Math.clamp(var0, 0.0F, 1.0F) * 255.0F);
+      return 0xFF000000 | var1 << 16 | var1 << 8 | var1;
+   }
+
+   public record a(float[] positions, float[] normals, float[] uvs, float[] gradient, float[] stretch, int[] quads) {
+      public int vertices() {
+         return this.gradient.length;
+      }
+
+      public int faces() {
+         return this.quads.length / 4;
       }
    }
 
-   public void N(GuiGraphicsExtractor var1) {
-      if (this.B != null) {
-         og.q var2 = this.B.toy();
-         og.u var3 = this.c;
-         float var4 = var3.scale();
-         var1.nextStratum();
-         double var5 = Math.abs(Math.sin(var2.roll()));
-         double var7 = 1.0 / (1.0 + var2.lift() * 0.9);
-         A(
-            var1,
-            (float)var2.x(),
-            var3.floorY(),
-            (float)(Math.min(var3.model().width() * 0.3F, var4 * 0.62F) * (1.0 + 0.9 * var5) / (1.0 + var2.lift() * 0.5)),
-            var7
+   private static final class y {
+      private float[] F = new float[384];
+      private float[] E = new float[384];
+      private float[] w = new float[256];
+      private float[] Z = new float[128];
+      private float[] n = new float[128];
+      private int[] t = new int[512];
+      private int O;
+      private int x;
+
+      int F(float var1, float var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, float var10) {
+         if (this.O == this.Z.length) {
+            this.F = Arrays.copyOf(this.F, this.O * 6);
+            this.E = Arrays.copyOf(this.E, this.O * 6);
+            this.w = Arrays.copyOf(this.w, this.O * 4);
+            this.Z = Arrays.copyOf(this.Z, this.O * 2);
+            this.n = Arrays.copyOf(this.n, this.O * 2);
+         }
+
+         float var11 = (float)Math.sqrt(var4 * var4 + var5 * var5 + var6 * var6);
+         if (var11 < 1.0E-6F) {
+            var4 = 0.0F;
+            var5 = 1.0F;
+            var6 = 0.0F;
+            var11 = 1.0F;
+         }
+
+         this.F[this.O * 3] = var1;
+         this.F[this.O * 3 + 1] = var2;
+         this.F[this.O * 3 + 2] = var3;
+         this.E[this.O * 3] = var4 / var11;
+         this.E[this.O * 3 + 1] = var5 / var11;
+         this.E[this.O * 3 + 2] = var6 / var11;
+         this.w[this.O * 2] = var7;
+         this.w[this.O * 2 + 1] = var8;
+         this.Z[this.O] = var9;
+         this.n[this.O] = var10;
+         return this.O++;
+      }
+
+      int t(int var1, float[] var2) {
+         return this.F(
+            this.F[var1 * 3],
+            this.F[var1 * 3 + 1],
+            this.F[var1 * 3 + 2],
+            var2[0],
+            var2[1],
+            var2[2],
+            this.w[var1 * 2],
+            this.w[var1 * 2 + 1],
+            this.Z[var1],
+            this.n[var1]
          );
-         double var9 = this.B.pose().ageInTicks() / 20.0;
-         E(var1, var2, var4, false, var9);
-         og.h var11 = og.h.of(var2, var4, this.j);
-         this.W.y(var2.roll(), var11.shiftX(), var11.shiftY());
-         var1.skin(
-            this.W, this.r, var4, 0.0F, this.B.pose().bodyYaw(), -1.0625F, var11.left(), var11.top(), var11.left() + var11.side(), var11.top() + var11.side()
-         );
-         var1.nextStratum();
-         E(var1, var2, var4, true, var9);
-      }
-   }
-
-   public double d() {
-      return this.i;
-   }
-
-   public boolean w(double var1, double var3) {
-      return this.N.m(var1, var3);
-   }
-
-   public boolean A() {
-      return this.N.L();
-   }
-
-   public void L(double var1, double var3) {
-      this.N.x(var1, var3);
-   }
-
-   public boolean S(double var1, double var3) {
-      if (!this.N.c(var1, var3)) {
-         return false;
       }
 
-      this.N.x(var1, var3);
-      return true;
-   }
+      float[] J(int var1, int var2, float var3, float var4, float var5) {
+         float var6 = this.F[var1 * 3];
+         float var7 = this.F[var1 * 3 + 1];
+         float var8 = this.F[var1 * 3 + 2];
+         float var9 = var3 - var6;
+         float var10 = var4 - var7;
+         float var11 = var5 - var8;
+         float var12 = this.F[var2 * 3] - var6;
+         float var13 = this.F[var2 * 3 + 1] - var7;
+         float var14 = this.F[var2 * 3 + 2] - var8;
+         return new float[]{var10 * var14 - var11 * var13, var11 * var12 - var9 * var14, var9 * var13 - var10 * var12};
+      }
 
-   public boolean O() {
-      return this.N.g();
-   }
-
-   private void L(og.s var1) {
-      og.e var2 = var1.stage();
-      if (var2 != this.Y) {
-         og.q var3 = var1.toy();
-         switch (var2) {
-            case e:
-               if (this.Y == og.e.H) {
-                  r4.V("Menu", "Account walk-on started after menu reveal; native left-facing stride");
-               }
-               break;
-            case n:
-               if (this.Y == og.e.y) {
-                  r4.V("Menu", "Account walk-on settled; native idle and pointer tracking active");
-               } else if (this.Y == og.e.E) {
-                  r4.V("Menu", "Account model back home; account switcher restored");
-               } else if (this.Y != null && this.Y.ordinal() > og.e.n.ordinal()) {
-                  r4.V("Menu", "Account model reset to its resting composition from {}", this.Y);
-               }
-               break;
-            case d:
-               r4.V("Menu", "Account model picked up from {}; account switcher hidden", this.Y);
-               break;
-            case a:
-               r4.V(
-                  "Menu",
-                  "Account model thrown at {} blocks/s, spin {} rad/s",
-                  String.format(Locale.ROOT, "%.1f", Math.hypot(var3.vx(), var3.vy())),
-                  String.format(Locale.ROOT, "%.1f", var3.spin())
-               );
-               break;
-            case I:
-               r4.V("Menu", "Account model knocked down at roll {} deg{}", Math.round(Math.toDegrees(var3.roll())), var3.dizzy() > 0.0F ? ", dazed" : "");
-               break;
-            case B:
-               if (this.Y == og.e.a) {
-                  r4.V("Menu", "Account model landed on its feet");
-               }
-               break;
-            case V:
-               r4.V("Menu", "Account model running home from {} px away", Math.round(Math.abs(var1.xOffset())));
+      void o(int var1, int var2, int var3, int var4) {
+         if (this.x * 4 == this.t.length) {
+            this.t = Arrays.copyOf(this.t, this.t.length * 2);
          }
 
-         this.Y = var2;
-         r4.g("Menu", "Account preview: {}", this.Y);
+         this.t[this.x * 4] = var1;
+         this.t[this.x * 4 + 1] = var2;
+         this.t[this.x * 4 + 2] = var3;
+         this.t[this.x * 4 + 3] = var4;
+         this.x++;
       }
-   }
 
-   private void p(Minecraft var1, og.q var2, long var3) {
-      if (!(var2.impact() < 4.5) && !(var3 - this.o < 9.0E7)) {
-         this.o = var3;
-         SoundEvent var5 = var2.impact() >= 12.0F ? SoundEvents.PLAYER_BIG_FALL : SoundEvents.PLAYER_SMALL_FALL;
-         var1.getSoundManager().play(SimpleSoundInstance.forUI(var5, 1.0F, (float)Math.clamp(var2.impact() / 16.0F, 0.18, 0.7)));
-      }
-   }
+      void y(float var1, float var2, float var3, float var4, float var5, float var6, int var7, int var8, int var9) {
+         int[][] var10 = new int[var8 + 1][var7 + 1];
 
-   private static void E(GuiGraphicsExtractor var0, og.q var1, float var2, boolean var3, double var4) {
-      if (!(var1.dizzy() <= 0.0F)) {
-         double var6 = Math.cos(var1.roll());
-         double var8 = Math.sin(var1.roll());
+         for (int var11 = 0; var11 <= var8; var11++) {
+            double var12 = Math.PI * var11 / var8;
 
-         for (int var10 = 0; var10 < 3; var10++) {
-            double var11 = var4 * 4.2 + var10 * Math.PI * 2.0 / 3.0;
-            double var13 = Math.sin(var11);
-            if ((var13 > 0.0 ? 1 : 0) == var3) {
-               double var15 = Math.cos(var11) * 0.42;
-               double var17 = -0.99 + var13 * 0.08;
-               float var19 = (float)(var1.x() + (var15 * var6 - var17 * var8) * var2);
-               float var20 = (float)(var1.y() + (var15 * var8 + var17 * var6) * var2);
-               float var21 = (float)(var2 * (0.13 + 0.03 * var13) / 64.0);
-               var0.pose().pushMatrix();
+            for (int var14 = 0; var14 <= var7; var14++) {
+               double var15 = (Math.PI * 2) * var14 / var7;
+               float var17 = var11 != 0 && var11 != var8 ? 1.0F + 0.07F * xu.F(var11, var14 % var7, var9) : 1.0F;
+               float var18 = (float)(Math.sin(var12) * Math.cos(var15));
+               float var19 = (float)(-Math.cos(var12));
+               float var20 = (float)(Math.sin(var12) * Math.sin(var15));
+               var10[var11][var14] = this.F(
+                  var1 + var18 * var4 * var17,
+                  var2 + var19 * var5 * var17,
+                  var3 + var20 * var6 * var17,
+                  var18 / var4,
+                  var19 / var5,
+                  var20 / var6,
+                  xu.V((float)var14 / var7),
+                  xu.s(0.25F * var11 / var8),
+                  0.1F * var11 / var8,
+                  0.0F
+               );
+            }
+         }
 
-               try {
-                  var0.pose().translate(var19, var20);
-                  var0.pose().rotate((float)(var4 * 3.0 + var10));
-                  var0.pose().scale(var21, var21);
-                  var0.blit(
-                     RenderPipelines.GUI_TEXTURED, dm.Q(), -32, -32, 0.0F, 0.0F, 64, 64, 64, 64, 64, 64, oh.i(-855310, var1.dizzy() * (0.75 + 0.25 * var13))
-                  );
-               } finally {
-                  var0.pose().popMatrix();
-               }
+         for (int var21 = 0; var21 < var8; var21++) {
+            for (int var22 = 0; var22 < var7; var22++) {
+               this.o(var10[var21][var22], var10[var21 + 1][var22], var10[var21 + 1][var22 + 1], var10[var21][var22 + 1]);
             }
          }
       }
-   }
 
-   private boolean v(Minecraft var1) {
-      int var2 = jk.v;
-      if (this.Q == var2) {
-         return false;
+      xu.a b() {
+         return new xu.a(
+            Arrays.copyOf(this.F, this.O * 3),
+            Arrays.copyOf(this.E, this.O * 3),
+            Arrays.copyOf(this.w, this.O * 2),
+            Arrays.copyOf(this.Z, this.O),
+            Arrays.copyOf(this.n, this.O),
+            Arrays.copyOf(this.t, this.x * 4)
+         );
       }
-
-      if (this.e == var2 && this.w != null) {
-         return true;
-      }
-
-      try {
-         EntityModelSet var3 = var1.getEntityModels();
-         this.w = new mn(var3.bakeLayer(ModelLayers.PLAYER));
-         this.S = new mn(var3.bakeLayer(ModelLayers.PLAYER_SLIM));
-         this.H = new PlayerCapeModel(var3.bakeLayer(ModelLayers.PLAYER_CAPE));
-         this.e = var2;
-         r4.V("Menu", "Account skin preview ready; native wide/slim models and cape, resource generation {}", var2);
-         return true;
-      } catch (RuntimeException var4) {
-         this.w = this.S = null;
-         this.H = null;
-         this.Q = var2;
-         r4.r("Menu", "Account model bake failed; showing the account portrait until reopen or resource reload", var4);
-         return false;
-      }
-   }
-
-   private static void A(GuiGraphicsExtractor var0, float var1, int var2, float var3, double var4) {
-      var0.pose().pushMatrix();
-
-      try {
-         var0.pose().translate(var1, var2);
-         var0.pose().scale(1.0F, 0.13F);
-
-         for (int var6 = 8; var6 >= 1; var6--) {
-            fr.J(var0, 0, 0, Math.max(1, Math.round(var3 * var6 / 8.0F)), oh.S(110663832, var4));
-         }
-      } finally {
-         var0.pose().popMatrix();
-      }
-   }
-
-   public void P() {
-      this.N.j();
-   }
-
-   public void L(boolean var1) {
-      this.w = this.S = null;
-      this.H = null;
-      this.B = null;
-      this.W = null;
-      this.e = this.Q = -1;
-      this.N.O(var1);
    }
 }

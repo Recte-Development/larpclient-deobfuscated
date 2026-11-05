@@ -1,11 +1,12 @@
 package com.larpclient;
 
-public interface u5 {
-   void larp$setGrounded(boolean var1);
+public final class u5 {
+   private u5() {
+   }
 
-   boolean larp$isGrounded();
-
-   void larp$setFloating(boolean var1);
-
-   boolean larp$isFloating();
+   public static void O(String var0) {
+      if (var0 != null && !var0.isBlank()) {
+         mt.U("Rig/Baccarat", "{}", var0.replace('\r', ' ').replace('\n', ' '));
+      }
+   }
 }

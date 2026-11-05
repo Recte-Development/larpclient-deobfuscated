@@ -1,13 +1,12 @@
 package com.larpclient.module;
 
-import com.larpclient.f8;
-import com.larpclient.jm;
-import com.larpclient.ol;
-import com.larpclient.r4;
-import com.larpclient.r6;
-import com.larpclient.u2;
-import com.larpclient.ym;
-import com.larpclient.yv;
+import com.larpclient.h;
+import com.larpclient.ki;
+import com.larpclient.mm;
+import com.larpclient.mt;
+import com.larpclient.u8;
+import com.larpclient.wy;
+import com.larpclient.x4;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -15,94 +14,94 @@ import net.minecraft.network.protocol.game.ClientboundDamageEventPacket;
 import net.minecraft.world.level.dimension.DimensionType.Skybox;
 import net.minecraft.world.level.material.FogType;
 
-public final class HalloweenModule extends Module implements u2 {
-   private static HalloweenModule x;
-   private final lp E = this.addSetting(new lp("Intensity", "A coordinated After Dark preset", "Balanced", "Subtle", "Balanced", "Cinematic"));
-   private final ln m = this.d("Harvest Moon", "Amber moon and midnight atmosphere");
-   private final ln Y = this.d("Cinderfall", "Sparse drifting ash and embers outdoors");
-   private final ln n = this.d("Haunted Combat", "Spectral hit accents and native weapon trails");
-   private final ln o = this.d("Soul Harvest", "An intact pumpkin flattens the defeated player and sends out a ground shockwave");
-   private final ln M = this.addSetting(new ln("After Dark Menu", "Use the Halloween logo in menus and ClickGUI", true) {
+public final class HalloweenModule extends Module implements com.larpclient.c {
+   private static HalloweenModule g;
+   private final d6 Y = this.addSetting(new d6("Intensity", "A coordinated After Dark preset", "Balanced", "Subtle", "Balanced", "Cinematic"));
+   private final dh P = this.x("Harvest Moon", "Amber moon and midnight atmosphere");
+   private final dh s = this.x("Cinderfall", "Sparse drifting ash and embers outdoors");
+   private final dh X = this.x("Haunted Combat", "Spectral hit accents and native weapon trails");
+   private final dh m = this.x("Soul Harvest", "An intact pumpkin flattens the defeated player and sends out a ground shockwave");
+   private final dh y = this.addSetting(new dh("After Dark Menu", "Use the Halloween logo in menus and ClickGUI", true) {
       @Override
       public String getDisplayName() {
          return "Menu Logo";
       }
    });
-   private jm a;
+   private mm x;
 
    public HalloweenModule() {
       super("Halloween", "After Dark: harvest moon, drifting cinders and spectral combat", Category.VISUALS, -1);
-      x = this;
-      this.E.W(var1 -> {
+      g = this;
+      this.Y.h(var1 -> {
          this.clear();
-         if (this.isRuntimeActive() && this.n.getValue()) {
-            a();
+         if (this.isRuntimeActive() && this.X.P()) {
+            c();
          }
 
-         r4.V("Halloween", "Intensity changed: {}", var1);
+         mt.K("Halloween", "Intensity changed: {}", var1);
       });
-      this.Y.W(var1 -> {
-         if (this.a != null) {
-            this.a.K();
+      this.s.h(var1 -> {
+         if (this.x != null) {
+            this.x.J();
          }
       });
-      this.n.W(var1 -> {
-         if (this.a != null) {
-            this.a.M();
+      this.X.h(var1 -> {
+         if (this.x != null) {
+            this.x.t();
          }
 
          if (this.isRuntimeActive()) {
-            a();
+            c();
          }
       });
-      this.o.W(var1 -> {
+      this.m.h(var1 -> {
          if (this.isRuntimeActive()) {
-            F();
+            G();
          }
       });
-      this.m.W(var1 -> {
+      this.P.h(var1 -> {
          if (this.isRuntimeActive()) {
-            yv.h();
+            wy.e();
          }
       });
    }
 
-   private ln d(String var1, String var2) {
-      return this.addSetting(new ln(var1, var2, true));
+   private dh x(String var1, String var2) {
+      return this.addSetting(new dh(var1, var2, true));
    }
 
-   public static HalloweenModule U() {
-      return x;
+   public static HalloweenModule X() {
+      return g;
    }
 
-   public ol t() {
-      return ol.W(this.E.getValue());
+   public u8 s() {
+      return u8.R(this.Y.P());
    }
 
-   public List<l6<?>> a() {
-      return List.of(this.E);
+   public List<df<?>> E() {
+      return List.of(this.Y);
    }
 
-   public List<l6<?>> T() {
-      return List.of(this.m, this.Y, this.n, this.o, this.M);
+   public List<df<?>> o() {
+      return List.of(this.P, this.s, this.X, this.m, this.y);
    }
 
-   public static boolean p() {
-      return x != null && x.isEnabled() ? x != null && x.isRuntimeActive() && x.n.getValue() && f8.p("Halloween") : false;
+   public static boolean S() {
+      return g != null && g.isEnabled() ? g != null && g.isRuntimeActive() && g.X.P() && h.R("Halloween") : false;
    }
 
-   public static boolean K() {
-      return x != null && x.isEnabled() ? x != null && x.isRuntimeActive() && x.o.getValue() : false;
+   public static boolean E() {
+      return g != null && g.isEnabled() ? g != null && g.isRuntimeActive() && g.m.P() : false;
    }
 
-   public static boolean M() {
-      return x != null && x.isEnabled() ? x != null && x.isOperational() && x.M.getValue() : false;
+   public static boolean a() {
+      return g != null && g.isEnabled() ? g != null && g.isOperational() && g.y.P() : false;
    }
 
-   public static boolean U() {
-      if (x == null || !x.isEnabled()) {
+   public static boolean f() {
+      if (g == null || !g.isEnabled()) {
          return false;
-      } else if (x != null && x.isRuntimeActive() && x.m.getValue()) {
+      } else if (g != null && g.isRuntimeActive() && g.P.P()) {
          Minecraft var0 = getMc();
          return var0.level != null
             && var0.player != null
@@ -113,20 +112,20 @@ public final class HalloweenModule extends Module implements u2 {
       }
    }
 
-   public void C(ClientboundDamageEventPacket var1) {
+   public void S(ClientboundDamageEventPacket var1) {
       if (this.isEnabled()) {
-         if (p()) {
-            this.l().B(getMc(), var1, this.t());
+         if (S()) {
+            this.g().n(getMc(), var1, this.s());
          }
       }
    }
 
-   private jm l() {
-      if (this.a == null) {
-         this.a = new jm();
+   private mm g() {
+      if (this.x == null) {
+         this.x = new mm();
       }
 
-      return this.a;
+      return this.x;
    }
 
    @Override
@@ -137,67 +136,67 @@ public final class HalloweenModule extends Module implements u2 {
    @Override
    public void tick(Minecraft var1) {
       if (this.isEnabled()) {
-         this.l().M(var1, this.t(), this.Y.getValue(), p());
+         this.g().h(var1, this.s(), this.s.P(), S());
       }
    }
 
    @Override
    public void prepare(float var1, CameraRenderState var2) {
       if (this.isEnabled()) {
-         if (this.a != null) {
-            this.a.Z(var1, var2, this.Y.getValue(), p());
+         if (this.x != null) {
+            this.x.H(var1, var2, this.s.P(), S());
          }
       }
    }
 
    @Override
-   public void render(r6 var1, boolean var2) {
+   public void render(ki var1, boolean var2) {
       if (this.isEnabled()) {
-         if (this.a != null) {
-            this.a.r(var1, var2, this.Y.getValue(), p());
+         if (this.x != null) {
+            this.x.k(var1, var2, this.s.P(), S());
          }
       }
    }
 
    @Override
    public boolean glowing() {
-      return !this.isEnabled() ? false : this.a != null && this.a.G(this.Y.getValue(), p());
+      return !this.isEnabled() ? false : this.x != null && this.x.Y(this.s.P(), S());
    }
 
    @Override
    public boolean soft() {
-      return this.a != null && this.a.C(this.Y.getValue(), p());
+      return this.x != null && this.x.g(this.s.P(), S());
    }
 
-   private static void a() {
-      ym.s();
+   private static void c() {
+      x4.D();
    }
 
-   private static void F() {
-      KillFXModule var0 = KillFXModule.X();
+   private static void G() {
+      KillFXModule var0 = KillFXModule.l();
       if (var0 != null) {
-         var0.d();
+         var0.c();
       }
    }
 
    @Override
    public void clear() {
-      if (this.a != null) {
-         this.a.Z();
+      if (this.x != null) {
+         this.x.s();
       }
    }
 
-   public void x(boolean var1) {
+   public void t(boolean var1) {
       this.clear();
       if (this.isRuntimeActive()) {
-         this.J();
+         this.V();
       }
 
       if (!var1) {
          this.disable();
 
-         for (l6 var3 : this.getSettings()) {
-            var3.x();
+         for (df var3 : this.getSettings()) {
+            var3.B();
          }
 
          this.setKeyBind(-1);
@@ -207,28 +206,28 @@ public final class HalloweenModule extends Module implements u2 {
    @Override
    public void onEnable() {
       this.clear();
-      this.J();
-      r4.V("Halloween", "After Dark enabled: {}; sky, hit and finisher ownership is temporary", this.E.getValue());
+      this.V();
+      mt.K("Halloween", "After Dark enabled: {}; sky, hit and finisher ownership is temporary", this.Y.P());
    }
 
    @Override
    public void onDisable() {
       this.clear();
-      this.J();
-      r4.V("Halloween", "After Dark disabled; seasonal state cleared, saved cosmetics retained");
+      this.V();
+      mt.K("Halloween", "After Dark disabled; seasonal state cleared, saved cosmetics retained");
    }
 
-   private void J() {
-      if (this.o.getValue()) {
-         F();
+   private void V() {
+      if (this.m.P()) {
+         G();
       }
 
-      if (this.n.getValue()) {
-         a();
+      if (this.X.P()) {
+         c();
       }
 
-      if (this.m.getValue()) {
-         yv.h();
+      if (this.P.P()) {
+         wy.e();
       }
    }
 }

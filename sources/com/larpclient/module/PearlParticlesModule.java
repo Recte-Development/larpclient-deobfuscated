@@ -1,12 +1,10 @@
 package com.larpclient.module;
 
-import com.larpclient.ea;
-import com.larpclient.ob;
-import com.larpclient.oh;
-import com.larpclient.r4;
-import com.larpclient.rv;
-import com.larpclient.y2;
-import com.larpclient.yc;
+import com.larpclient._3;
+import com.larpclient.hp;
+import com.larpclient.mt;
+import com.larpclient.ty;
+import com.larpclient.xh;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,96 +17,96 @@ import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnder
 import net.minecraft.world.phys.Vec3;
 
 public final class PearlParticlesModule extends Module {
-   private static PearlParticlesModule Q;
-   private final lv W = this.addSetting(new lv("Color", "Particle tint", -8866817));
-   private final lc S = this.A("Spawn Rate", "Particles per pearl each tick", 10.0, 1.0, 10.0, 1.0);
-   private final lc y = this.A("Size", "Billboard width in blocks", 0.3, 0.05, 0.5, 0.01);
-   private final lc z = this.A("Lifetime", "Seconds", 0.5, 0.5, 3.0, 0.1);
-   private final lc B = this.A("Spread", "Initial velocity spread", 0.2, 0.01, 0.2, 0.01);
-   private final lc n = this.A("Gravity", "Downward acceleration per tick", 0.008, 0.0, 0.03, 0.001);
-   private final lc r = this.A("Fade Speed", "Opacity fade exponent", 2.0, 0.3, 2.0, 0.1);
-   private final ln F = this.addSetting(new ln("Color Animation", "Animate the theme gradient", false));
-   private final HashMap<Integer, ThrownEnderpearl> p = new HashMap<>();
-   private final ArrayList<PearlParticlesModule.w> m = new ArrayList<>();
-   private final Random R = new Random();
-   private Object Z;
-   private Object L;
-   private Vec3 Y;
-   private int H;
+   private static PearlParticlesModule v;
+   private final dk y = this.addSetting(new dk("Color", "Particle tint", -8866817));
+   private final d9 r = this.i("Spawn Rate", "Particles per pearl each tick", 10.0, 1.0, 10.0, 1.0);
+   private final d9 c = this.i("Size", "Billboard width in blocks", 0.3, 0.05, 0.5, 0.01);
+   private final d9 t = this.i("Lifetime", "Seconds", 0.5, 0.5, 3.0, 0.1);
+   private final d9 R = this.i("Spread", "Initial velocity spread", 0.2, 0.01, 0.2, 0.01);
+   private final d9 M = this.i("Gravity", "Downward acceleration per tick", 0.008, 0.0, 0.03, 0.001);
+   private final d9 d = this.i("Fade Speed", "Opacity fade exponent", 2.0, 0.3, 2.0, 0.1);
+   private final dh D = this.addSetting(new dh("Color Animation", "Animate the theme gradient", false));
+   private final HashMap<Integer, ThrownEnderpearl> O = new HashMap<>();
+   private final ArrayList<PearlParticlesModule.g> l = new ArrayList<>();
+   private final Random Y = new Random();
+   private Object A;
+   private Object e;
+   private Vec3 F;
+   private int n;
 
    public PearlParticlesModule() {
       super("Pearl Particles", "Add glowing trails to ender pearls", Category.VISUALS, -1);
-      Q = this;
-      this.W.x(() -> !this.F.getValue());
+      v = this;
+      this.y.H(() -> !this.D.P());
    }
 
-   public List<l6<?>> a() {
-      return List.of(this.S, this.y, this.z);
+   public List<df<?>> J() {
+      return List.of(this.r, this.c, this.t);
    }
 
-   public List<l6<?>> L() {
-      return List.of(this.F, this.W);
+   public List<df<?>> M() {
+      return List.of(this.D, this.y);
    }
 
-   public List<l6<?>> I() {
-      return List.of(this.B, this.n, this.r);
+   public List<df<?>> N() {
+      return List.of(this.R, this.M, this.d);
    }
 
-   private lc A(String var1, String var2, double var3, double var5, double var7, double var9) {
-      return this.addSetting(new lc(var1, var2, var3, var5, var7, var9));
+   private d9 i(String var1, String var2, double var3, double var5, double var7, double var9) {
+      return this.addSetting(new d9(var1, var2, var3, var5, var7, var9));
    }
 
-   public static PearlParticlesModule D() {
-      return Q;
+   public static PearlParticlesModule r() {
+      return v;
    }
 
-   public void Y() {
-      this.p.clear();
-      this.m.clear();
-      this.Z = this.L = null;
-      this.Y = null;
-      this.H = 0;
+   public void E() {
+      this.O.clear();
+      this.l.clear();
+      this.A = this.e = null;
+      this.F = null;
+      this.n = 0;
    }
 
    @Override
    public void onEnable() {
-      this.Y();
-      r4.V("PearlParticles", "Enabled; max 32 observed pearls, 4096 particles; source bloom sprite");
+      this.E();
+      mt.K("PearlParticles", "Enabled; max 32 observed pearls, 4096 particles; source bloom sprite");
    }
 
    @Override
    public void onDisable() {
-      this.Y();
+      this.E();
    }
 
    @Override
    public void onTick() {
       if (this.isRuntimeActive() && this.isInGame()) {
          Vec3 var1;
-         label62: {
+         label63: {
             var1 = this.getPlayer().position();
-            if (this.Z == getMc().level && this.L == this.getPlayer()) {
-               if (this.Y == null) {
-                  break label62;
+            if (this.A == getMc().level && this.e == this.getPlayer()) {
+               if (this.F == null) {
+                  break label63;
                }
 
                double var14;
-               int var10000 = (var14 = var1.distanceToSqr(this.Y) - 256.0) == 0.0 ? 0 : (var14 < 0.0 ? -1 : 1);
+               int var10000 = (var14 = var1.distanceToSqr(this.F) - 256.0) == 0.0 ? 0 : (var14 < 0.0 ? -1 : 1);
                boolean var13 = false;
                int var12 = var10000;
                if ((-Integer.signum(var12) >>> 31 ^ 1) != 0) {
-                  break label62;
+                  break label63;
                }
             }
 
-            this.Y();
+            this.E();
          }
 
-         this.Z = getMc().level;
-         this.L = this.getPlayer();
-         this.Y = var1;
-         double var2 = ea.t();
-         this.p.entrySet().removeIf(var0 -> getMc().level.getEntity(var0.getKey()) != var0.getValue() || var0.getValue().isRemoved());
+         this.A = getMc().level;
+         this.e = this.getPlayer();
+         this.F = var1;
+         double var2 = ty.P();
+         this.O.entrySet().removeIf(var0 -> getMc().level.getEntity(var0.getKey()) != var0.getValue() || var0.getValue().isRemoved());
          HashSet var4 = new HashSet();
          int var5 = 0;
 
@@ -119,46 +117,46 @@ public final class PearlParticlesModule extends Module {
                }
 
                var4.add(var8.getId());
-               if (this.p.get(var8.getId()) == var8) {
-                  double var9 = this.B.getValue();
+               if (this.O.get(var8.getId()) == var8) {
+                  double var9 = this.R.P();
 
-                  for (int var11 = 0; var11 < this.S.getValue().intValue() && this.m.size() < 4096; var11++) {
-                     this.m
+                  for (int var11 = 0; var11 < this.r.P().intValue() && this.l.size() < 4096; var11++) {
+                     this.l
                         .add(
-                           new PearlParticlesModule.w(
+                           new PearlParticlesModule.g(
                               var8.position(),
                               new Vec3(
-                                 (this.R.nextDouble() * 2.0 - 1.0) * var9,
-                                 (this.R.nextDouble() * 2.0 - 1.0) * var9 * 0.25,
-                                 (this.R.nextDouble() * 2.0 - 1.0) * var9
+                                 (this.Y.nextDouble() * 2.0 - 1.0) * var9,
+                                 (this.Y.nextDouble() * 2.0 - 1.0) * var9 * 0.25,
+                                 (this.Y.nextDouble() * 2.0 - 1.0) * var9
                               ),
-                              this.n.getValue(),
+                              this.M.P(),
                               var2,
-                              this.H++
+                              this.n++
                            )
                         );
                   }
                }
 
-               if (this.p.size() < 32 || this.p.containsKey(var8.getId())) {
-                  this.p.put(var8.getId(), var8);
+               if (this.O.size() < 32 || this.O.containsKey(var8.getId())) {
+                  this.O.put(var8.getId(), var8);
                }
             }
          }
 
-         this.p.keySet().retainAll(var4);
-         this.m.removeIf(var3 -> var3.K(var2, this.z.getValue()));
+         this.O.keySet().retainAll(var4);
+         this.l.removeIf(var3 -> var3.I(var2, this.t.P()));
       } else {
-         this.Y();
+         this.E();
       }
    }
 
-   public boolean e(double var1) {
+   public boolean n(double var1) {
       if (this.isEnabled()) {
-         if (this.isRuntimeActive() && this.isInGame() && this.Z == getMc().level) {
-            for (PearlParticlesModule.w var4 : this.m) {
-               double var5 = this.x(var4, var1);
-               if (var5 >= 0.001 && oh.S(this.B(var4, var1), var5) >>> 24 != 0) {
+         if (this.isRuntimeActive() && this.isInGame() && this.A == getMc().level) {
+            for (PearlParticlesModule.g var4 : this.l) {
+               double var5 = this.k(var4, var1);
+               if (var5 >= 0.001 && _3.U(this.l(var4, var1), var5) >>> 24 != 0) {
                   return true;
                }
             }
@@ -172,62 +170,62 @@ public final class PearlParticlesModule extends Module {
       }
    }
 
-   private double x(PearlParticlesModule.w var1, double var2) {
-      double var4 = Math.clamp((var2 - var1.v) / this.z.getValue(), 0.0, 1.0);
-      return Math.pow(1.0 - var4, this.r.getValue());
+   private double k(PearlParticlesModule.g var1, double var2) {
+      double var4 = Math.clamp((var2 - var1.M) / this.t.P(), 0.0, 1.0);
+      return Math.pow(1.0 - var4, this.d.P());
    }
 
-   private int B(PearlParticlesModule.w var1, double var2) {
-      return this.F.getValue() ? oh.j(rv.e, rv.GQ, 0.5 + 0.5 * Math.sin(var2 * 2.0 + var1.X * 0.04)) : this.W.getValue();
+   private int l(PearlParticlesModule.g var1, double var2) {
+      return this.D.P() ? _3.D(com.larpclient.f.C, com.larpclient.f.O, 0.5 + 0.5 * Math.sin(var2 * 2.0 + var1.u * 0.04)) : this.y.P();
    }
 
-   public void x(PoseStack var1, y2 var2, CameraRenderState var3, double var4, boolean var6) {
+   public void p(PoseStack var1, xh var2, CameraRenderState var3, double var4, boolean var6) {
       if (this.isEnabled()) {
-         if (this.isRuntimeActive() && this.Z == getMc().level) {
-            ob var7 = new ob(var1, var2, var3);
+         if (this.isRuntimeActive() && this.A == getMc().level) {
+            com.larpclient.j var7 = new com.larpclient.j(var1, var2, var3);
 
-            for (PearlParticlesModule.w var9 : this.m) {
-               double var10 = this.x(var9, var4);
+            for (PearlParticlesModule.g var9 : this.l) {
+               double var10 = this.k(var9, var4);
                if (!(var10 < 0.001)) {
-                  Vec3 var12 = var9.x.lerp(var9.S, ea.Z());
-                  int var13 = this.B(var9, var4);
-                  double var14 = Math.clamp((var4 - var9.v) / this.z.getValue(), 0.0, 1.0);
-                  var13 = oh.j(var13, var13 & 0xFF000000 | 16777215, 0.22 * Math.pow(1.0 - var14, 4.0));
-                  var7.C(var12, Y(this.y.getValue(), var14, var9.X), oh.S(var13, var10));
+                  Vec3 var12 = var9.a.lerp(var9.H, ty.g());
+                  int var13 = this.l(var9, var4);
+                  double var14 = Math.clamp((var4 - var9.M) / this.t.P(), 0.0, 1.0);
+                  var13 = _3.D(var13, var13 & 0xFF000000 | 16777215, 0.22 * Math.pow(1.0 - var14, 4.0));
+                  var7.U(var12, c(this.c.P(), var14, var9.u), _3.U(var13, var10));
                }
             }
          }
       }
    }
 
-   public static double Y(double var0, double var2, int var4) {
+   public static double c(double var0, double var2, int var4) {
       int var5 = var4 * -1640531527;
       var5 ^= var5 >>> 16;
       double var6 = 0.74 + 0.26 * (var5 >>> 8 & 65535) / 65535.0;
-      return var0 * var6 * (1.0 - 0.55 * yc.H(var2));
+      return var0 * var6 * (1.0 - 0.55 * hp.R(var2));
    }
 
-   private static final class w {
-      Vec3 S;
-      Vec3 x;
-      Vec3 g;
-      final double B;
-      final double v;
-      final int X;
+   private static final class g {
+      Vec3 H;
+      Vec3 a;
+      Vec3 P;
+      final double S;
+      final double M;
+      final int u;
 
-      w(Vec3 var1, Vec3 var2, double var3, double var5, int var7) {
-         this.S = this.x = var1;
-         this.g = var2;
-         this.B = var3;
-         this.v = var5;
-         this.X = var7;
+      g(Vec3 var1, Vec3 var2, double var3, double var5, int var7) {
+         this.H = this.a = var1;
+         this.P = var2;
+         this.S = var3;
+         this.M = var5;
+         this.u = var7;
       }
 
-      boolean K(double var1, double var3) {
-         this.x = this.S;
-         this.S = this.S.add(this.g);
-         this.g = this.g.add(0.0, -this.B, 0.0).scale(0.96);
-         return var1 - this.v >= var3;
+      boolean I(double var1, double var3) {
+         this.a = this.H;
+         this.H = this.H.add(this.P);
+         this.P = this.P.add(0.0, -this.S, 0.0).scale(0.96);
+         return var1 - this.M >= var3;
       }
    }
 }

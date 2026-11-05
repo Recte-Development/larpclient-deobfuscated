@@ -1,58 +1,110 @@
 package com.larpclient;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public final class e6 {
-   public static double q(double var0) {
-      var0 = Math.clamp(var0, 0.0, 1.0);
-      return var0 * var0 * (3.0 - 2.0 * var0);
+   private static final Pattern d = Pattern.compile("\\[(\\d{1,3}):(\\d{2})(?:[.:](\\d{1,3}))?]");
+   private static final Pattern L = Pattern.compile("(?im)^\\[offset:([+-]?\\d+)]\\s*$");
+   private final List<e6.r> Q;
+
+   private e6(List<e6.r> var1) {
+      this.Q = List.copyOf(var1);
    }
 
-   public static void G(lg var0, e0 var1, double var2) {
-      var0.T += var2;
-      var0.o += var2;
-      switch (var0.t) {
-         case A:
-            var0.v = q(var0.o / var1.L);
-            if (var0.o >= var1.L) {
-               var0.t = lg.s.h;
-               var0.o = 0.0;
+   public List<e6.r> K() {
+      return this.Q;
+   }
+
+   public static e6 L(String var0) {
+      if (var0 != null && var0.length() <= 262144) {
+         double var1 = 0.0;
+         Matcher var3 = L.matcher(var0);
+         if (var3.find()) {
+            var1 = Math.clamp(Double.parseDouble(var3.group(1)) / 1000.0, -60.0, 60.0);
+         }
+
+         ArrayList var4 = new ArrayList();
+
+         for (String var8 : var0.split("\\R")) {
+            Matcher var9 = d.matcher(var8);
+            ArrayList var10 = new ArrayList();
+            int var11 = 0;
+
+            while (var9.find()) {
+               if (Integer.parseInt(var9.group(2)) < 60) {
+                  double var12 = var9.group(3) == null ? 0.0 : Double.parseDouble("0." + var9.group(3));
+                  var10.add(Integer.parseInt(var9.group(1)) * 60 + Integer.parseInt(var9.group(2)) + var12);
+                  var11 = var9.end();
+               }
             }
-            break;
-         case h:
-            var0.v = 1.0;
-            if (var0.T >= var0.L) {
-               var0.g();
+
+            String var21 = var8.substring(var11).replaceAll("<\\d{1,3}:\\d{2}(?:\\.\\d+)?>", "").replaceAll("[\\p{Cntrl}§]", "").strip();
+            if (var21.codePointCount(0, var21.length()) > 240) {
+               var21 = var21.substring(0, var21.offsetByCodePoints(0, 240));
             }
-            break;
-         case W:
-            var0.v = var0.j * (1.0 - q(var0.o / var1.w));
-            if (var0.o >= var1.w) {
-               var0.v = 0.0;
-               var0.t = lg.s.I;
-               var0.h = (boolean)0;
+
+            for (double var14 : var10) {
+               if (var4.size() >= 4096) {
+                  throw new IllegalArgumentException("Too many timed lyric cues");
+               }
+
+               var4.add(new e6.r(Math.max(0.0, var14 - var1), var21));
             }
-            break;
-         case I:
-            var0.v = 0.0;
-      }
-      double var4 = switch (var1.R) {
-         case O -> 0.0;
-         case V -> 0.45;
-         case L -> 1.0;
-         case Y -> 0.8;
-         case s -> 2.0;
-      };
-      double var6 = var0.T * var0.l * var1.e * (var1.R == e0.z.Y ? 0.5 : 1.0) + var0.p;
-      var0.E = Math.sin(var6) * var1.h * var4;
-      var0.a = Math.sin(var6 * 0.63) * var1.h * var4 * 0.35;
-      var0.q = Math.cos(var6 * 0.77) * var1.h * var4 * 0.25;
-      var0.K = Math.sin(var6 * 0.7) * Math.toRadians(var1.V) * var4;
-      double var8 = var1.R == e0.z.Y ? 0.045 : 0.012;
-      var0.J = (0.7 + 0.3 * var0.v) * (1.0 + Math.sin(var6 * 0.65) * var8 * var4);
-      if (var1.R != e0.z.O) {
-         var0.E = var0.E - (1.0 - var0.v) * 0.12;
+         }
+
+         var4.sort(Comparator.comparingDouble(e6.r::seconds));
+         ArrayList var16 = new ArrayList();
+
+         for (e6.r var18 : var4) {
+            if (!var16.isEmpty() && ((e6.r)var16.getLast()).seconds == var18.seconds) {
+               e6.r var19 = (e6.r)var16.removeLast();
+               String var20 = var19.text.isEmpty() ? var18.text : (var18.text.isEmpty() ? var19.text : var19.text + " / " + var18.text);
+               if (var20.codePointCount(0, var20.length()) > 240) {
+                  var20 = var20.substring(0, var20.offsetByCodePoints(0, 240));
+               }
+
+               var16.add(new e6.r(var18.seconds, var20));
+            } else {
+               var16.add(var18);
+            }
+         }
+
+         return new e6(var16);
+      } else {
+         throw new IllegalArgumentException("Invalid timed lyrics size");
       }
    }
 
-   private e6() {
+   public int M(double var1) {
+      int var3 = 0;
+      int var4 = this.Q.size() - 1;
+      int var5 = -1;
+
+      while (var3 <= var4) {
+         int var6 = var3 + var4 >>> 1;
+         if (this.Q.get(var6).seconds <= var1) {
+            var5 = var6;
+            var3 = var6 + 1;
+         } else {
+            var4 = var6 - 1;
+         }
+      }
+
+      return var5;
+   }
+
+   public String W(int var1, double var2) {
+      if (var1 >= 0 && var1 < this.Q.size()) {
+         return var2 - this.Q.get(var1).seconds > 18.0 ? "" : this.Q.get(var1).text;
+      } else {
+         return "";
+      }
+   }
+
+   public record r(double seconds, String text) {
    }
 }

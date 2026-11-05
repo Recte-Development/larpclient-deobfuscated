@@ -1,10 +1,10 @@
 package com.larpclient.account;
 
 import com.larpclient.LarpClient;
-import com.larpclient._v;
-import com.larpclient.h4;
-import com.larpclient.r4;
-import com.larpclient.xj;
+import com.larpclient.mt;
+import com.larpclient.oe;
+import com.larpclient.u2;
+import com.larpclient.xo;
 import com.mojang.blaze3d.Blaze3D;
 import java.io.IOException;
 import java.net.URI;
@@ -57,7 +57,7 @@ public final class MicrosoftAccounts {
    private boolean legacy;
    private boolean stored;
    private List<AccountVault.Entry> snapshot = List.of();
-   private List<h4> proxySnapshot = List.of();
+   private List<oe> proxySnapshot = List.of();
    private UUID activeProxyId;
    private String status = "";
    private String code = "";
@@ -77,12 +77,12 @@ public final class MicrosoftAccounts {
          this.vault = new AccountVault(var2);
          this.proxyMarker = var2.resolve("proxy-enabled");
          if (Files.exists(this.proxyMarker, LinkOption.NOFOLLOW_LINKS)) {
-            _v.q("The saved proxy is still loading. Try again in a moment.");
+            xo.a("The saved proxy is still loading. Try again in a moment.");
 
             try {
                this.worker.execute(this::restoreProxy);
             } catch (RejectedExecutionException var4) {
-               _v.q("The saved proxy could not be loaded. Open the account list to retry or turn the proxy off.");
+               xo.a("The saved proxy could not be loaded. Open the account list to retry or turn the proxy off.");
             }
          }
       }
@@ -120,7 +120,7 @@ public final class MicrosoftAccounts {
       return this.snapshot;
    }
 
-   public List<h4> proxies() {
+   public List<oe> proxies() {
       return this.proxySnapshot;
    }
 
@@ -160,7 +160,7 @@ public final class MicrosoftAccounts {
                throw new InterruptedException();
             }
 
-            HttpClient var4 = MinecraftAuth.createHttpClient("LarpClient/" + LarpClient.L + " MinecraftAuth/5.0.2");
+            HttpClient var4 = MinecraftAuth.createHttpClient("LarpClient/" + LarpClient.t + " MinecraftAuth/5.0.2");
             JavaAuthManager var5 = JavaAuthManager.create(var4).login(DeviceCodeMsaAuthService::new, (Consumer<MsaDeviceCode>)var4x -> {
                URI var5x = verificationLink(var4x.getDirectVerificationUri());
                if (!var4x.getUserCode().matches("[A-Za-z0-9-]{4,16}")) {
@@ -246,7 +246,7 @@ public final class MicrosoftAccounts {
                   var1,
                   "Refreshing Microsoft account...",
                   () -> {
-                     HttpClient var3x = MinecraftAuth.createHttpClient("LarpClient/" + LarpClient.L + " MinecraftAuth/5.0.2");
+                     HttpClient var3x = MinecraftAuth.createHttpClient("LarpClient/" + LarpClient.t + " MinecraftAuth/5.0.2");
                      JavaAuthManager var4x = JavaAuthManager.fromJson(var3x, var3.authentication());
 
                      try {
@@ -275,7 +275,7 @@ public final class MicrosoftAccounts {
                               this.vault.put(new AccountVault.Entry(var2, var6.getName(), JavaAuthManager.toJson(var4x)));
                            }
                         } catch (Exception var7) {
-                           r4.m("Accounts", "Could not retain refreshed account state; sign in again if refresh fails");
+                           mt.T("Accounts", "Could not retain refreshed account state; sign in again if refresh fails");
                         }
 
                         throw var8;
@@ -318,7 +318,7 @@ public final class MicrosoftAccounts {
    }
 
    public void archive(Screen var1) {
-      boolean var2 = _v.B() != null || _v.u() != null;
+      boolean var2 = xo.y() != null || xo.x() != null;
       this.run(var1, "Starting a new saved list...", () -> {
          this.vault.archive();
          this.vault.open();
@@ -327,7 +327,7 @@ public final class MicrosoftAccounts {
       }, var2x -> this.message("Previous list kept for recovery. Add your accounts again." + (var2 ? " The proxy is off." : ""), false));
    }
 
-   public void saveProxy(Screen var1, h4 var2, Runnable var3) {
+   public void saveProxy(Screen var1, oe var2, Runnable var3) {
       if (this.unlocked() && !this.busy) {
          this.run(var1, "Testing the proxy...", () -> {
             MicrosoftAccounts.Tested var2x = this.test(var2);
@@ -343,7 +343,7 @@ public final class MicrosoftAccounts {
 
    public void useProxy(Screen var1, UUID var2) {
       if (this.unlocked() && !this.busy) {
-         h4 var3 = this.proxySnapshot.stream().filter(var1x -> var1x.id().equals(var2)).findFirst().orElse(null);
+         oe var3 = this.proxySnapshot.stream().filter(var1x -> var1x.id().equals(var2)).findFirst().orElse(null);
          if (var3 != null) {
             this.run(var1, "Testing the proxy...", () -> {
                MicrosoftAccounts.Tested var3x = this.test(var3);
@@ -358,12 +358,12 @@ public final class MicrosoftAccounts {
    public void proxyOff(Screen var1) {
       if (!this.busy) {
          if (!this.ready) {
-            _v.U();
+            xo.j();
 
             try {
                this.marker(false);
             } catch (IOException var3) {
-               r4.m("Proxy", "Could not clear the proxy marker ({})", var3.getClass().getSimpleName());
+               mt.T("Proxy", "Could not clear the proxy marker ({})", var3.getClass().getSimpleName());
             }
 
             this.message("Proxy off for this session. The saved choice returns once the account list opens.", false);
@@ -373,7 +373,7 @@ public final class MicrosoftAccounts {
                this.marker(false);
                return null;
             }, var1x -> {
-               _v.U();
+               xo.j();
                this.message("Proxy off. Server traffic connects directly.", false);
             });
          }
@@ -392,7 +392,7 @@ public final class MicrosoftAccounts {
             return null;
          }, var2x -> {
             if (var3) {
-               _v.U();
+               xo.j();
             }
 
             this.message(var3 ? "Proxy removed and turned off. Server traffic connects directly." : "Saved proxy removed.", false);
@@ -400,39 +400,39 @@ public final class MicrosoftAccounts {
       }
    }
 
-   private MicrosoftAccounts.Tested test(h4 var1) throws Exception {
-      h4.o var2;
+   private MicrosoftAccounts.Tested test(oe var1) throws Exception {
+      oe.u var2;
       try {
          var2 = var1.resolve();
       } catch (UnknownHostException var5) {
-         throw new xj.s("Proxy " + var1.label() + ": the proxy host could not be found");
+         throw new u2.i("Proxy " + var1.label() + ": the proxy host could not be found");
       }
 
-      long var3 = _v.h(var2);
+      long var3 = xo.P(var2);
       interrupted();
       return new MicrosoftAccounts.Tested(var2, var3);
    }
 
    private void activate(MicrosoftAccounts.Tested var1) {
-      _v.G(var1.proxy());
+      xo.o(var1.proxy());
       this.message("Proxy on: " + var1.proxy().settings().label() + " (" + var1.millis() + " ms). Server traffic now uses it.", false);
    }
 
    private void syncProxy() throws IOException {
-      h4 var1 = this.vault.activeProxy();
+      oe var1 = this.vault.activeProxy();
       if (var1 == null) {
-         _v.U();
+         xo.j();
          this.marker(false);
       } else {
-         h4.o var2 = _v.B();
+         oe.u var2 = xo.y();
          if (var2 != null && var2.settings().equals(var1)) {
             this.marker(true);
          } else {
             try {
-               _v.G(var1.resolve());
+               xo.o(var1.resolve());
                this.marker(true);
             } catch (UnknownHostException var4) {
-               _v.q("Proxy " + var1.label() + " could not be found. Choose another proxy or turn it off in the account list.");
+               xo.a("Proxy " + var1.label() + " could not be found. Choose another proxy or turn it off in the account list.");
             }
          }
       }
@@ -443,8 +443,8 @@ public final class MicrosoftAccounts {
          this.vault.open();
          this.syncProxy();
       } catch (Exception var2) {
-         r4.m("Proxy", "Saved proxy could not be loaded ({}); server connections stay paused", var2.getClass().getSimpleName());
-         _v.q("The saved proxy could not be loaded. Open the account list to retry or turn the proxy off.");
+         mt.T("Proxy", "Saved proxy could not be loaded ({}); server connections stay paused", var2.getClass().getSimpleName());
+         xo.a("The saved proxy could not be loaded. Open the account list to retry or turn the proxy off.");
       }
    }
 
@@ -522,7 +522,7 @@ public final class MicrosoftAccounts {
          this.code = "";
          this.verification = null;
          this.message(var2, false);
-         r4.V("Accounts", "Starting {}; explicit user request, local encrypted storage", var2);
+         mt.K("Accounts", "Starting {}; explicit user request, local encrypted storage", var2);
 
          try {
             this.pending = this.worker.submit(() -> {
@@ -576,14 +576,14 @@ public final class MicrosoftAccounts {
 
    private void failed(String var1, Exception var2) {
       this.refreshSnapshot();
-      r4.m("Accounts", "stage={} failed ({}); current Minecraft account retained", var1, var2.getClass().getSimpleName());
+      mt.T("Accounts", "stage={} failed ({}); current Minecraft account retained", var1, var2.getClass().getSimpleName());
       String var3 = var2 instanceof TimeoutException
          ? "Microsoft sign-in expired. Choose Add to try again."
          : (
             var2 instanceof FileAlreadyExistsException
                ? "Another instance created the saved list. Choose Retry."
                : (
-                  !(var2 instanceof AccountVault.Failure) && !(var2 instanceof xj.s)
+                  !(var2 instanceof AccountVault.Failure) && !(var2 instanceof u2.i)
                      ? (
                         var1.contains("token")
                            ? "Token sign-in could not finish. Check your connection and that the token still works, then retry."
@@ -616,7 +616,7 @@ public final class MicrosoftAccounts {
       this.stored = this.vault != null && this.vault.exists();
       this.snapshot = this.ready ? this.vault.entries() : List.of();
       this.proxySnapshot = this.ready ? this.vault.proxies() : List.of();
-      h4 var1 = this.ready ? this.vault.activeProxy() : null;
+      oe var1 = this.ready ? this.vault.activeProxy() : null;
       this.activeProxyId = var1 == null ? null : var1.id();
    }
 
@@ -632,7 +632,7 @@ public final class MicrosoftAccounts {
          this.code = "";
          this.verification = null;
          this.message("Cancelled. Your current Minecraft account was retained.", false);
-         r4.V("Accounts", "Pending account operation cancelled; late results will be discarded");
+         mt.K("Accounts", "Pending account operation cancelled; late results will be discarded");
       }
    }
 
@@ -659,6 +659,6 @@ public final class MicrosoftAccounts {
       var1.start();
    }
 
-   private record Tested(h4.o proxy, long millis) {
+   private record Tested(oe.u proxy, long millis) {
    }
 }

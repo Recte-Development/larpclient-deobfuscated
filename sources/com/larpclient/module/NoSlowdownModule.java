@@ -3,34 +3,34 @@ package com.larpclient.module;
 import java.util.Set;
 
 public class NoSlowdownModule extends Module {
-   private final ln c = this.addSetting(new ln("Items", "No item use slowdown", true));
-   private final ln K = this.addSetting(new ln("Webs", "No cobweb slowdown", true));
-   private final ln Y = this.addSetting(new ln("Soul Sand", "No soul sand slowdown", true));
-   private static NoSlowdownModule y;
+   private final dh A = this.addSetting(new dh("Items", "No item use slowdown", true));
+   private final dh w = this.addSetting(new dh("Webs", "No cobweb slowdown", true));
+   private final dh K = this.addSetting(new dh("Soul Sand", "No soul sand slowdown", true));
+   private static NoSlowdownModule R;
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    public NoSlowdownModule() {
       super("NoSlowdown", "Reduce item and block slowdown", Category.MOVEMENT, -1);
-      y = this;
+      R = this;
    }
 
-   public static NoSlowdownModule v() {
-      return y;
+   public static NoSlowdownModule n() {
+      return R;
    }
 
-   public boolean D() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.c.getValue();
+   public boolean s() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.A.P();
    }
 
-   public boolean p() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.K.getValue();
+   public boolean m() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.w.P();
    }
 
-   public boolean q() {
-      return !this.isEnabled() ? false : this.isRuntimeActive() && this.Y.getValue();
+   public boolean u() {
+      return !this.isEnabled() ? false : this.isRuntimeActive() && this.K.P();
    }
 }

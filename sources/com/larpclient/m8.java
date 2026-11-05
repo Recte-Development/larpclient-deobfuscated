@@ -1,27 +1,46 @@
 package com.larpclient;
 
-import net.minecraft.client.renderer.state.LightmapRenderState;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.Matrix3x2f;
 
 public final class m8 {
    private m8() {
    }
 
-   public static void s(LightmapRenderState var0, int var1, float var2) {
-      if (var0.needsUpdate && !(var2 <= 0.0F) && (var1 & 16777215) != 16777215) {
-         float var3 = Math.clamp(var2, 0.0F, 1.0F);
-         float var4 = 1.0F + ((var1 >>> 16 & 0xFF) / 255.0F - 1.0F) * var3;
-         float var5 = 1.0F + ((var1 >>> 8 & 0xFF) / 255.0F - 1.0F) * var3;
-         float var6 = 1.0F + ((var1 & 0xFF) / 255.0F - 1.0F) * var3;
-         var0.skyLightColor = u(var0.skyLightColor, var4, var5, var6);
-         var0.blockLightTint = u(var0.blockLightTint, var4, var5, var6);
-         var0.ambientColor = u(var0.ambientColor, var4, var5, var6);
-         var0.nightVisionColor = u(var0.nightVisionColor, var4, var5, var6);
-      }
+   public static double d(double var0, double var2, double var4, boolean var6) {
+      return var6 ? ef.q.m.k((var0 - var2) / var4) : 1.0;
    }
 
-   private static Vector3fc u(Vector3fc var0, float var1, float var2, float var3) {
-      return new Vector3f(var0.x() * var1, var0.y() * var2, var0.z() * var3);
+   public static m8.w E(double var0, double var2, double var4, boolean var6, boolean var7) {
+      if (!var6) {
+         return new m8.w(1.0, 0.0);
+      }
+
+      double var8 = Math.clamp(var0, 0.0, 1.0);
+      double var10 = Math.clamp(var2, 0.0, 1.0);
+      return new m8.w(var7 ? 1.0 + 0.035 * var8 - 0.025 * var10 : 1.0 - 0.015 * var10, var4 - (var7 ? 2.5 * var8 : 0.0) + var10);
+   }
+
+   public record w(double scale, double offsetY) {
+      public static final m8.w REST = new m8.w(1.0, 0.0);
+
+      public double localX(double var1, double var3) {
+         return var3 + (var1 - var3) / this.scale;
+      }
+
+      public double localY(double var1, double var3) {
+         return var3 + (var1 - var3 - this.offsetY) / this.scale;
+      }
+
+      public double screenX(double var1, double var3) {
+         return var3 + (var1 - var3) * this.scale;
+      }
+
+      public double screenY(double var1, double var3) {
+         return var3 + (var1 - var3) * this.scale + this.offsetY;
+      }
+
+      public Matrix3x2f matrix(double var1, double var3) {
+         return new Matrix3x2f().translate((float)var1, (float)(var3 + this.offsetY)).scale((float)this.scale).translate((float)(-var1), (float)(-var3));
+      }
    }
 }

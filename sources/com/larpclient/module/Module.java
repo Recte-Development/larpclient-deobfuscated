@@ -1,8 +1,8 @@
 package com.larpclient.module;
 
-import com.larpclient.pe;
-import com.larpclient.r4;
-import com.larpclient.u8;
+import com.larpclient.cc;
+import com.larpclient.cf;
+import com.larpclient.mt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +17,8 @@ public abstract class Module {
    private boolean enabled;
    private boolean pendingEnable;
    private boolean heldByBind;
-   private lp keybindMode;
-   private final List<l6<?>> settings = new ArrayList<>();
+   private d6 keybindMode;
+   private final List<df<?>> settings = new ArrayList<>();
    protected static Minecraft mc = null;
 
    protected static Minecraft getMc() {
@@ -51,7 +51,7 @@ public abstract class Module {
          this.pendingEnable = (boolean)1;
          this.activatePending();
          if (this.enabled) {
-            r4.V("Module", "Enabled {}", this.name);
+            mt.K("Module", "Enabled {}", this.name);
          }
       }
    }
@@ -83,7 +83,7 @@ public abstract class Module {
             var4.addSuppressed(var3);
          }
 
-         r4.r("Module", "Enable failed: " + this.name, var4);
+         mt.P("Module", "Enable failed: " + this.name, var4);
       }
    }
 
@@ -97,11 +97,11 @@ public abstract class Module {
                this.onDisable();
             }
          } catch (RuntimeException var2) {
-            r4.r("Module", "Disable failed: " + this.name, var2);
+            mt.P("Module", "Disable failed: " + this.name, var2);
          }
 
          this.pendingEnable = (boolean)0;
-         r4.V("Module", "Disabled {}", this.name);
+         mt.K("Module", "Disabled {}", this.name);
       }
    }
 
@@ -112,7 +112,7 @@ public abstract class Module {
          try {
             this.onDisable();
          } catch (RuntimeException var2) {
-            r4.r("Module", "Disconnect cleanup failed: " + this.name, var2);
+            mt.P("Module", "Disconnect cleanup failed: " + this.name, var2);
          }
 
          this.pendingEnable = (boolean)1;
@@ -136,16 +136,16 @@ public abstract class Module {
       return false;
    }
 
-   public Module.b getTickPhase() {
-      return Module.b.F;
+   public Module.f getTickPhase() {
+      return Module.f.X;
    }
 
-   protected <T extends l6<?>> T addSetting(T var1) {
+   protected <T extends df<?>> T addSetting(T var1) {
       this.settings.add(var1);
       return (T)var1;
    }
 
-   public List<l6<?>> getSettings() {
+   public List<df<?>> getSettings() {
       return this.settings;
    }
 
@@ -198,27 +198,27 @@ public abstract class Module {
    public final void offerHoldKeybind() {
       if (this.keybindMode() == null) {
          this.keybindMode = this.addSetting(
-            new lp("Keybind Mode", "Toggle switches the module with each press; Hold keeps it on only while the key is held", "Toggle", "Toggle", "Hold")
+            new d6("Keybind Mode", "Toggle switches the module with each press; Hold keeps it on only while the key is held", "Toggle", "Toggle", "Hold")
          );
-         this.keybindMode.W(var1 -> this.endHeldBind("Keybind Mode changed"));
+         this.keybindMode.h(var1 -> this.endHeldBind("Keybind Mode changed"));
       }
    }
 
-   public lp keybindMode() {
+   public d6 keybindMode() {
       return this.keybindMode;
    }
 
    public boolean holdsKeybind() {
-      return this.keybindMode != null && this.keybindMode.i("Hold");
+      return this.keybindMode != null && this.keybindMode.S("Hold");
    }
 
    public boolean activateHeldBind() {
       Minecraft var1 = getMc();
-      if (this.holdsKeybind() && var1 != null && var1.getWindow() != null && pe.A(var1.getWindow().handle(), this.keyBind)) {
+      if (this.holdsKeybind() && var1 != null && var1.getWindow() != null && cc.N(var1.getWindow().handle(), this.keyBind)) {
          boolean var2 = this.enabled;
          this.heldByBind = (boolean)1;
          if (var2) {
-            r4.g("Input", "{} shortcut now holds the enabled module", this.name);
+            mt.U("Input", "{} shortcut now holds the enabled module", this.name);
             return false;
          }
 
@@ -248,7 +248,7 @@ public abstract class Module {
                var2 = "screen opened";
             } else if (!var1.isWindowActive()) {
                var2 = "window lost focus";
-            } else if (!pe.A(var1.getWindow().handle(), this.keyBind)) {
+            } else if (!cc.N(var1.getWindow().handle(), this.keyBind)) {
                var2 = "key released";
             }
 
@@ -261,7 +261,7 @@ public abstract class Module {
 
    private void endHeldBind(String var1) {
       if (this.heldByBind) {
-         r4.g("Input", "{} hold ended: {}", this.name, var1);
+         mt.U("Input", "{} hold ended: {}", this.name, var1);
          this.disable();
       }
    }
@@ -275,18 +275,18 @@ public abstract class Module {
    }
 
    public boolean isOperational() {
-      return this.enabled && !u8.G(this);
+      return this.enabled && !cf.W(this);
    }
 
    public String getStatus() {
       return "";
    }
 
-   public Set<ld> getCurrentNetworkImpacts() {
+   public Set<dm> getCurrentNetworkImpacts() {
       return this.getNetworkImpacts();
    }
 
-   public Set<ld> getNetworkImpacts() {
+   public Set<dm> getNetworkImpacts() {
       return Set.of();
    }
 
@@ -302,10 +302,10 @@ public abstract class Module {
       }
    }
 
-   public enum b {
-      m,
-      w,
-      F,
-      N;
+   public enum f {
+      M,
+      Z,
+      X,
+      b;
    }
 }

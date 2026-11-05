@@ -1,46 +1,24 @@
 package com.larpclient;
 
 public final class m_ {
-   private long d;
-   private long H;
-   private long K;
-   private long s = -1L;
-   private long N = -1L;
-   private long M = -1L;
-   private long y = -1L;
+   private long A;
 
-   public void w() {
-      this.d++;
-      this.H = this.K = 0L;
+   public boolean z(long var1) {
+      return var1 >= this.A;
    }
 
-   public void F() {
-      this.H++;
+   public void A() {
+      this.A = 0L;
    }
 
-   public void m() {
-      this.K++;
+   public void X(long var1, double var3, double var5, double var7) {
+      this.A = var1 + G(var3, var5, var7);
    }
 
-   public boolean Y() {
-      return this.s == this.d && this.M == this.H;
-   }
-
-   public boolean N() {
-      return this.N == this.d && this.y == this.K;
-   }
-
-   public void E() {
-      this.s = this.d;
-      this.M = this.H;
-   }
-
-   public void l() {
-      this.N = this.d;
-      this.y = this.K;
-   }
-
-   public void i() {
-      this.s = this.N = -1L;
+   public static long G(double var0, double var2, double var4) {
+      double var6 = Math.clamp(var2, 1.0, 20.0);
+      double var8 = Math.clamp(var0, 1.0, var6);
+      double var10 = var8 + (var6 - var8) * Math.clamp(var4, 0.0, 1.0);
+      return (long)Math.ceil(1.0E9 / var10);
    }
 }

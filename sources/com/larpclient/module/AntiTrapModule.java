@@ -1,6 +1,6 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
+import com.larpclient.mt;
 import java.util.Set;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
@@ -16,55 +16,55 @@ import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 public final class AntiTrapModule extends Module {
-   private static AntiTrapModule C;
-   private final ln V = this.G("Paintings", true);
-   private final ln b = this.G("Item Frames", true);
-   private final ln G = this.G("Minecarts", true);
-   private final ln B = this.G("Falling Blocks", false);
-   private final ln A = this.G("Armor Stands", false);
-   private final ln r = this.G("Banners", false);
-   private final ln E = this.G("Villagers", false);
-   private final ln n = this.G("Horses", false);
-   private final ln m = this.G("Signs", false);
-   private final ln T = this.G("Boats", false);
+   private static AntiTrapModule A;
+   private final dh M = this.r("Paintings", true);
+   private final dh F = this.r("Item Frames", true);
+   private final dh g = this.r("Minecarts", true);
+   private final dh r = this.r("Falling Blocks", false);
+   private final dh D = this.r("Armor Stands", false);
+   private final dh W = this.r("Banners", false);
+   private final dh m = this.r("Villagers", false);
+   private final dh n = this.r("Horses", false);
+   private final dh a = this.r("Signs", false);
+   private final dh h = this.r("Boats", false);
 
    public AntiTrapModule() {
       super("AntiTrap", "Skip interactions with selected trap objects", Category.COMBAT, -1);
-      C = this;
+      A = this;
    }
 
-   private ln G(String var1, boolean var2) {
-      return this.addSetting(new ln(var1, "Ignore " + var1.toLowerCase() + " when interacting", var2));
+   private dh r(String var1, boolean var2) {
+      return this.addSetting(new dh(var1, "Ignore " + var1.toLowerCase() + " when interacting", var2));
    }
 
-   public static boolean A(Entity var0) {
-      if (C != null && C.isEnabled()) {
-         AntiTrapModule var1 = C;
+   public static boolean l(Entity var0) {
+      if (A != null && A.isEnabled()) {
+         AntiTrapModule var1 = A;
          return var1 != null
             && var1.isRuntimeActive()
             && var0 != null
             && (
-               var0 instanceof Painting && var1.V.getValue()
-                  || var0 instanceof ItemFrame && var1.b.getValue()
-                  || var0 instanceof AbstractMinecart && var1.G.getValue()
-                  || var0 instanceof FallingBlockEntity && var1.B.getValue()
-                  || var0 instanceof ArmorStand && var1.A.getValue()
-                  || var0 instanceof Villager && var1.E.getValue()
-                  || var0 instanceof AbstractHorse && var1.n.getValue()
-                  || var0 instanceof AbstractBoat && var1.T.getValue()
+               var0 instanceof Painting && var1.M.P()
+                  || var0 instanceof ItemFrame && var1.F.P()
+                  || var0 instanceof AbstractMinecart && var1.g.P()
+                  || var0 instanceof FallingBlockEntity && var1.r.P()
+                  || var0 instanceof ArmorStand && var1.D.P()
+                  || var0 instanceof Villager && var1.m.P()
+                  || var0 instanceof AbstractHorse && var1.n.P()
+                  || var0 instanceof AbstractBoat && var1.h.P()
             );
       } else {
          return false;
       }
    }
 
-   public static boolean V(BlockState var0) {
-      if (C != null && C.isEnabled()) {
-         AntiTrapModule var1 = C;
+   public static boolean z(BlockState var0) {
+      if (A != null && A.isEnabled()) {
+         AntiTrapModule var1 = A;
          return var1 != null
             && var1.isRuntimeActive()
             && var0 != null
-            && (var0.getBlock() instanceof AbstractBannerBlock && var1.r.getValue() || var0.getBlock() instanceof SignBlock && var1.m.getValue());
+            && (var0.getBlock() instanceof AbstractBannerBlock && var1.W.P() || var0.getBlock() instanceof SignBlock && var1.a.P());
       } else {
          return false;
       }
@@ -72,16 +72,16 @@ public final class AntiTrapModule extends Module {
 
    @Override
    public void onEnable() {
-      r4.g("AntiTrap", "Interaction trap filters active");
+      mt.U("AntiTrap", "Interaction trap filters active");
    }
 
    @Override
    public void onDisable() {
-      r4.g("AntiTrap", "Interaction trap filters released");
+      mt.U("AntiTrap", "Interaction trap filters released");
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.a);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.z);
    }
 }

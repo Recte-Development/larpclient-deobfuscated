@@ -1,276 +1,418 @@
 package com.larpclient;
 
+import com.larpclient.module.AutoSellModule;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
-import java.util.function.IntPredicate;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
-public final class hi {
-   public static final double Y = 1420.0;
-   private static final double v = 150.0;
-   private static final double d = 610.0;
-   private static final double y = 720.0;
-   private static final double N = 600.0;
-   private static final double M = 0.28;
-   public static final int o = 12;
-   private static final double t = 1.4;
-   private final hi.o f;
-   private hi.c A;
-   private long G = -1L;
-   private double D;
-   private double B;
-   private boolean R;
-   private final Set<Integer> I = new HashSet<>();
+public final class hi extends h8 {
+   private final Screen m;
+   private final AutoSellModule j;
+   private final boolean i;
+   private final LinkedHashSet<String> W;
+   private final List<hi.e> v = new ArrayList<>();
+   private final List<b> X = new ArrayList<>();
+   private List<hi.e> s = List.of();
+   private ur I;
+   private u7 P;
+   private u7 L;
+   private u7 y;
+   private u7 Q;
+   private u7 w;
+   private u7 F;
+   private u7 c;
+   private String e = "";
+   private String n = "";
+   private boolean o;
+   private boolean x;
+   private int E;
+   private int H;
+   private int J;
+   private int S;
+   private int z;
+   private int Y;
+   private int a;
+   private int U;
+   private int M;
+   private Set<String> O = Set.of();
+   private Map<String, Integer> K = Map.of();
+   private final ef d = new ef(0.0);
 
-   private hi(hi.o var1, boolean var2) {
-      this.f = var1;
-      this.A = var2 ? hi.c.w : hi.c.o;
-   }
+   public hi(Screen var1, AutoSellModule var2, boolean var3) {
+      super(var3 ? "Never sell" : "Choose sell items");
+      this.m = var1;
+      this.j = var2;
+      this.i = var3;
+      this.W = new LinkedHashSet<>(var2.r(var3));
 
-   public hi.c B() {
-      return this.A;
-   }
-
-   public boolean q() {
-      return this.A == hi.c.w;
-   }
-
-   public boolean K() {
-      return this.A == hi.c.o;
-   }
-
-   public double X() {
-      return this.B;
-   }
-
-   public void F(long var1, boolean var3, boolean var4) {
-      double var5 = this.G >= 0L && var1 >= this.G && var1 - this.G <= 500000000L ? (var1 - this.G) / 1000000.0 : 0.0;
-      this.G = var1;
-      if (var3 && this.R) {
-         if (this.q()) {
-            this.D += var5;
-         } else if (this.A == hi.c.O) {
-            this.B += var5;
-         } else if (this.A == hi.c.q) {
-            this.B -= var5 * 1.4;
+      for (Item var5 : BuiltInRegistries.ITEM) {
+         ItemStack var6 = new ItemStack(var5);
+         if (!var6.isEmpty()) {
+            String var7 = BuiltInRegistries.ITEM.getKey(var5).toString();
+            String var8 = var6.getHoverName().getString();
+            this.v.add(new hi.e(var7, var8, var6, (var8 + " " + var7).toLowerCase(Locale.ROOT).replace('_', ' ')));
          }
       }
 
-      this.R = var3;
-      if (this.A == hi.c.O && (!var4 || this.B >= 1420.0)) {
-         this.L();
+      for (String var10 : this.W) {
+         if (this.v.stream().noneMatch(var1x -> var1x.id.equals(var10))) {
+            this.v.add(new hi.e(var10, var10 + " (unavailable)", ItemStack.EMPTY, var10.replace('_', ' ')));
+         }
       }
 
-      if (this.A == hi.c.q && (!var4 || this.B <= 0.0)) {
+      this.v.sort(Comparator.comparing(hi.e::name, String.CASE_INSENSITIVE_ORDER).thenComparing(hi.e::id));
+      this.L();
+      this.d.m(1.0, 200);
+      mt.U("AutoSell", "Opened {} item picker; draft size={}", var3 ? "excluded" : "selected", this.W.size());
+   }
+
+   private void L() {
+      HashSet var1 = new HashSet();
+      if (this.minecraft.player != null) {
+         for (int var2 = 0; var2 < 36; var2++) {
+            ItemStack var3 = this.minecraft.player.getInventory().getItem(var2);
+            if (!var3.isEmpty()) {
+               var1.add(BuiltInRegistries.ITEM.getKey(var3.getItem()).toString());
+            }
+         }
+      }
+
+      this.O = Set.copyOf(var1);
+   }
+
+   protected void init() {
+      this.z();
+      this.X.clear();
+      this.J = Math.max(1, Math.min(700, this.width - 24));
+      this.S = Math.max(1, Math.min(500, this.height - 20));
+      this.E = (this.width - this.J) / 2;
+      this.H = (this.height - this.S) / 2;
+      this.a = this.J >= 440 ? 2 : 1;
+      this.z = this.H + 111;
+      this.Y = this.H + this.S - 66;
+      this.U = Math.max(1, (this.Y - this.z) / 34);
+      this.I = new ur("Search items or namespace:item...", var1x -> {
+         this.e = var1x;
+         this.M = 0;
+         this.n();
+      }, 96);
+      this.I.d = this.e;
+      this.I.bounds(this.E + 12, this.H + 40, this.J - 24);
+      this.I.W = 24;
+      this.G.add(this.I);
+      this.P = this.X("In inventory", () -> {
          this.L();
+         this.o = (boolean)(!this.o ? 1 : 0);
+         this.M = 0;
+         this.n();
+      });
+      this.L = this.X("Selected", () -> {
+         this.x = (boolean)(!this.x ? 1 : 0);
+         this.M = 0;
+         this.n();
+      });
+      this.y = this.X("Add held", () -> {
+         if (this.minecraft.player != null && !this.minecraft.player.getMainHandItem().isEmpty()) {
+            String var1x = BuiltInRegistries.ITEM.getKey(this.minecraft.player.getMainHandItem().getItem()).toString();
+            this.U(() -> {
+               LinkedHashSet var2x = new LinkedHashSet<>(this.W);
+               var2x.add(var1x);
+               this.I(var2x);
+            });
+         } else {
+            this.n = "Hold an item first.";
+         }
+      });
+      this.Q = this.X("Select results", () -> this.U(() -> {
+         LinkedHashSet var1x = new LinkedHashSet<>(this.W);
+         this.s.forEach(var1xx -> var1x.add(var1xx.id));
+         this.I(var1x);
+      }));
+      this.w = this.X("Clear", () -> this.U(this.W::clear));
+      this.F = this.X("Cancel", this::onClose);
+      this.c = this.X("Done", () -> {
+         try {
+            this.j.P(this.i, this.W);
+            this.j.A();
+            mt.U("AutoSell", "Saved {} item selection; size={}", this.i ? "excluded" : "selected", this.W.size());
+            this.minecraft.gui.setScreen(this.m);
+         } catch (IllegalArgumentException var2x) {
+            this.n = var2x.getMessage();
+         }
+      });
+      this.c.w = (boolean)1;
+      int var1 = (this.J - 32) / 3;
+      this.P.bounds(this.E + 12, this.H + 73, var1);
+      this.L.bounds(this.E + 16 + var1, this.H + 73, var1);
+      this.y.bounds(this.E + 20 + var1 * 2, this.H + 73, var1);
+      int var2 = this.H + this.S - 31;
+      int var3 = (this.J - 36) / 4;
+      this.Q.bounds(this.E + 12, var2, var3);
+      this.w.bounds(this.E + 16 + var3, var2, var3);
+      this.F.bounds(this.E + 20 + var3 * 2, var2, var3);
+      this.c.bounds(this.E + 24 + var3 * 3, var2, var3);
+      this.n();
+      this.q = this.I;
+      this.I.l = (boolean)1;
+   }
+
+   private u7 X(String var1, Runnable var2) {
+      u7 var3 = new u7(var1, var2);
+      this.G.add(var3);
+      return var3;
+   }
+
+   private void I(Collection<String> var1) {
+      List var2 = ch.U(var1);
+      this.W.clear();
+      this.W.addAll(var2);
+   }
+
+   private void U(Runnable var1) {
+      try {
+         var1.run();
+         this.n = "";
+         this.n();
+      } catch (IllegalArgumentException var3) {
+         this.n = var3.getMessage();
       }
    }
 
-   public boolean m(boolean var1) {
-      if (this.R && this.q()) {
-         this.f.x = (boolean)1;
-         this.A = var1 ? hi.c.O : hi.c.o;
-         this.B = 0.0;
+   private void n() {
+      String[] var1 = this.e.strip().toLowerCase(Locale.ROOT).replace('_', ' ').split("\\s+");
+      this.s = this.v
+         .stream()
+         .filter(var1x -> !this.o || this.O.contains(var1x.id))
+         .filter(var1x -> !this.x || this.W.contains(var1x.id))
+         .filter(var1x -> Arrays.stream(var1).allMatch(var1x.search::contains))
+         .sorted(Comparator.comparing(var1x -> !this.W.contains(var1x.id)))
+         .toList();
+      this.M = Math.clamp(this.M, 0, Math.max(0, (this.s.size() + this.a - 1) / this.a - this.U));
+      this.P.U = this.o;
+      this.L.U = this.x;
+      this.X();
+      this.y();
+   }
+
+   private void X() {
+      ch.z var1 = this.j.K();
+      int var2 = !var1.error().isEmpty() ? 1 : 0;
+      ch.z var3 = new ch.z(
+         var2 != 0 ? ch.V.getFirst() : var1.mode(),
+         this.i ? var1.selected() : this.W,
+         this.i ? this.W : var1.excluded(),
+         var2 != 0 || var1.hotbar(),
+         var2 != 0 || var1.named(),
+         var2 != 0 || var1.enchanted(),
+         var2 != 0 || var1.filled(),
+         ""
+      );
+      HashMap var4 = new HashMap();
+      if (this.minecraft.player != null) {
+         for (int var5 = 0; var5 < 36; var5++) {
+            ch.t var6 = AutoSellModule.n(this.minecraft.player.getInventory().getItem(var5), var5);
+            if (var3.eligible(var6)) {
+               var4.merge(var6.id(), 1, Integer::sum);
+            }
+         }
+      }
+
+      this.K = Map.copyOf(var4);
+   }
+
+   private void y() {
+      if (this.q != null && this.X.contains(this.q)) {
+         this.q.blur();
+         this.q = null;
+      }
+
+      this.G.removeAll(this.X);
+      this.X.clear();
+      int var1 = (this.J - 28) / this.a;
+
+      for (int var2 = this.M * this.a; var2 < Math.min(this.s.size(), (this.M + this.U) * this.a); var2++) {
+         hi.x var3 = new hi.x(this.s.get(var2));
+         int var4 = var2 - this.M * this.a;
+         var3.bounds(this.E + 12 + var4 % this.a * var1, this.z + var4 / this.a * 34, var1 - 4);
+         var3.W = 30;
+         this.X.add(var3);
+         this.G.add(var3);
+      }
+   }
+
+   public void extractRenderState(GuiGraphicsExtractor var1, int var2, int var3, float var4) {
+      double var5 = this.d.m(1.0, 200);
+      c7.s(var1, 0, 0, this.width, this.height, -1609560044);
+
+      try (de var7 = de.l(var5)) {
+         pn.g(var1, this.E, this.H, this.J, this.S, com.larpclient.f.y, com.larpclient.f.u, 0.6);
+         k6.T(var1, this.i ? "Never sell" : "Choose sell items", this.E + 12, this.H + 12, com.larpclient.f.J, k6.d.m);
+         String var8 = this.W.size() + " / 32";
+         k6.Z(var1, var8, this.E + this.J - 12 - k6.P(var8), this.H + 16, com.larpclient.f.s);
+
+         for (b var10 : this.G) {
+            if (!this.X.contains(var10)) {
+               var10.render(var1, var2, var3);
+            }
+         }
+
+         var1.enableScissor(this.E + 8, this.z, this.E + this.J - 8, this.Y);
+
+         try {
+            for (b var20 : this.X) {
+               var20.render(var1, var2, var3);
+            }
+         } finally {
+            var1.disableScissor();
+         }
+
+         if (this.s.isEmpty()) {
+            k6.Z(var1, "No matching items", this.E + 16, this.z + 12, com.larpclient.f.s);
+         }
+
+         int var19 = (this.s.size() + this.a - 1) / this.a * 34;
+         pn.u(var1, this.E + this.J - 7, this.z, Math.max(1, this.Y - this.z), var19, this.M * 34);
+         String var21 = !this.n.isEmpty()
+            ? this.n
+            : this.s.size() + " results, " + this.K.values().stream().mapToInt(Integer::intValue).sum() + " eligible inventory stacks. Escape cancels.";
+         k6.T(var1, k6.o(var21, this.J - 24, k6.d.K), this.E + 12, this.H + this.S - 50, this.n.isEmpty() ? com.larpclient.f.s : -24915, k6.d.K);
+      }
+   }
+
+   @Override
+   protected boolean accepts(b var1, double var2, double var4) {
+      return super.accepts(var1, var2, var4) && (!this.X.contains(var1) || var4 >= this.z && var4 < this.Y);
+   }
+
+   @Override
+   public boolean mouseClicked(MouseButtonEvent var1, boolean var2) {
+      return super.mouseClicked(var1, var2);
+   }
+
+   public boolean mouseScrolled(double var1, double var3, double var5, double var7) {
+      if (!(var1 < this.E) && !(var1 >= this.E + this.J) && !(var3 < this.z) && !(var3 >= this.Y)) {
+         this.M = this.M - (int)Math.signum(var7) * 2;
+         this.n();
          return true;
       } else {
          return false;
       }
    }
 
-   public boolean B(boolean var1) {
-      if (this.R && this.K()) {
-         this.A = var1 ? hi.c.q : hi.c.w;
-         this.B = var1 ? 1420.0 : 0.0;
+   @Override
+   public boolean keyPressed(KeyEvent var1) {
+      if (mo.O(var1) == 256) {
+         this.onClose();
+         return true;
+      } else if (this.q != this.I && (mo.O(var1) == 266 || mo.O(var1) == 267 || mo.O(var1) == 264 || mo.O(var1) == 265)) {
+         this.M = this.M + (mo.O(var1) == 266 ? -this.U : (mo.O(var1) == 267 ? this.U : (mo.O(var1) == 264 ? 1 : -1)));
+         this.n();
          return true;
       } else {
-         return false;
+         return super.keyPressed(var1);
       }
    }
 
-   public void L() {
-      if (this.A == hi.c.q) {
-         this.A = hi.c.w;
-         this.B = 0.0;
-      } else if (!this.q()) {
-         this.A = hi.c.o;
-         this.B = 1420.0;
-      }
+   public void onClose() {
+      mt.U("AutoSell", "Item picker draft discarded");
+      this.minecraft.gui.setScreen(this.m);
    }
 
-   public void y() {
-      this.f.x = (boolean)1;
-      this.A = hi.c.o;
-      this.B = 1420.0;
+   private record e(String id, String name, ItemStack icon, String search) {
    }
 
-   public boolean a(int var1) {
-      return this.I.add(var1);
-   }
+   private final class x extends b {
+      private final hi.e h;
+      private final ef s = new ef(0.0);
 
-   public boolean e(int var1) {
-      return this.I.contains(var1);
-   }
-
-   public boolean C(int var1) {
-      return this.I.remove(var1);
-   }
-
-   public void F(IntPredicate var1) {
-      this.I.removeIf(var1x -> !var1.test(var1x));
-   }
-
-   public static o6.b Z(int var0, int var1) {
-      int var2 = Math.min(188, var0 - 32);
-      return new o6.b((var0 - var2) / 2, (int)(var1 * 0.48) + P(var1) / 2 + 42, var2, 28);
-   }
-
-   private static int P(int var0) {
-      return (int)Math.clamp(var0 * 0.16, 30.0, 86.0);
-   }
-
-   public hi.k v(_q var1, boolean var2) {
-      o6.b var3 = var1.logo();
-      double var4 = var1.width() / 2.0;
-      double var6 = var1.height() * 0.48;
-      double var8 = var3.x() + var3.width() / 2.0;
-      double var10 = var3.y() + var3.height() / 2.0;
-      double var12 = P(var1.height());
-      if (this.K()) {
-         return new hi.k(var8, var10, var3.width(), 1.0, 0.0);
+      x(hi.e var2) {
+         this.h = var2;
       }
 
-      double var14 = var2 ? Math.sin(this.D / 1800.0) * 0.025 : 0.0;
-      if (this.q()) {
-         return new hi.k(var4, var6, var12, 1.0, var14);
+      @Override
+      public void render(GuiGraphicsExtractor var1, int var2, int var3) {
+         boolean var4 = hi.this.W.contains(this.h.id);
+         double var5 = this.s.m(!this.contains(var2, var3) && !this.l ? 0.0 : 1.0, 160);
+         pn.b(var1, this.q, this.J, this.A, this.W, com.larpclient.f.aj, _3.D(var4 ? com.larpclient.f.V : com.larpclient.f.S, com.larpclient.f.x, var5 * 0.6));
+         if (!this.h.icon.isEmpty()) {
+            var1.item(this.h.icon, this.q + 7, this.J + 7);
+         }
+
+         k6.Z(var1, k6.j(this.h.name, this.A - 54), this.q + 29, this.J + 5, com.larpclient.f.J);
+         k6.T(var1, k6.o(this.h.id, this.A - 54, k6.d.K), this.q + 29, this.J + 18, com.larpclient.f.s, k6.d.K);
+         if (var4) {
+            k6.Z(var1, "+", this.q + this.A - 15, this.J + 10, com.larpclient.f.z(this.q));
+         }
+
+         if (this.l && this.R) {
+            pn.y(var1, this.q, this.J, this.A, this.W, com.larpclient.f.aj);
+         }
+
+         if (this.contains(var2, var3)) {
+            String var7 = this.h.id
+               + (hi.this.O.contains(this.h.id) ? " | " + hi.this.K.getOrDefault(this.h.id, 0) + " eligible inventory stacks" : "")
+               + (hi.this.j.r(!hi.this.i).contains(this.h.id) ? (hi.this.i ? " | Also selected for selling; exclusion wins" : " | Excluded from selling") : "");
+            var1.setTooltipForNextFrame(Component.literal(var7), var2, var3);
+         }
       }
 
-      double var16 = Math.pow(Math.sin(Math.PI * W(this.B / 150.0)), 2.0);
-      if (this.B < 150.0) {
-         return new hi.k(var4, var6 + 5.0 * var16, var12 * (1.0 + 0.06 * var16), 1.0 - 0.15 * var16, var14 - 0.055 * var16);
+      private void R() {
+         boolean var1 = this.R;
+         hi.this.U(() -> {
+            LinkedHashSet var1x = new LinkedHashSet<>(hi.this.W);
+            if (!var1x.remove(this.h.id)) {
+               var1x.add(this.h.id);
+            }
+
+            hi.this.I(var1x);
+         });
+
+         for (b var3 : hi.this.X) {
+            if (var3 instanceof hi.x var4 && var4.h.id.equals(this.h.id)) {
+               hi.this.q = var4;
+               var4.l = (boolean)1;
+               var4.R = var1;
+               break;
+            }
+         }
+
+         kb.d(kb.n.w);
       }
 
-      double var18 = W((this.B - 150.0) / 610.0);
-      double var20 = g(var18);
-      double var22 = Math.sin(Math.PI * var20);
-      double var24 = Math.sin((Math.PI * 2) * var18) * Math.pow(1.0 - var18, 2.0);
-      return new hi.k(
-         var4 + (var8 - var4) * var20 + Math.min(42.0, var1.width() * 0.06) * var22,
-         var6 + (var10 - var6) * var20 - 24.0 * var22,
-         var12 + (var3.width() - var12) * var20,
-         1.0 + 0.13 * var24,
-         var14 * (1.0 - var20) - 0.28 * var22 + 0.1 * var24
-      );
-   }
-
-   public hi.s K(_q var1, boolean var2) {
-      o6.b var3 = var1.logo();
-      o6.b var4 = var1.title();
-      hi.k var5 = this.v(var1, var2);
-      double var6 = var5.x() + var5.size() * 0.28;
-      if (this.K()) {
-         return new hi.s(var4.x(), 0.0, var6, 1.0);
+      @Override
+      public boolean click(double var1, double var3, int var5) {
+         if (var5 == 0 && this.contains(var1, var3)) {
+            this.R();
+            return true;
+         } else {
+            return false;
+         }
       }
 
-      double var8 = this.q() ? 0.0 : W((this.B - 720.0) / 600.0);
-      double var10 = 1.0 - Math.pow(1.0 - var8, 3.0);
-      double var12 = var3.width() * 0.28 - var4.width() - 2.0;
-      double var14 = var4.x() - (var3.x() + var3.width() / 2.0);
-      double var16 = var5.y() - (var3.y() + var3.height() / 2.0);
-      return new hi.s(var5.x() + var12 + (var14 - var12) * var10, var16, var6, E(var8 / 0.25));
-   }
-
-   public hi.t w(boolean var1) {
-      double var2 = this.q() ? 1.0 : 1.0 - E(this.B / 150.0);
-      return new hi.t(0.0, 0.0, 1.0, 1.0, 0.0, var2);
-   }
-
-   public hi.t U(boolean var1) {
-      double var2 = this.q() ? (var1 ? 0.78 + 0.12 * Math.sin(this.D / 900.0) : 1.0) : 1.0 - E(this.B / 110.0);
-      return new hi.t(0.0, 0.0, 1.0, 1.0, 0.0, var2);
-   }
-
-   public hi.t L(int var1) {
-      int var2 = var1 == 5 ? 1 : 0;
-      int var3 = var1 < 3 ? 1 : 0;
-      return this.q(
-         var2 != 0 ? 700 + var1 * 70 + 50 : 700 + var1 * 70,
-         440.0,
-         var3 != 0 ? 27.0 : 16.0,
-         var2 != 0 ? -10.0 : (var1 % 2 == 0 ? -7 : 7),
-         var3 != 0 ? 0.78 : 0.9
-      );
-   }
-
-   private hi.t q(double var1, double var3, double var5, double var7, double var9) {
-      if (this.K()) {
-         return hi.t.REST;
+      @Override
+      public boolean key(int var1) {
+         if (this.l && (var1 == 257 || var1 == 32)) {
+            this.R();
+            return true;
+         } else {
+            return false;
+         }
       }
-
-      double var11 = this.q() ? 0.0 : W((this.B - var1) / var3);
-      double var13 = E(var11 / 0.42);
-      double var15 = s(var11);
-      double var17 = Math.sin(Math.PI * var11) * (1.0 - var11);
-      return new hi.t(var7 * var17, var5 * (1.0 - var15), var9 + (1.0 - var9) * var15, var9 + (1.0 - var9) * var15, 0.022 * var7 / 10.0 * var17, var13);
-   }
-
-   public double I() {
-      return this.K() ? 1.0 : (this.q() ? 0.12 : 0.12 + 0.88 * g((this.B - 110.0) / 820.0));
-   }
-
-   public hi.l S(int var1, _q var2) {
-      double var3 = !this.q() && !this.K() ? W((this.B - 180.0 - var1 % 3 * 20) / 660.0) : 0.0;
-      double var5 = var1 % 2 == 0 ? -1.0 : 1.0;
-      double var7 = -0.9 + var1 / 2.0 * 0.29;
-      double var9 = Math.min(var2.width() * 0.43, 270.0) * (1.0 - Math.pow(1.0 - var3, 3.0));
-      double var11 = var2.width() / 2.0 + var5 * (20.0 + var9 * Math.cos(var7));
-      double var13 = var2.height() * 0.48 + var9 * 0.35 * Math.sin(var7) - 44.0 * Math.sin(Math.PI * var3) + 35.0 * var3 * var3;
-      return new hi.l(var11, var13, (3 + var1 % 3 * 2) * (1.0 - 0.6 * var3), var5 * var3 * 2.3, 0.32 * E(var3 / 0.15) * (1.0 - E((var3 - 0.35) / 0.65)));
-   }
-
-   public static double W(double var0) {
-      return Math.clamp(var0, 0.0, 1.0);
-   }
-
-   private static double E(double var0) {
-      var0 = W(var0);
-      return var0 * var0 * (3.0 - 2.0 * var0);
-   }
-
-   private static double g(double var0) {
-      var0 = W(var0);
-      return var0 * var0 * var0 * (var0 * (var0 * 6.0 - 15.0) + 10.0);
-   }
-
-   private static double s(double var0) {
-      var0 = W(var0);
-      double var2 = var0 - 1.0;
-      return 1.0 + 2.4 * var2 * var2 * var2 + 1.4 * var2 * var2;
-   }
-
-   public enum c {
-      w,
-      O,
-      q,
-      o;
-   }
-
-   public record k(double x, double y, double size, double stretch, double rotation) {
-   }
-
-   public record l(double x, double y, double size, double rotation, double alpha) {
-   }
-
-   public static final class o {
-      private boolean x;
-
-      public hi p() {
-         return new hi(this, !this.x);
-      }
-   }
-
-   public record s(double x, double lift, double clip, double alpha) {
-   }
-
-   public record t(double x, double y, double scaleX, double scaleY, double rotation, double alpha) {
-      public static final hi.t REST = new hi.t(0.0, 0.0, 1.0, 1.0, 0.0, 1.0);
    }
 }

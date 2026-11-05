@@ -1,467 +1,287 @@
 package com.larpclient;
 
-import io.netty.buffer.ByteBuf;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mojang.authlib.exceptions.AuthenticationException;
+import com.mojang.authlib.exceptions.MinecraftClientHttpException;
+import com.mojang.authlib.services.response.ErrorResponse;
+import com.mojang.util.UndashedUuid;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.PendingWriteQueue;
-import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.ScheduledFuture;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.resolver.NoopAddressResolverGroup;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLParameters;
+import net.minecraft.server.network.EventLoopGroupHolder;
 
-public final class xj extends ChannelDuplexHandler {
-   public static final String G = "larp_proxy";
-   static final int m = 10;
-   static final int E = 8192;
-   private final h4.o K;
-   private InetSocketAddress N;
-   private ChannelPromise r;
-   private PendingWriteQueue n;
-   private ByteBuf Q = Unpooled.EMPTY_BUFFER;
-   private ScheduledFuture<?> X;
-   private boolean h;
-   private boolean j;
-   private boolean Y;
-   private int z;
+final class xj {
+   static final URI v = URI.create("https://sessionserver.mojang.com/session/minecraft/join");
+   static final int c = 10000;
+   static final int L = 15;
+   static final int p = 65536;
 
-   public xj(h4.o var1) {
-      this.K = var1;
+   private xj() {
    }
 
-   public void handlerAdded(ChannelHandlerContext var1) {
-      this.n = new PendingWriteQueue(var1);
-   }
+   static void Z(oe.u var0, UUID var1, String var2, String var3) throws AuthenticationException {
+      JsonObject var4 = new JsonObject();
+      var4.addProperty("accessToken", var2);
+      var4.addProperty("selectedProfile", UndashedUuid.toString(var1));
+      var4.addProperty("serverId", var3);
 
-   public void connect(ChannelHandlerContext var1, SocketAddress var2, SocketAddress var3, ChannelPromise var4) {
-      if (this.N != null) {
-         var4.setFailure(new xj.s("Proxy connection was already started"));
-      } else if (var2 instanceof InetSocketAddress var5) {
-         this.N = var5;
-         this.r = var4;
-         var4.addListener(var1x -> {
-            if (var1x.isCancelled()) {
-               var1.close();
-            }
-         });
-         ChannelPromise var6 = var1.newPromise();
-         var6.addListener(var2x -> {
-            if (!var2x.isSuccess() && !var2x.isCancelled()) {
-               this.V(var1, new xj.s(this.P() + "could not reach the proxy", var2x.cause()));
-            }
-         });
-         var1.connect(this.K.address(), var3, var6);
-      } else {
-         var4.setFailure(new xj.s("Proxy destinations must be network addresses"));
-      }
-   }
-
-   public void channelActive(ChannelHandlerContext var1) {
-      this.X = var1.executor().schedule(() -> this.V(var1, new xj.s(this.P() + "the proxy did not answer in time")), 10L, TimeUnit.SECONDS);
-
+      xj.z var5;
       try {
-         this.e(var1);
-      } catch (xj.s var3) {
-         this.V(var1, var3);
+         var5 = z(var0, v, var4.toString());
+      } catch (IOException var7) {
+         mt.T(
+            "Proxy",
+            "Mojang join check through {} failed ({}); the server login stops instead of going direct",
+            var0.settings().label(),
+            var7.getClass().getSimpleName()
+         );
+         throw new AuthenticationException(var7.getMessage());
+      } catch (InterruptedException var8) {
+         Thread.currentThread().interrupt();
+         throw new AuthenticationException("Proxy " + var0.settings().label() + ": the join check was interrupted");
       }
-   }
 
-   public void channelRead(ChannelHandlerContext var1, Object var2) {
-      if (this.h) {
-         var1.fireChannelRead(var2);
-      } else if (!(var2 instanceof ByteBuf var3)) {
-         ReferenceCountUtil.release(var2);
-      } else if (this.j) {
-         var3.release();
+      if (var5.status() / 100 == 2) {
+         mt.K("Proxy", "Mojang join check passed through {}", var0.settings().label());
       } else {
-         if (this.Q.isReadable()) {
-            this.Q = Unpooled.wrappedBuffer(new ByteBuf[]{this.Q, var3});
-         } else {
-            this.Q.release();
-            this.Q = var3;
-         }
-
-         try {
-            if (this.Q.readableBytes() > 8192) {
-               throw new xj.s(this.P() + "the proxy sent an oversized reply");
-            }
-
-            while (!this.h && !this.j && this.L(var1)) {
-            }
-         } catch (xj.s var5) {
-            this.V(var1, var5);
-         }
+         mt.T("Proxy", "Mojang join check through {} returned HTTP {}", var0.settings().label(), var5.status());
+         throw N(var5.status(), var5.body());
       }
    }
 
-   public void channelInactive(ChannelHandlerContext var1) throws Exception {
-      if (this.h) {
-         super.channelInactive(var1);
-      } else {
-         this.V(var1, new xj.s(this.P() + "the proxy closed the connection"));
-      }
+   static AuthenticationException N(int var0, String var1) {
+      ErrorResponse var2 = m(var1);
+      return (var2 == null ? new MinecraftClientHttpException(var0) : new MinecraftClientHttpException(var0, var2)).toAuthenticationException();
    }
 
-   public void exceptionCaught(ChannelHandlerContext var1, Throwable var2) {
-      if (this.h) {
-         var1.fireExceptionCaught(var2);
-      } else {
-         this.V(var1, var2 instanceof xj.s var3 ? var3 : new xj.s(this.P() + "the proxy connection failed", var2));
-      }
-   }
-
-   public void write(ChannelHandlerContext var1, Object var2, ChannelPromise var3) {
-      if (this.h) {
-         var1.write(var2, var3);
-      } else if (this.j) {
-         ReferenceCountUtil.release(var2);
-         var3.setFailure(new xj.s(this.P() + "the proxy connection failed"));
-      } else {
-         this.n.add(var2, var3);
-      }
-   }
-
-   public void flush(ChannelHandlerContext var1) {
-      if (this.h) {
-         var1.flush();
-      } else {
-         this.Y = (boolean)1;
-      }
-   }
-
-   public void handlerRemoved(ChannelHandlerContext var1) {
-      if (this.X != null) {
-         this.X.cancel(false);
-      }
-
-      if (!this.h) {
-         if (!this.n.isEmpty()) {
-            this.n.removeAndFailAll(new xj.s(this.P() + "the proxy connection closed"));
-         }
-
-         if (this.Q.refCnt() > 0 && this.Q != Unpooled.EMPTY_BUFFER) {
-            this.Q.release();
-         }
-
-         this.Q = Unpooled.EMPTY_BUFFER;
-      }
-   }
-
-   private void e(ChannelHandlerContext var1) throws xj.s {
-      h4 var2 = this.K.settings();
-      ByteBuf var3 = var1.alloc().buffer();
-      switch (var2.type()) {
-         case e:
-            if (var2.authenticated()) {
-               var3.writeBytes(new byte[]{5, 2, 0, 2});
-            } else {
-               var3.writeBytes(new byte[]{5, 1, 0});
-            }
-            break;
-         case d:
-            var3.writeByte(4).writeByte(1).writeShort(this.N.getPort());
-            byte[] var7 = var2.username().getBytes(StandardCharsets.UTF_8);
-            if (this.N.isUnresolved()) {
-               byte[] var6 = l(this.N.getHostString());
-               var3.writeBytes(new byte[]{0, 0, 0, 1}).writeBytes(var7).writeByte(0).writeBytes(var6).writeByte(0);
-            } else {
-               if (!(this.N.getAddress() instanceof Inet4Address var8)) {
-                  var3.release();
-                  throw new xj.s(this.P() + "SOCKS4 proxies cannot reach IPv6 servers");
-               }
-
-               var3.writeBytes(var8.getAddress()).writeBytes(var7).writeByte(0);
-            }
-            break;
-         case q:
-            String var4 = S(this.N);
-            StringBuilder var5 = new StringBuilder("CONNECT ").append(var4).append(" HTTP/1.1\r\nHost: ").append(var4).append("\r\n");
-            if (var2.authenticated()) {
-               var5.append("Proxy-Authorization: Basic ")
-                  .append(Base64.getEncoder().encodeToString((var2.username() + ":" + var2.password()).getBytes(StandardCharsets.UTF_8)))
-                  .append("\r\n");
-            }
-
-            var3.writeBytes(var5.append("\r\n").toString().getBytes(StandardCharsets.ISO_8859_1));
-      }
-
-      var1.writeAndFlush(var3).addListener(var2x -> {
-         if (!var2x.isSuccess()) {
-            this.V(var1, new xj.s(this.P() + "could not talk to the proxy", var2x.cause()));
+   static long Y(oe.u var0) throws IOException, InterruptedException {
+      long var1 = System.nanoTime();
+      CompletableFuture var3 = new CompletableFuture();
+      ChannelFuture var4 = C(var0, new xj.o(var0, var3)).connect(C(var0, v.getHost()));
+      var4.addListener(var1x -> {
+         if (!var1x.isSuccess()) {
+            var3.completeExceptionally(var1x.cause());
          }
       });
+
+      try {
+         c(var0, var3);
+         return (System.nanoTime() - var1) / 1000000L;
+      } finally {
+         var4.channel().close();
+      }
    }
 
-   private boolean L(ChannelHandlerContext var1) throws xj.s {
-      h4 var2 = this.K.settings();
-      switch (var2.type()) {
-         case e:
-            return this.d(var1, var2);
-         case d:
-            if (this.Q.readableBytes() < 8) {
-               return false;
-            } else {
-               short var10 = this.Q.readUnsignedByte();
-               short var11 = this.Q.readUnsignedByte();
-               this.Q.skipBytes(6);
-               if (var10 != 0) {
-                  throw new xj.s(this.P() + "the proxy does not speak SOCKS4");
-               } else {
-                  if (var11 == 90) {
-                     this.m(var1);
-                     return true;
-                  }
+   static xj.z z(oe.u var0, URI var1, String var2) throws IOException, InterruptedException {
+      if ("https".equals(var1.getScheme()) && var1.getPort() == -1) {
+         byte[] var3 = var2.getBytes(StandardCharsets.UTF_8);
+         DefaultFullHttpRequest var4 = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, var1.getRawPath(), Unpooled.wrappedBuffer(var3));
+         var4.headers()
+            .set(HttpHeaderNames.HOST, var1.getHost())
+            .set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8")
+            .set(HttpHeaderNames.CONTENT_LENGTH, var3.length)
+            .set(HttpHeaderNames.ACCEPT, "application/json")
+            .set(HttpHeaderNames.USER_AGENT, "Java/" + System.getProperty("java.version"))
+            .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+         CompletableFuture var5 = new CompletableFuture();
 
-                  throw new xj.s(this.P() + (var11 != 92 && var11 != 93 ? "the proxy refused the connection" : "the proxy rejected the user ID"));
-               }
+         ChannelFuture var6;
+         try {
+            var6 = C(var0, new xj.d(var0, var1.getHost(), var4, var5)).connect(C(var0, var1.getHost()));
+         } catch (RuntimeException var12) {
+            var4.release();
+            throw var12;
+         }
+
+         var6.addListener(var1x -> {
+            if (!var1x.isSuccess()) {
+               var5.completeExceptionally(var1x.cause());
             }
-         case q:
-            int var3 = this.g();
-            if (var3 < 0) {
-               return false;
-            } else {
-               String var4 = this.Q.readCharSequence(var3 + 4 - this.Q.readerIndex(), StandardCharsets.ISO_8859_1).toString();
-               String var5 = var4.substring(0, Math.max(0, var4.indexOf("\r\n")));
-               String[] var6 = var5.split(" ", 3);
-               if (var6.length >= 2 && var6[0].startsWith("HTTP/1.")) {
-                  int var7;
-                  try {
-                     var7 = Integer.parseInt(var6[1]);
-                  } catch (NumberFormatException var9) {
-                     throw new xj.s(this.P() + "the proxy sent an invalid reply");
-                  }
+         });
 
-                  if (var7 == 407) {
-                     throw new xj.s(
-                        this.P() + (var2.authenticated() ? "the proxy rejected the username or password" : "the proxy needs a username and password")
-                     );
-                  }
-
-                  if (var7 / 100 != 2) {
-                     throw new xj.s(this.P() + "the proxy refused the connection (HTTP " + var7 + ")");
-                  }
-
-                  this.m(var1);
-                  return true;
-               }
-
-               throw new xj.s(this.P() + "the proxy does not speak HTTP CONNECT");
-            }
-         default:
-            return false;
+         try {
+            return c(var0, var5);
+         } finally {
+            var6.channel().close();
+         }
+      } else {
+         throw new IllegalArgumentException("Proxy requests use default HTTPS endpoints");
       }
    }
 
-   private boolean d(ChannelHandlerContext var1, h4 var2) throws xj.s {
-      if (this.z == 0) {
-         if (this.Q.readableBytes() < 2) {
-            return false;
-         }
-
-         short var7 = this.Q.readUnsignedByte();
-         short var8 = this.Q.readUnsignedByte();
-         if (var7 != 5) {
-            throw new xj.s(this.P() + "the proxy does not speak SOCKS5");
-         }
-
-         if (var8 == 2 && var2.authenticated()) {
-            byte[] var9 = var2.username().getBytes(StandardCharsets.UTF_8);
-            byte[] var10 = var2.password().getBytes(StandardCharsets.UTF_8);
-            var1.writeAndFlush(var1.alloc().buffer().writeByte(1).writeByte(var9.length).writeBytes(var9).writeByte(var10.length).writeBytes(var10));
-            this.z = 1;
-            return true;
-         }
-
-         if (var8 != 0) {
-            throw new xj.s(
-               this.P()
-                  + (
-                     var8 == 255
-                        ? (var2.authenticated() ? "the proxy refused these login methods" : "the proxy needs a username and password")
-                        : "the proxy chose an unsupported login method"
-                  )
-            );
-         }
-
-         this.i(var1);
-         this.z = 2;
-         return true;
-      } else if (this.z == 1) {
-         if (this.Q.readableBytes() < 2) {
-            return false;
-         }
-
-         this.Q.readUnsignedByte();
-         if (this.Q.readUnsignedByte() != 0) {
-            throw new xj.s(this.P() + "the proxy rejected the username or password");
-         }
-
-         this.i(var1);
-         this.z = 2;
-         return true;
-      } else {
-         if (this.Q.readableBytes() < 5) {
-            return false;
-         }
-
-         int var3 = this.Q.readerIndex();
-         short var4 = this.Q.getUnsignedByte(var3 + 3);
-
-         int var5 = switch (var4) {
-            case 1 -> 10;
-            default -> -1;
-            case 3 -> 7 + this.Q.getUnsignedByte(var3 + 4);
-            case 4 -> 22;
-         };
-         if (this.Q.getUnsignedByte(var3) != 5) {
-            throw new xj.s(this.P() + "the proxy does not speak SOCKS5");
-         }
-
-         short var6 = this.Q.getUnsignedByte(var3 + 1);
-         if (var6 != 0) {
-            throw new xj.s(this.P() + Z(var6));
-         }
-
-         if (var5 < 0) {
-            throw new xj.s(this.P() + "the proxy sent an invalid reply");
-         }
-
-         if (this.Q.readableBytes() < var5) {
-            return false;
-         }
-
-         this.Q.skipBytes(var5);
-         this.m(var1);
-         return true;
-      }
+   private static Bootstrap C(oe.u var0, ChannelHandler var1) {
+      EventLoopGroupHolder var2 = EventLoopGroupHolder.remote(false);
+      return (Bootstrap)((Bootstrap)((Bootstrap)((Bootstrap)new Bootstrap().group(var2.eventLoopGroup())).channel(var2.channelCls()))
+            .resolver(NoopAddressResolverGroup.INSTANCE)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000))
+         .handler(var1);
    }
 
-   private void i(ChannelHandlerContext var1) throws xj.s {
-      ByteBuf var2 = var1.alloc().buffer().writeBytes(new byte[]{5, 1, 0});
-      if (this.N.isUnresolved()) {
-         byte[] var4 = l(this.N.getHostString());
-         if (var4.length > 255) {
-            var2.release();
-            throw new xj.s(this.P() + "the server name is too long for SOCKS5");
-         }
-
-         var2.writeByte(3).writeByte(var4.length).writeBytes(var4);
-      } else if (this.N.getAddress() instanceof Inet6Address var3) {
-         var2.writeByte(4).writeBytes(var3.getAddress());
-      } else {
-         var2.writeByte(1).writeBytes(this.N.getAddress().getAddress());
-      }
-
-      var2.writeShort(this.N.getPort());
-      var1.writeAndFlush(var2);
+   private static InetSocketAddress C(oe.u var0, String var1) throws IOException {
+      return var0.settings().type() == oe.k.q ? new InetSocketAddress(InetAddress.getByName(var1), 443) : InetSocketAddress.createUnresolved(var1, 443);
    }
 
-   private void m(ChannelHandlerContext var1) {
-      if (this.X != null) {
-         this.X.cancel(false);
-      }
-
-      this.h = (boolean)1;
-      ByteBuf var2 = this.Q;
-      this.Q = Unpooled.EMPTY_BUFFER;
-      if (!this.r.trySuccess()) {
-         var2.release();
-         var1.close();
-      } else {
-         var1.fireChannelActive();
-         this.n.removeAndWriteAll();
-         if (this.Y) {
-            var1.flush();
-         }
-
-         if (var2.isReadable()) {
-            var1.fireChannelRead(var2);
+   private static <T> T c(oe.u var0, CompletableFuture<T> var1) throws IOException, InterruptedException {
+      try {
+         return (T)var1.get(15L, TimeUnit.SECONDS);
+      } catch (TimeoutException var5) {
+         var1.cancel(false);
+         throw new u2.i("Proxy " + var0.settings().label() + ": the request did not finish in time");
+      } catch (ExecutionException var6) {
+         Throwable var3 = var6.getCause();
+         if (var3 instanceof u2.i var4) {
+            throw var4;
+         } else if (var3 instanceof SSLException) {
+            throw new u2.i("Proxy " + var0.settings().label() + ": the secure connection through the proxy failed", var3);
          } else {
-            var2.release();
+            throw new u2.i("Proxy " + var0.settings().label() + ": the request failed", var3);
          }
-
-         var1.pipeline().remove(this);
       }
    }
 
-   private void V(ChannelHandlerContext var1, Throwable var2) {
-      if (!this.h && !this.j) {
-         this.j = (boolean)1;
-         if (this.X != null) {
-            this.X.cancel(false);
-         }
+   private static ErrorResponse m(String var0) {
+      try {
+         JsonObject var1 = JsonParser.parseString(var0).getAsJsonObject();
+         return new ErrorResponse(E(var1, "path"), E(var1, "error"), E(var1, "errorMessage"), null);
+      } catch (RuntimeException var2) {
+         return null;
+      }
+   }
 
-         xj.s var3 = var2 instanceof xj.s var4 ? var4 : new xj.s(this.P() + "the proxy connection failed", var2);
-         if (this.r != null) {
-            this.r.tryFailure(var3);
-         }
+   private static String E(JsonObject var0, String var1) {
+      return var0.has(var1) && var0.get(var1).isJsonPrimitive() ? var0.get(var1).getAsString() : null;
+   }
 
-         if (!this.n.isEmpty()) {
-            this.n.removeAndFailAll(var3);
-         }
+   private static SslHandler m(String var0) throws NoSuchAlgorithmException {
+      SSLEngine var1 = SSLContext.getDefault().createSSLEngine(var0, 443);
+      var1.setUseClientMode(true);
+      SSLParameters var2 = var1.getSSLParameters();
+      var2.setEndpointIdentificationAlgorithm("HTTPS");
+      var2.setServerNames(List.of(new SNIHostName(var0)));
+      var1.setSSLParameters(var2);
+      return new SslHandler(var1);
+   }
 
+   static final class d extends ChannelInitializer<Channel> {
+      private final oe.u w;
+      private final String j;
+      private final FullHttpRequest c;
+      private final CompletableFuture<xj.z> e;
+
+      d(oe.u var1, String var2, FullHttpRequest var3, CompletableFuture<xj.z> var4) {
+         this.w = var1;
+         this.j = var2;
+         this.c = var3;
+         this.e = var4;
+      }
+
+      protected void initChannel(Channel var1) throws Exception {
+         var1.pipeline()
+            .addLast("larp_proxy", new u2(this.w))
+            .addLast("tls", xj.m(this.j))
+            .addLast("http", new HttpClientCodec())
+            .addLast("aggregate", new HttpObjectAggregator(65536))
+            .addLast("larp_response", new xj.k(this.c, this.e));
+      }
+   }
+
+   static final class k extends SimpleChannelInboundHandler<FullHttpResponse> {
+      private final FullHttpRequest M;
+      private final CompletableFuture<xj.z> v;
+
+      k(FullHttpRequest var1, CompletableFuture<xj.z> var2) {
+         this.M = var1;
+         this.v = var2;
+      }
+
+      public void channelActive(ChannelHandlerContext var1) {
+         var1.writeAndFlush(this.M.retain());
+      }
+
+      protected void P(ChannelHandlerContext var1, FullHttpResponse var2) {
+         this.v.complete(new xj.z(var2.status().code(), var2.content().toString(StandardCharsets.UTF_8)));
+         var1.close();
+      }
+
+      public void exceptionCaught(ChannelHandlerContext var1, Throwable var2) {
+         this.v.completeExceptionally(var2);
+         var1.close();
+      }
+
+      public void channelInactive(ChannelHandlerContext var1) {
+         this.v.completeExceptionally(new IOException("The connection closed before a response"));
+      }
+
+      public void handlerRemoved(ChannelHandlerContext var1) {
+         if (this.M.refCnt() > 0) {
+            this.M.release();
+         }
+      }
+   }
+
+   static final class o extends ChannelInitializer<Channel> {
+      private final oe.u C;
+      private final CompletableFuture<Void> r;
+
+      o(oe.u var1, CompletableFuture<Void> var2) {
+         this.C = var1;
+         this.r = var2;
+      }
+
+      protected void initChannel(Channel var1) {
+         var1.pipeline().addLast("larp_proxy", new u2(this.C)).addLast("larp_probe", new xj.t(this.r));
+      }
+   }
+
+   static final class t extends ChannelInboundHandlerAdapter {
+      private final CompletableFuture<Void> L;
+
+      t(CompletableFuture<Void> var1) {
+         this.L = var1;
+      }
+
+      public void channelActive(ChannelHandlerContext var1) {
+         this.L.complete(null);
          var1.close();
       }
    }
 
-   private int g() {
-      int var1 = this.Q.readerIndex();
-      int var2 = this.Q.writerIndex() - 3;
-
-      for (int var3 = var1; var3 < var2; var3++) {
-         if (this.Q.getByte(var3) == 13 && this.Q.getByte(var3 + 1) == 10 && this.Q.getByte(var3 + 2) == 13 && this.Q.getByte(var3 + 3) == 10) {
-            return var3;
-         }
-      }
-
-      return -1;
-   }
-
-   private String P() {
-      return "Proxy " + this.K.settings().label() + ": ";
-   }
-
-   private static byte[] l(String var0) throws xj.s {
-      if (!var0.matches("[A-Za-z0-9.-]{1,253}")) {
-         throw new xj.s("Proxy destinations must be ASCII host names");
-      } else {
-         return var0.getBytes(StandardCharsets.US_ASCII);
-      }
-   }
-
-   static String S(InetSocketAddress var0) {
-      String var1 = var0.isUnresolved() ? var0.getHostString() : var0.getAddress().getHostAddress();
-      return (var1.indexOf(58) >= 0 ? "[" + var1 + "]" : var1) + ":" + var0.getPort();
-   }
-
-   static String Z(int var0) {
-      return switch (var0) {
-         case 1 -> "the proxy failed";
-         case 2 -> "the proxy does not allow this connection";
-         case 3 -> "the proxy cannot reach that network";
-         case 4 -> "the proxy cannot reach that server";
-         case 5 -> "the server refused the connection through the proxy";
-         case 6 -> "the proxy connection expired";
-         case 7 -> "the proxy does not support connect requests";
-         case 8 -> "the proxy does not support this address type";
-         default -> "the proxy refused the connection (SOCKS5 reply " + var0 + ")";
-      };
-   }
-
-   public static final class s extends IOException {
-      public s(String var1) {
-         super(var1);
-      }
-
-      public s(String var1, Throwable var2) {
-         super(var1, var2);
-      }
+   record z(int status, String body) {
    }
 }

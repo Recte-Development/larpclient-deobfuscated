@@ -1,13 +1,13 @@
 package com.larpclient.module;
 
-import com.larpclient.ex;
-import com.larpclient.je;
+import com.larpclient.eo;
+import com.larpclient.t2;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 
 public class AutoEatModule extends Module {
-   private final lc Y = this.addSetting(new lc("Hunger", "Eat below this hunger", 14.0, 1.0, 20.0, 1.0));
+   private final d9 F = this.addSetting(new d9("Hunger", "Eat below this hunger", 14.0, 1.0, 20.0, 1.0));
 
    public AutoEatModule() {
       super("AutoEat", "Automatically eat food", Category.PLAYER, -1);
@@ -17,7 +17,7 @@ public class AutoEatModule extends Module {
    public void onTick() {
       if (this.isInGame()) {
          double var8;
-         int var10000 = (var8 = mc.player.getFoodData().getFoodLevel() - this.Y.getValue()) == 0.0 ? 0 : (var8 < 0.0 ? -1 : 1);
+         int var10000 = (var8 = mc.player.getFoodData().getFoodLevel() - this.F.P()) == 0.0 ? 0 : (var8 < 0.0 ? -1 : 1);
          boolean var7 = false;
          int var6 = var10000;
          if (Integer.signum(var6) >>> 31 != 0) {
@@ -33,7 +33,7 @@ public class AutoEatModule extends Module {
                }
             }
 
-            ex.S(je.b.A, var1, var0 -> var0.get(DataComponents.FOOD) != null);
+            t2.U(eo.r.s, var1, var0 -> var0.get(DataComponents.FOOD) != null);
             return;
          }
       }
@@ -43,6 +43,6 @@ public class AutoEatModule extends Module {
 
    @Override
    public void onDisable() {
-      ex.z(je.b.A);
+      t2.D(eo.r.s);
    }
 }

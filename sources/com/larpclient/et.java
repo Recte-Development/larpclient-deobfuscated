@@ -1,39 +1,17 @@
 package com.larpclient;
 
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.ClipContext.Block;
-import net.minecraft.world.level.ClipContext.Fluid;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.HitResult.Type;
-import net.minecraft.world.phys.shapes.CollisionContext;
-
-public final class et {
-   public static et.d Q(ClientLevel var0, Vec3 var1, Vec3 var2) {
-      if (var0 != null && !(var1.distanceToSqr(var2) > 64.0) && var0.hasChunkAt(BlockPos.containing(var1)) && var0.hasChunkAt(BlockPos.containing(var2))) {
-         BlockHitResult var3 = var0.clip(new ClipContext(var1, var2, Block.COLLIDER, Fluid.NONE, CollisionContext.empty()));
-         if (var3.getType() == Type.BLOCK && !var3.isInside()) {
-            Direction var4 = var3.getDirection();
-            return new et.d(var3.getLocation(), new Vec3(var4.getStepX(), var4.getStepY(), var4.getStepZ()));
-         } else {
-            return null;
-         }
-      } else {
-         return null;
-      }
-   }
-
-   private et() {
-   }
-
-   public record d(Vec3 point, Vec3 normal) {
-   }
-
-   @FunctionalInterface
-   public interface l {
-      et.d J(Vec3 var1, Vec3 var2);
+public record et(int zenith, int horizon) {
+   public static et of(String var0, int var1, float var2) {
+      return switch (var0) {
+         case "Theme" -> new et(_3.D(-16315882, f.C, 0.16), _3.D(-15263703, f.O, 0.48));
+         case "Sunset" -> new et(-14609097, -3245717);
+         case "Ocean" -> new et(-16378327, -12349780);
+         case "Purple" -> new et(-15725786, -8955221);
+         case "Red" -> new et(-14678256, -5486497);
+         case "Black" -> new et(-16645368, -15460316);
+         case "Rainbow" -> new et(_3.Z(var2, 0.65F, 0.13F), _3.Z(var2, 0.42F, 0.58F));
+         case "Custom" -> new et(_3.D(-16579055, var1 | 0xFF000000, 0.2), var1 | 0xFF000000);
+         default -> new et(-16446431, -12758401);
+      };
    }
 }

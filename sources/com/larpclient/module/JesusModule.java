@@ -1,7 +1,7 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
-import com.larpclient.yu;
+import com.larpclient.mt;
+import com.larpclient.te;
 import java.util.Set;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -15,48 +15,48 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public final class JesusModule extends Module {
-   private static JesusModule u;
-   private static final VoxelShape[] I = l();
-   private long Y = Long.MIN_VALUE;
-   private boolean V;
+   private static JesusModule f;
+   private static final VoxelShape[] b = Z();
+   private long t = Long.MIN_VALUE;
+   private boolean J;
 
    public JesusModule() {
       super("Jesus", "Walk on water surfaces; hold sneak to swim normally", Category.MOVEMENT, -1);
-      u = this;
+      f = this;
    }
 
    @Override
-   public Set<ld> getNetworkImpacts() {
-      return Set.of(ld.c);
+   public Set<dm> getNetworkImpacts() {
+      return Set.of(dm.j);
    }
 
    @Override
    public void onEnable() {
-      this.Y = Long.MIN_VALUE;
-      this.V = (boolean)0;
-      r4.g("Jesus", "Enabled: water surfaces only; sneak and long falls retain normal swimming");
+      this.t = Long.MIN_VALUE;
+      this.J = (boolean)0;
+      mt.U("Jesus", "Enabled: water surfaces only; sneak and long falls retain normal swimming");
    }
 
    @Override
    public void onDisable() {
-      this.Y = Long.MIN_VALUE;
-      this.V = (boolean)0;
-      r4.g("Jesus", "Released water support; native collision restored");
+      this.t = Long.MIN_VALUE;
+      this.J = (boolean)0;
+      mt.U("Jesus", "Released water support; native collision restored");
    }
 
    @Override
    public String getStatus() {
       if (!this.isRuntimeActive()) {
          return "Inactive";
-      } else if (!this.h()) {
+      } else if (!this.r()) {
          return "Paused; native water movement";
       } else {
-         return this.Y != Long.MIN_VALUE && mc.level.getGameTime() - this.Y <= 1L ? "Walking on water" : "Approach the water surface from above";
+         return this.t != Long.MIN_VALUE && mc.level.getGameTime() - this.t <= 1L ? "Walking on water" : "Approach the water surface from above";
       }
    }
 
-   private boolean h() {
-      if (this.isInGame() && yu.r()) {
+   private boolean r() {
+      if (this.isInGame() && te.i()) {
          LocalPlayer var1 = mc.player;
          if (!var1.isSpectator()
             && !var1.isPassenger()
@@ -70,10 +70,10 @@ public final class JesusModule extends Module {
             && !var1.isShiftKeyDown()
             && !mc.options.keyShift.isDown()
             && !(var1.fallDistance > 3.0)) {
-            FlyModule var2 = FlyModule.s();
-            AirStuckModule var3 = AirStuckModule.H();
-            ElytraMotionModule var4 = ElytraMotionModule.S();
-            return (var2 == null || !var2.E()) && (var3 == null || !var3.D()) && (var4 == null || !var4.m());
+            FlyModule var2 = FlyModule.d();
+            AirStuckModule var3 = AirStuckModule.X();
+            ElytraMotionModule var4 = ElytraMotionModule.d();
+            return (var2 == null || !var2.s()) && (var3 == null || !var3.U()) && (var4 == null || !var4.z());
          } else {
             return false;
          }
@@ -82,8 +82,8 @@ public final class JesusModule extends Module {
       }
    }
 
-   public static VoxelShape v(BlockState var0, CollisionGetter var1, BlockPos var2, EntityCollisionContext var3, VoxelShape var4) {
-      JesusModule var5 = u;
+   public static VoxelShape n(BlockState var0, CollisionGetter var1, BlockPos var2, EntityCollisionContext var3, VoxelShape var4) {
+      JesusModule var5 = f;
       if (var5 != null && var5.isRuntimeActive()) {
          try {
             if (var1 == getMc().level
@@ -91,21 +91,21 @@ public final class JesusModule extends Module {
                && var0.getBlock() instanceof LiquidBlock
                && var4.isEmpty()
                && !var3.isDescending()
-               && var5.h()) {
+               && var5.r()) {
                FluidState var6 = var0.getFluidState();
                if (var6.is(FluidTags.WATER) && !var1.getFluidState(var2.above()).is(FluidTags.WATER)) {
                   float var7 = var6.getHeight(var1, var2);
                   if (Float.isFinite(var7) && !(var7 <= 0.0F) && !(var7 > 1.0F)) {
                      int var8 = Math.round(var7 * 9.0F);
-                     VoxelShape var9 = Math.abs(var7 - var8 / 9.0F) < 1.0E-6 ? I[var8] : Shapes.box(0.0, 0.0, 0.0, 1.0, var7, 1.0);
+                     VoxelShape var9 = Math.abs(var7 - var8 / 9.0F) < 1.0E-6 ? b[var8] : Shapes.box(0.0, 0.0, 0.0, 1.0, var7, 1.0);
                      if (!var3.isAbove(var9, var2, false)) {
                         return var4;
                      }
 
-                     var5.Y = mc.level.getGameTime();
-                     if (!var5.V) {
-                        var5.V = (boolean)1;
-                        r4.g("Jesus", "Water support active at native fluid height; no forced motion or extra packets");
+                     var5.t = mc.level.getGameTime();
+                     if (!var5.J) {
+                        var5.J = (boolean)1;
+                        mt.U("Jesus", "Water support active at native fluid height; no forced motion or extra packets");
                      }
 
                      return var9;
@@ -119,7 +119,7 @@ public final class JesusModule extends Module {
                return var4;
             }
          } catch (RuntimeException var10) {
-            r4.r("Jesus", "Water collision query failed; disabling and returning native collision", var10);
+            mt.P("Jesus", "Water collision query failed; disabling and returning native collision", var10);
             var5.disable();
             return var4;
          }
@@ -128,7 +128,7 @@ public final class JesusModule extends Module {
       }
    }
 
-   private static VoxelShape[] l() {
+   private static VoxelShape[] Z() {
       VoxelShape[] var0 = new VoxelShape[10];
       var0[0] = Shapes.empty();
 

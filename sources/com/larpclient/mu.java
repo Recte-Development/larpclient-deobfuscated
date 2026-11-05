@@ -1,155 +1,113 @@
 package com.larpclient;
 
-import com.larpclient.module.WorldColorModule;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
-import com.mojang.renderpearl.api.commands.CommandEncoder;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.UniformType;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline.Snippet;
-import com.mojang.renderpearl.api.textures.FilterMode;
-import java.nio.ByteBuffer;
-import java.util.Optional;
+import com.larpclient.module.SelfVisualsModule;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
-import org.lwjgl.system.MemoryStack;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.phys.Vec3;
 
 public final class mu {
-   private static final RenderPipeline v = RenderPipeline.builder(new Snippet[0])
-      .withLocation(z("world_color"))
-      .withVertexShader(z("post/fullscreen"))
-      .withFragmentShader(z("post/world_color"))
-      .withBindGroupLayout(BindGroupLayout.builder().withUniform("Source", of.t).withUniform("Grade", UniformType.UNIFORM_BUFFER).build())
-      .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
-      .withCull(false)
-      .build();
-   private static final ld p = new ld();
-   private static GpuBuffer o;
-   private static double u = -100.0;
-   private static int F;
-   private static int N = -1;
-   private static boolean d;
-
-   public static void T(int var0) {
-      u = ea.y();
-      F = var0;
-   }
-
-   public static void J() {
-      Minecraft var0 = Minecraft.getInstance();
-      WorldColorModule var1 = WorldColorModule.S();
-      if (var0.level != null) {
-         double var2 = Math.max(0.0, 1.0 - (ea.y() - u) / 0.24);
-         var2 *= var2;
-         int var4 = var1 != null && var1.isRuntimeActive() ? 1 : 0;
-         if (var4 != 0 || var2 != 0.0) {
-            if (N != jk.v) {
-               s();
-               d = (boolean)0;
-               N = jk.v;
-            }
-
-            if (!d) {
-               long var5 = h_.U();
-
-               try {
-                  if (o == null) {
-                     e4.U(v);
-                     o = RenderSystem.getDevice().createBuffer(() -> "Larp WorldColor parameters", 136, 96L);
-                     r4.V("Shader", "WorldColor shader loaded");
-                  }
-
-                  RenderTarget var7 = var0.gameRenderer.mainRenderTarget();
-                  p.m(var7.width, var7.height, 1, ld.y.s);
-                  jk.y(e4.g, var7, p.U);
-                  CommandEncoder var8 = RenderSystem.getDevice().createCommandEncoder();
-                  MemoryStack var9 = MemoryStack.stackPush();
-
-                  try {
-                     ByteBuffer var10 = var9.malloc(96);
-                     var10.putFloat(var4 != 0 ? var1.H.getValue().floatValue() : 1.0F)
-                        .putFloat(var4 != 0 ? var1.S.getValue().floatValue() : 1.0F)
-                        .putFloat(var4 != 0 ? var1.A.getValue().floatValue() : 0.0F)
-                        .putFloat(var4 != 0 ? var1.j.getValue().floatValue() : 1.0F);
-                     N(var10, var4 != 0 ? var1.R.getValue() : -1, var4 != 0 ? var1.a.getValue().floatValue() : 0.0F);
-                     N(var10, var4 != 0 ? var1.q.getValue() : -1, 0.0F);
-                     N(var10, var4 != 0 ? var1.v.getValue() : -1, 0.0F);
-                     N(var10, F, (float)var2);
-                     var10.putFloat(1.0F / var7.width).putFloat(1.0F / var7.height).putFloat(0.0F).putFloat(0.0F);
-                     var10.flip();
-                     var8.writeToBuffer(o.slice(), var10);
-                  } catch (Throwable var22) {
-                     if (var9 != null) {
-                        try {
-                           var9.close();
-                        } catch (Throwable var20) {
-                           var22.addSuppressed(var20);
-                        }
-                     }
-
-                     throw var22;
-                  }
-
-                  if (var9 != null) {
-                     var9.close();
-                  }
-
-                  RenderPass var26 = var8.createRenderPass(() -> "Larp WorldColor grade + impact", var7.getColorTextureView(), Optional.empty());
-
-                  try {
-                     of.z(var26, v);
-                     var26.setUniform("Grade", o.slice());
-                     of.h(var26, "Source", p.U.getColorTextureView(), RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
-                     var26.draw(3, 1, 0, 0);
-                  } catch (Throwable var21) {
-                     if (var26 != null) {
-                        try {
-                           var26.close();
-                        } catch (Throwable var19) {
-                           var21.addSuppressed(var19);
-                        }
-                     }
-
-                     throw var21;
-                  }
-
-                  if (var26 != null) {
-                     var26.close();
-                  }
-               } catch (RuntimeException var23) {
-                  d = (boolean)1;
-                  s();
-                  r4.r("WorldColor", "WorldPostRenderer stage=grade framebuffer=scene shader=post/world_color; disabled until reload", var23);
-               } finally {
-                  h_.n("WorldColor", var5);
-               }
-            }
-         }
-      }
-   }
-
-   private static void N(ByteBuffer var0, int var1, float var2) {
-      var0.putFloat((var1 >> 16 & 0xFF) / 255.0F).putFloat((var1 >> 8 & 0xFF) / 255.0F).putFloat((var1 & 0xFF) / 255.0F).putFloat(var2);
-   }
+   private static final xi m = new xi();
+   private static final __.l[] O = new __.l[3];
+   private static final Vec3[] u = new Vec3[3];
+   private static Object l;
+   private static Object P;
+   private static Vec3 h;
+   private static Vec3 q;
+   private static double E;
+   private static double Z;
+   private static double K;
+   private static double A;
+   private static double V;
+   private static double Q;
+   private static int S;
+   private static int n;
+   private static boolean p;
+   private static boolean F;
 
    public static void s() {
-      p.close();
-      if (o != null) {
-         o.close();
-         o = null;
+      m.i();
+      P = null;
+      l = null;
+      q = null;
+      h = null;
+      p = (boolean)0;
+   }
+
+   public static void s(float var0) {
+      Minecraft var1 = Minecraft.getInstance();
+      SelfVisualsModule var2 = SelfVisualsModule.V();
+      LocalPlayer var3 = var1.player;
+      if (var2 != null && var2.M() && var2.w.S("Comets") && var3 != null && var3.isAlive() && !var3.isInvisible() && !var3.isSpectator()) {
+         Vec3 var4 = var3.position();
+         int var5 = l == var3 && P == var1.level && (h == null || !(h.distanceToSqr(var4) > 64.0)) ? 0 : 1;
+         if (var5 != 0) {
+            s();
+         }
+
+         l = var3;
+         P = var1.level;
+         h = var4;
+         q = var3.getPosition(var0).distanceToSqr(var4) > 64.0 ? var4 : var3.getPosition(var0);
+         Z = var3.getBbHeight();
+         K = xi.f(var2.X.P(), Z);
+         A = var2.L.P();
+         V = var2.Z.P();
+         F = var2.e.P();
+         S = var2.T.P() ? f.C : var2.v.P();
+         n = var2.T.P() ? f.O : var2.a.P();
+         E = ty.K();
+         double var6 = Math.max(var2.n.P(), var3.getBbWidth() * 0.71 + K);
+         m.O(E, var2.h.P(), var6, A);
+         Q = m.s(E);
+         Vec3 var8 = var1.gameRenderer.mainCamera().position();
+
+         for (int var9 = 0; var9 < 3; var9++) {
+            __.l var10 = O[var9];
+            var10.y();
+            Vec3 var11 = u[var9] = xi.U(m.K(var9), q, Z, K);
+
+            for (int var12 = 0; var12 <= m.V(); var12++) {
+               Vec3 var13 = var12 == m.V() ? var11 : xi.U(m.f(var9, var12), q, Z, K);
+               double var14 = var12 == m.V() ? 1.0 : Math.clamp(1.0 - (E - m.K(var12)) / A, 0.0, 1.0);
+               var10.y(var13, K * 1.4 * var14 * var14, _3.U(_3.D(n, S, var14), var14 * var14 * V * Q));
+            }
+
+            var10.F();
+            var10.a(var8);
+         }
+
+         p = (boolean)1;
+      } else {
+         s();
       }
    }
 
-   public static void f() {
-      u = -100.0;
-      s();
+   public static boolean b() {
+      return p && F;
    }
 
-   private static Identifier z(String var0) {
-      return Identifier.fromNamespaceAndPath("larp-client", var0);
+   public static void b(ki var0, boolean var1) {
+      if (p && (!var1 || F)) {
+         var0.blend(pf.x.E);
+
+         for (int var2 = 0; var2 < 3; var2++) {
+            Vec3 var3 = u[var2];
+            var0.M(O[var2], true);
+            var0.W(var3.x, var3.y, var3.z, K * 2.2, 0.0, _3.U(S, 0.35 * V * Q), cg.u.a, 0.0, 0.0, 0.0);
+            var0.W(var3.x, var3.y, var3.z, K, 0.0, _3.U(S, 0.9 * Q), cg.u.n, 0.0, 0.0, 0.0);
+            var0.W(var3.x, var3.y, var3.z, K * 0.55, 0.0, _3.U(_3.D(S, S & 0xFF000000 | 16777215, 0.8), Q), cg.u.a, 0.0, 0.0, 0.0);
+         }
+
+         var0.blend(pf.x.S);
+      }
+   }
+
+   private mu() {
+   }
+
+   static {
+      for (int var0 = 0; var0 < O.length; var0++) {
+         O[var0] = new __.l(257);
+      }
    }
 }

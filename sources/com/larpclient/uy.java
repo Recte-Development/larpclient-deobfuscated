@@ -1,559 +1,443 @@
 package com.larpclient;
 
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.UnixDomainSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.ClosedSelectorException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.Reader;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Map.Entry;
 
-final class uy implements AutoCloseable {
-   static final int m = 1048576;
-   private static final int l = 32;
-   private static final int s = 65536;
-   private final SocketChannel d;
-   private final Selector K;
-   private int I;
-   private volatile boolean J;
+public final class uy {
+   public static final int J = 0;
+   public static final int q = 1;
+   public static final int p = 2;
+   public static final int N = 3;
+   public static final int b = 4;
+   public static final int F = 5;
+   public static final int U = 6;
+   public static final int i = 7;
+   public static final int l = 8;
+   public static final int u = 9;
+   public static final int z = 10;
+   public static final int Y = uy.q.values().length * 10;
+   private static final String[] T = new String[]{"x", "y", "z", "pitch", "yaw", "roll", "bend", "scale", "spread", "hold"};
+   private static final float[][] n = new float[][]{
+      {0.0F, 0.0F, 0.0F},
+      {0.0F, 0.0F, 0.0F},
+      {-5.0F, 2.0F, 0.0F},
+      {5.0F, 2.0F, 0.0F},
+      {-1.9F, 12.0F, 0.1F},
+      {1.9F, 12.0F, 0.1F},
+      {0.0F, 0.0F, 0.0F},
+      {0.0F, 0.0F, 0.0F}
+   };
+   public final String j;
+   public final String v;
+   public final int d;
+   public final int k;
+   public final int h;
+   public final int P;
+   public final boolean K;
+   private final boolean o;
+   private final uy.f[] X = new uy.f[Y];
+   private final Set<String> g = new TreeSet<>();
 
-   uy(SocketChannel var1, String var2, long var3) throws IOException, InterruptedException {
-      this.d = var1;
-      var1.configureBlocking(false);
-      this.K = Selector.open();
-
-      try {
-         var1.register(this.K, 0);
-         this.j(var2, var3);
-         if (this.I("org.freedesktop.DBus", "/org/freedesktop/DBus", "org.freedesktop.DBus", "Hello", var3) == null) {
-            throw new IOException("D-Bus session refused Hello");
-         }
-      } catch (IOException | InterruptedException | RuntimeException var6) {
-         this.K.close();
-         throw var6;
-      }
+   private uy(String var1, String var2, int var3, int var4, int var5, boolean var6, int var7, boolean var8) {
+      this.j = var1;
+      this.v = var2;
+      this.d = var3;
+      this.k = var4;
+      this.h = var5;
+      this.K = var6;
+      this.P = var7;
+      this.o = var8;
    }
 
-   static uy n(long var0) throws IOException, InterruptedException {
-      String var2 = g();
-      IOException var3 = null;
-
-      for (String var5 : z(System.getenv("DBUS_SESSION_BUS_ADDRESS"), System.getenv("XDG_RUNTIME_DIR"), var2)) {
-         if (Files.exists(Path.of(var5))) {
-            SocketChannel var6 = null;
-
-            try {
-               var6 = SocketChannel.open(UnixDomainSocketAddress.of(var5));
-               uy var7 = new uy(var6, var2, var0);
-               var6 = null;
-               return var7;
-            } catch (IOException var12) {
-               var3 = var12;
-            } finally {
-               if (var6 != null) {
-                  var6.close();
-               }
-            }
-         }
+   public static uy B(Reader var0, uy.h var1) {
+      JsonObject var2 = JsonParser.parseReader(var0).getAsJsonObject();
+      if (!var2.has("emote")) {
+         throw new IllegalArgumentException("Only Emotecraft JSON emotes are supported");
       }
 
-      throw var3 != null ? var3 : new IOException("No D-Bus session socket found");
-   }
-
-   static List<String> z(String var0, String var1, String var2) {
-      LinkedHashSet var3 = new LinkedHashSet();
-      if (var0 != null) {
-         for (String var7 : var0.split(";")) {
-            int var8 = var7.indexOf(58);
-            if (var8 >= 0 && var7.substring(0, var8).equals("unix")) {
-               for (String var12 : var7.substring(var8 + 1).split(",")) {
-                  if (var12.startsWith("path=")) {
-                     String var13 = x(var12.substring(5));
-                     if (var13 != null && !var13.isEmpty()) {
-                        var3.add(var13);
-                     }
-                  }
-               }
-            }
-         }
+      int var3 = var2.has("version") ? var2.get("version").getAsInt() : 1;
+      if (var3 > 3) {
+         throw new IllegalArgumentException("Unsupported emote version " + var3);
       }
 
-      if (var1 != null && var1.startsWith("/")) {
-         var3.add(var1.replaceAll("/+$", "") + "/bus");
+      JsonObject var4 = var2.getAsJsonObject("emote");
+      int var5 = var4.has("beginTick") ? var4.get("beginTick").getAsInt() : 0;
+      int var6 = var4.get("endTick").getAsInt();
+      if (var6 <= 0) {
+         throw new IllegalArgumentException("endTick must be positive");
       }
 
-      if (var2 != null && var2.matches("\\d{1,10}")) {
-         var3.add("/run/user/" + var2 + "/bus");
+      int var7 = var4.has("isLoop") && var4.has("returnTick") && var4.get("isLoop").getAsBoolean() ? 1 : 0;
+      int var8 = var7 != 0 ? var4.get("returnTick").getAsInt() : 0;
+      int var9 = var4.has("stopTick") ? var4.get("stopTick").getAsInt() : var6;
+      if (var1 != null) {
+         var7 = 1;
+         var8 = var1.returnTick();
+         var6 = var1.endTick();
+         var9 = var6 + 1;
       }
 
-      return List.copyOf(var3);
-   }
+      if (var7 == 0 || var8 >= 0 && var8 <= var6) {
+         int var10 = var4.has("degrees") && !var4.get("degrees").getAsBoolean() ? 0 : 1;
+         int var11 = var4.has("easeBeforeKeyframe") && var4.get("easeBeforeKeyframe").getAsBoolean() ? 1 : 0;
+         uy var12 = new uy(b(var2, "name"), b(var2, "author"), var5, var6, var9, (boolean)var7, var8, (boolean)var11);
 
-   private static String x(String var0) {
-      ByteArrayOutputStream var1 = new ByteArrayOutputStream();
-
-      for (int var2 = 0; var2 < var0.length(); var2++) {
-         char var3 = var0.charAt(var2);
-         if (var3 != '%') {
-            var1.write(var3);
-         } else {
-            if (var2 + 2 >= var0.length()) {
-               return null;
+         for (JsonElement var14 : var4.getAsJsonArray("moves")) {
+            JsonObject var15 = var14.getAsJsonObject();
+            int var16 = var15.get("tick").getAsInt();
+            uy.d var17 = uy.d.O(var15.has("easing") ? var15.get("easing").getAsString() : "linear");
+            if (var17 == null) {
+               var12.g.add("easing " + var15.get("easing").getAsString());
+               var17 = uy.d.B;
             }
 
-            int var4 = Character.digit(var0.charAt(var2 + 1), 16);
-            int var5 = Character.digit(var0.charAt(var2 + 2), 16);
-            if (var4 < 0 || var5 < 0) {
-               return null;
-            }
+            int var18 = var15.has("turn") ? var15.get("turn").getAsInt() : 0;
 
-            var1.write(var4 << 4 | var5);
-            var2 += 2;
-         }
-      }
-
-      return var1.toString(StandardCharsets.UTF_8);
-   }
-
-   private static String g() throws IOException {
-      try {
-         return String.valueOf(Files.getAttribute(Path.of("/proc/self"), "unix:uid"));
-      } catch (UnsupportedOperationException | IllegalArgumentException var1) {
-         throw new IOException("Cannot determine the Linux user for D-Bus", var1);
-      }
-   }
-
-   private void j(String var1, long var2) throws IOException, InterruptedException {
-      StringBuilder var4 = new StringBuilder();
-
-      for (byte var8 : var1.getBytes(StandardCharsets.US_ASCII)) {
-         var4.append(String.format(Locale.ROOT, "%02x", var8));
-      }
-
-      this.B(ByteBuffer.wrap(("\u0000AUTH EXTERNAL " + var4 + "\r\n").getBytes(StandardCharsets.US_ASCII)), var2);
-      if (!this.e(var2).startsWith("OK ")) {
-         throw new IOException("D-Bus session rejected authentication");
-      }
-
-      this.B(ByteBuffer.wrap("BEGIN\r\n".getBytes(StandardCharsets.US_ASCII)), var2);
-   }
-
-   private String e(long var1) throws IOException, InterruptedException {
-      StringBuilder var3 = new StringBuilder();
-      ByteBuffer var4 = ByteBuffer.allocate(1);
-
-      while (var3.length() < 512) {
-         this.V(var4.clear(), var1);
-         char var5 = (char)(var4.get(0) & 0xFF);
-         if (var5 == '\n') {
-            return var3.toString().strip();
-         }
-
-         var3.append(var5);
-      }
-
-      throw new IOException("Oversized D-Bus authentication reply");
-   }
-
-   List<Object> I(String var1, String var2, String var3, String var4, long var5, String... var7) throws IOException, InterruptedException {
-      this.I = this.I == Integer.MAX_VALUE ? 1 : this.I + 1;
-      int var8 = this.I;
-      this.B(Y(var8, var1, var2, var3, var4, var7), var5);
-
-      while (System.nanoTime() - var5 < 0L) {
-         uy.i var9 = new uy.i(this.C(var5));
-         if (var9.p == var8 && (var9.K == 2 || var9.K == 3)) {
-            return var9.K == 3 ? null : var9.r();
-         }
-      }
-
-      throw new IOException("D-Bus request timed out");
-   }
-
-   static ByteBuffer Y(int var0, String var1, String var2, String var3, String var4, String... var5) {
-      ByteBuffer var6 = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
-      var6.put((byte)108).put((byte)1).put((byte)0).put((byte)1).putInt(0).putInt(var0).putInt(0);
-      M(var6, 1, "o", var2);
-      M(var6, 6, "s", var1);
-      M(var6, 2, "s", var3);
-      M(var6, 3, "s", var4);
-      if (var5.length > 0) {
-         M(var6, 8, "g", "s".repeat(var5.length));
-      }
-
-      var6.putInt(12, var6.position() - 16);
-      v(var6, 8);
-      int var7 = var6.position();
-
-      for (String var11 : var5) {
-         T(var6, var11);
-      }
-
-      var6.putInt(4, var6.position() - var7);
-      return var6.flip();
-   }
-
-   private static void M(ByteBuffer var0, int var1, String var2, String var3) {
-      v(var0, 8);
-      var0.put((byte)var1);
-      g(var0, var2);
-      if (var2.equals("g")) {
-         g(var0, var3);
-      } else {
-         T(var0, var3);
-      }
-   }
-
-   private static void v(ByteBuffer var0, int var1) {
-      while (var0.position() % var1 != 0) {
-         var0.put((byte)0);
-      }
-   }
-
-   private static void T(ByteBuffer var0, String var1) {
-      byte[] var2 = var1.getBytes(StandardCharsets.UTF_8);
-      v(var0, 4);
-      var0.putInt(var2.length).put(var2).put((byte)0);
-   }
-
-   private static void g(ByteBuffer var0, String var1) {
-      byte[] var2 = var1.getBytes(StandardCharsets.US_ASCII);
-      var0.put((byte)var2.length).put(var2).put((byte)0);
-   }
-
-   private ByteBuffer C(long var1) throws IOException, InterruptedException {
-      ByteBuffer var3 = ByteBuffer.allocate(16);
-      this.V(var3, var1);
-      byte var4 = var3.get(0);
-      if (var4 != 108 && var4 != 66) {
-         throw new IOException("Invalid D-Bus message");
-      } else {
-         var3.order(var4 == 108 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-         long var5 = var3.getInt(12) & 4294967295L;
-         long var7 = var3.getInt(4) & 4294967295L;
-         long var9 = (16L + var5 + 7L & -8L) + var7;
-         if (var3.get(3) == 1 && var9 <= 1048576L) {
-            ByteBuffer var11 = ByteBuffer.allocate((int)var9).order(var3.order());
-            var11.put(var3.flip());
-            this.V(var11, var1);
-            return var11.flip();
-         } else {
-            throw new IOException("Unsupported or oversized D-Bus message");
-         }
-      }
-   }
-
-   private void V(ByteBuffer var1, long var2) throws IOException, InterruptedException {
-      while (var1.hasRemaining()) {
-         int var4 = this.d.read(var1);
-         if (var4 < 0) {
-            throw new EOFException("D-Bus session closed the connection");
-         }
-
-         if (var4 == 0) {
-            this.m(1, var2);
-         }
-      }
-   }
-
-   private void B(ByteBuffer var1, long var2) throws IOException, InterruptedException {
-      while (var1.hasRemaining()) {
-         if (this.d.write(var1) == 0) {
-            this.m(4, var2);
-         }
-      }
-   }
-
-   private void m(int var1, long var2) throws IOException, InterruptedException {
-      if (this.J) {
-         throw new IOException("D-Bus session closed");
-      }
-
-      long var4 = var2 - System.nanoTime();
-      if (var4 <= 0L) {
-         throw new IOException("D-Bus request timed out");
-      }
-
-      try {
-         SelectionKey var6 = this.d.keyFor(this.K);
-         if (var6 == null) {
-            throw new IOException("D-Bus session closed");
-         }
-
-         var6.interestOps(var1);
-         this.K.select(Math.max(1L, TimeUnit.NANOSECONDS.toMillis(var4)));
-         this.K.selectedKeys().clear();
-      } catch (ClosedSelectorException | CancelledKeyException var7) {
-         throw new IOException("D-Bus session closed", var7);
-      }
-
-      if (Thread.interrupted()) {
-         throw new InterruptedException("D-Bus request interrupted");
-      }
-
-      if (this.J) {
-         throw new IOException("D-Bus session closed");
-      }
-   }
-
-   @Override
-   public void close() {
-      this.J = (boolean)1;
-
-      try {
-         this.d.close();
-      } catch (IOException var3) {
-      }
-
-      try {
-         this.K.close();
-      } catch (IOException var2) {
-      }
-   }
-
-   static final class i {
-      private final ByteBuffer w;
-      private final int b;
-      private int r;
-      private int Q;
-      final int K;
-      long p;
-      private String A = "";
-
-      i(ByteBuffer var1) throws IOException {
-         this.w = var1;
-         if (var1.limit() < 16) {
-            throw Q();
-         }
-
-         this.K = var1.get(1);
-         this.b = (int)(16L + (var1.getInt(12) & 4294967295L) + 7L & -8L);
-         this.r = 12;
-         Object var3 = this.T("a(yv)", new int[1], 0);
-         if (var3 instanceof List) {
-            for (Object var4 : (List)var3) {
-               List var5 = (List)var4;
-               long var6 = (Long)var5.get(0);
-               if (var6 == 5L && var5.get(1) instanceof Long var8) {
-                  this.p = var8;
-               }
-
-               if (var6 == 8L && var5.get(1) instanceof String var11) {
-                  this.A = var11;
-               }
-
-               if (var6 == 9L && !Long.valueOf(0L).equals(var5.get(1))) {
-                  throw new IOException("Unexpected D-Bus file descriptors");
-               }
-            }
-
-            if (this.r > this.b || this.b > var1.limit()) {
-               throw Q();
-            }
-         } else {
-            throw Q();
-         }
-      }
-
-      List<Object> r() throws IOException {
-         this.r = this.b;
-         ArrayList var1 = new ArrayList();
-         int[] var2 = new int[]{0};
-
-         while (var2[0] < this.A.length()) {
-            var1.add(this.T(this.A, var2, 0));
-         }
-
-         if (this.r != this.w.limit()) {
-            throw Q();
-         } else {
-            return var1;
-         }
-      }
-
-      private Object T(String var1, int[] var2, int var3) throws IOException {
-         if (var3 <= 32 && var2[0] < var1.length() && ++this.Q <= 65536) {
-            char var4 = var1.charAt((int)(var2[0]++));
-            switch (var4) {
-               case '(':
-                  this.X(8, 0);
-                  ArrayList var15 = new ArrayList();
-
-                  while (var2[0] < var1.length() && var1.charAt(var2[0]) != ')') {
-                     var15.add(this.T(var1, var2, var3 + 1));
-                  }
-
-                  if (var2[0]++ < var1.length() && !var15.isEmpty()) {
-                     return var15;
+            for (Entry var20 : var15.entrySet()) {
+               if (((JsonElement)var20.getValue()).isJsonObject()) {
+                  uy.q var21 = k((String)var20.getKey(), var3);
+                  if (var21 == null) {
+                     var12.g.add((String)var20.getKey());
                   } else {
-                     throw Q();
-                  }
-               case 'a':
-                  long var14 = this.w.getInt(this.X(4, 4)) & 4294967295L;
-                  int var16 = R(var1, var2[0], var3 + 1);
-                  String var8 = var1.substring(var2[0], var16);
-                  var2[0] = var16;
-                  this.X(M(var8.charAt(0)), 0);
-                  if (var14 > this.w.limit() - this.r) {
-                     throw Q();
-                  } else {
-                     int var9 = this.r + (int)var14;
-                     if (var8.charAt(0) == '{') {
-                        LinkedHashMap var17 = new LinkedHashMap();
-
-                        while (this.r < var9) {
-                           this.X(8, 0);
-                           int[] var11 = new int[]{1};
-                           Object var12 = this.T(var8, var11, var3 + 1);
-                           var17.put(var12, this.T(var8, var11, var3 + 1));
-                           if (var11[0] != var8.length() - 1) {
-                              throw Q();
+                     for (Entry var23 : ((JsonElement)var20.getValue()).getAsJsonObject().entrySet()) {
+                        int var24 = Arrays.asList(T).indexOf(var23.getKey());
+                        if (var24 >= 0 && (var24 != 6 || B(var21)) && (var24 < 7 || var21 == uy.q.u)) {
+                           float var25 = ((JsonElement)var23.getValue()).getAsFloat();
+                           if (Float.isNaN(var25)) {
+                              throw new IllegalArgumentException("Keyframe value is NaN");
                            }
+
+                           int var26 = (var24 < 3 || var24 > 6) && var24 != 8 ? 0 : 1;
+                           if (var26 != 0 && var10 != 0) {
+                              var25 *= (float) (Math.PI / 180.0);
+                           }
+
+                           float var27 = var26 != 0 && var18 != 0 ? var25 + (float)((Math.PI * 2) * var18) : var25;
+                           var12.D(var21, var24).o(var16, var25, var27, var17);
+                        } else {
+                           var12.g.add((String)var20.getKey() + "." + (String)var23.getKey());
                         }
-
-                        if (this.r != var9) {
-                           throw Q();
-                        }
-
-                        return var17;
-                     } else {
-                        ArrayList var10 = new ArrayList();
-
-                        while (this.r < var9) {
-                           var10.add(this.T(var8, new int[1], var3 + 1));
-                        }
-
-                        if (this.r != var9) {
-                           throw Q();
-                        }
-
-                        return var10;
                      }
                   }
-               case 'b':
-                  int var13 = this.w.getInt(this.X(4, 4));
-                  if (var13 != 0 && var13 != 1) {
-                     throw Q();
-                  }
-
-                  return var13 == 1;
-               case 'd':
-                  return this.w.getDouble(this.X(8, 8));
-               case 'g':
-                  return this.x(this.w.get(this.X(1, 1)) & 0xFF);
-               case 'h':
-               case 'u':
-                  return this.w.getInt(this.X(4, 4)) & 4294967295L;
-               case 'i':
-                  return (long)this.w.getInt(this.X(4, 4));
-               case 'n':
-                  return (long)this.w.getShort(this.X(2, 2));
-               case 'o':
-               case 's':
-                  return this.x(this.w.getInt(this.X(4, 4)) & 4294967295L);
-               case 'q':
-                  return (long)(this.w.getShort(this.X(2, 2)) & 65535);
-               case 't':
-               case 'x':
-                  return this.w.getLong(this.X(8, 8));
-               case 'v':
-                  String var5 = this.x(this.w.get(this.X(1, 1)) & 0xFF);
-                  int[] var6 = new int[]{0};
-                  Object var7 = this.T(var5, var6, var3 + 1);
-                  if (var6[0] != var5.length()) {
-                     throw Q();
-                  }
-
-                  return var7;
-               case 'y':
-                  return (long)(this.w.get(this.X(1, 1)) & 0xFF);
-               default:
-                  throw Q();
+               }
             }
-         } else {
-            throw Q();
+         }
+
+         return var12;
+      } else {
+         throw new IllegalArgumentException("returnTick must be within 0..endTick");
+      }
+   }
+
+   private static String b(JsonObject var0, String var1) {
+      return var0.has(var1) && var0.get(var1).isJsonPrimitive() ? var0.get(var1).getAsString() : "";
+   }
+
+   private static uy.q k(String var0, int var1) {
+      return switch (var0) {
+         case "head" -> uy.q.S;
+         case "torso" -> var1 < 3 ? uy.q.f : uy.q.W;
+         case "body" -> uy.q.f;
+         case "rightArm" -> uy.q.x;
+         case "leftArm" -> uy.q.J;
+         case "rightLeg" -> uy.q.G;
+         case "leftLeg" -> uy.q.C;
+         case "prop" -> uy.q.u;
+         default -> null;
+      };
+   }
+
+   public static boolean B(uy.q var0) {
+      return var0 == uy.q.x || var0 == uy.q.J || var0 == uy.q.G || var0 == uy.q.C;
+   }
+
+   private uy.f D(uy.q var1, int var2) {
+      int var3 = var1.ordinal() * 10 + var2;
+      if (this.X[var3] == null) {
+         this.X[var3] = new uy.f(var2 < 3 ? n[var1.ordinal()][var2] : (var2 == 7 ? 1.0F : 0.0F));
+      }
+
+      return this.X[var3];
+   }
+
+   public Set<String> E() {
+      return Set.copyOf(this.g);
+   }
+
+   public boolean s(uy.q var1, int var2) {
+      return this.X[var1.ordinal() * 10 + var2] != null;
+   }
+
+   public int Y(int var1) {
+      return this.K && var1 > this.k ? this.P + (var1 - this.k - 1) % (this.k - this.P + 1) : var1;
+   }
+
+   public boolean A(int var1) {
+      return this.K && var1 > this.k;
+   }
+
+   public float W(int var1, float var2) {
+      return !this.K ? 0.0F : (this.Y(var1) + var2 - this.P) / (this.k - this.P + 1);
+   }
+
+   public boolean p(int var1) {
+      return !this.K && var1 >= this.h;
+   }
+
+   public void p(int var1, float var2, float[] var3) {
+      int var4 = this.Y(var1);
+      boolean var5 = this.A(var1);
+
+      for (int var6 = 0; var6 < Y; var6++) {
+         var3[var6] = this.X[var6] == null ? Float.NaN : this.U(this.X[var6], var4, var2, var5);
+      }
+   }
+
+   private float U(uy.f var1, int var2, float var3, boolean var4) {
+      List var5 = var1.f;
+      int var6 = this.k - this.P + 1;
+      uy.y var7 = null;
+      uy.y var8 = null;
+      int var9 = 0;
+      int var10 = 0;
+
+      for (int var11 = var5.size() - 1; var11 >= 0; var11--) {
+         uy.y var12 = (uy.y)var5.get(var11);
+         if (var12.tick <= var2 && (!this.K || var12.tick <= this.k) && (!var4 || var12.tick >= this.P)) {
+            var7 = var12;
+            var9 = var12.tick;
+            break;
          }
       }
 
-      private String x(long var1) throws IOException {
-         if (var1 > this.w.limit()) {
-            throw Q();
+      for (uy.y var15 : var5) {
+         if (var15.tick > var2 && (!this.K || var15.tick <= this.k)) {
+            var8 = var15;
+            var10 = var15.tick;
+            break;
          }
-
-         int var3 = this.X(1, (int)var1 + 1);
-         if (this.w.get(var3 + (int)var1) != 0) {
-            throw Q();
-         }
-
-         byte[] var4 = new byte[(int)var1];
-         this.w.get(var3, var4);
-         return new String(var4, StandardCharsets.UTF_8);
       }
 
-      private int X(int var1, int var2) throws IOException {
-         int var3 = this.r + var1 - 1 & -var1;
-         if (var3 >= this.r && var3 <= this.w.limit() - var2) {
-            this.r = var3 + var2;
+      if (this.K && var7 == null && var4) {
+         var7 = this.E(var5);
+         if (var7 != null) {
+            var9 = var7.tick - var6;
+         }
+      }
+
+      if (this.K && var8 == null) {
+         var8 = this.C(var5);
+         if (var8 != null) {
+            var10 = var8.tick + var6;
+         }
+      }
+
+      if (var7 == null) {
+         var7 = new uy.y(this.d, var1.c, var1.c, uy.d.B);
+         var9 = this.d;
+      }
+
+      if (var8 == null) {
+         return var7.depart;
+      }
+
+      if (var10 <= var9) {
+         return var7.depart;
+      }
+
+      float var14 = Math.clamp((var2 + var3 - var9) / (var10 - var9), 0.0F, 1.0F);
+      float var16 = (this.o ? var8.ease : var7.ease).d(var14);
+      return var7.depart + (var8.arrive - var7.depart) * var16;
+   }
+
+   private uy.y C(List<uy.y> var1) {
+      for (uy.y var3 : var1) {
+         if (var3.tick >= this.P && var3.tick <= this.k) {
             return var3;
-         } else {
-            throw Q();
          }
       }
 
-      private static int R(String var0, int var1, int var2) throws IOException {
-         if (var2 <= 32 && var1 < var0.length()) {
-            char var3 = var0.charAt(var1);
-            if (var3 == 'a') {
-               return R(var0, var1 + 1, var2 + 1);
-            }
+      return null;
+   }
 
-            if (var3 == '(' || var3 == '{') {
-               int var4 = var3 == '(' ? 41 : 125;
-               int var5 = var1 + 1;
-
-               while (var5 < var0.length() && var0.charAt(var5) != var4) {
-                  var5 = R(var0, var5, var2 + 1);
-               }
-
-               if (var5 < var0.length() && var5 != var1 + 1) {
-                  return var5 + 1;
-               } else {
-                  throw Q();
-               }
-            } else if ("ybnqiuxtdsogvh".indexOf(var3) < 0) {
-               throw Q();
-            } else {
-               return var1 + 1;
-            }
-         } else {
-            throw Q();
+   private uy.y E(List<uy.y> var1) {
+      for (int var2 = var1.size() - 1; var2 >= 0; var2--) {
+         uy.y var3 = (uy.y)var1.get(var2);
+         if (var3.tick >= this.P && var3.tick <= this.k) {
+            return var3;
          }
       }
 
-      private static int M(char var0) {
-         return switch (var0) {
-            case '(', 'd', 't', 'x', '{' -> 8;
-            case 'g', 'v', 'y' -> 1;
-            case 'n', 'q' -> 2;
-            default -> 4;
+      return null;
+   }
+
+   public enum d {
+      B,
+      b,
+      y,
+      z,
+      R,
+      E,
+      Y,
+      M,
+      h,
+      o,
+      s,
+      u,
+      C,
+      N,
+      f,
+      x,
+      m,
+      e,
+      T,
+      X,
+      U,
+      v,
+      P,
+      J,
+      I,
+      r,
+      l,
+      K,
+      c,
+      q,
+      L,
+      F;
+
+      static uy.d O(String var0) {
+         String var1 = var0.toUpperCase(Locale.ROOT).replace("_", "");
+         if (var1.equals("STEP")) {
+            return b;
+         }
+
+         for (uy.d var5 : values()) {
+            if (var5.name().equals(var1)) {
+               return var5;
+            }
+         }
+
+         return null;
+      }
+
+      public float d(float var1) {
+         double var2 = var1;
+         double var4 = 1.70158;
+         double var6 = var4 * 1.525;
+         double var8 = var4 + 1.0;
+         double var10 = Math.PI * 2.0 / 3.0;
+         double var12 = Math.PI * 4.0 / 9.0;
+
+         return switch (this) {
+            case B -> (float)var2;
+            case b -> 0.0F;
+            case y -> (float)(1.0 - Math.cos(var2 * Math.PI / 2.0));
+            case z -> (float)Math.sin(var2 * Math.PI / 2.0);
+            case R -> (float)(-(Math.cos(Math.PI * var2) - 1.0) / 2.0);
+            case E -> (float)(var2 * var2);
+            case Y -> (float)(1.0 - (1.0 - var2) * (1.0 - var2));
+            case M -> var2 < 0.5 ? (float)(2.0 * var2 * var2) : (float)(1.0 - Math.pow(-2.0 * var2 + 2.0, 2.0) / 2.0);
+            case h -> (float)(var2 * var2 * var2);
+            case o -> (float)(1.0 - Math.pow(1.0 - var2, 3.0));
+            case s -> var2 < 0.5 ? (float)(4.0 * var2 * var2 * var2) : (float)(1.0 - Math.pow(-2.0 * var2 + 2.0, 3.0) / 2.0);
+            case u -> (float)Math.pow(var2, 4.0);
+            case C -> (float)(1.0 - Math.pow(1.0 - var2, 4.0));
+            case N -> var2 < 0.5 ? (float)(8.0 * Math.pow(var2, 4.0)) : (float)(1.0 - Math.pow(-2.0 * var2 + 2.0, 4.0) / 2.0);
+            case f -> (float)Math.pow(var2, 5.0);
+            case x -> (float)(1.0 - Math.pow(1.0 - var2, 5.0));
+            case m -> var2 < 0.5 ? (float)(16.0 * Math.pow(var2, 5.0)) : (float)(1.0 - Math.pow(-2.0 * var2 + 2.0, 5.0) / 2.0);
+            case e -> var2 == 0.0 ? 0.0F : (float)Math.pow(2.0, 10.0 * var2 - 10.0);
+            case T -> var2 == 1.0 ? 1.0F : (float)(1.0 - Math.pow(2.0, -10.0 * var2));
+            case X -> var2 == 0.0 || var2 == 1.0
+               ? (float)var2
+               : (var2 < 0.5 ? (float)(Math.pow(2.0, 20.0 * var2 - 10.0) / 2.0) : (float)((2.0 - Math.pow(2.0, -20.0 * var2 + 10.0)) / 2.0));
+            case U -> (float)(1.0 - Math.sqrt(1.0 - var2 * var2));
+            case v -> (float)Math.sqrt(1.0 - Math.pow(var2 - 1.0, 2.0));
+            case P -> var2 < 0.5
+               ? (float)((1.0 - Math.sqrt(1.0 - Math.pow(2.0 * var2, 2.0))) / 2.0)
+               : (float)((Math.sqrt(1.0 - Math.pow(-2.0 * var2 + 2.0, 2.0)) + 1.0) / 2.0);
+            case J -> (float)(var8 * var2 * var2 * var2 - var4 * var2 * var2);
+            case I -> (float)(1.0 + var8 * Math.pow(var2 - 1.0, 3.0) + var4 * Math.pow(var2 - 1.0, 2.0));
+            case r -> var2 < 0.5
+               ? (float)(Math.pow(2.0 * var2, 2.0) * ((var6 + 1.0) * 2.0 * var2 - var6) / 2.0)
+               : (float)((Math.pow(2.0 * var2 - 2.0, 2.0) * ((var6 + 1.0) * (var2 * 2.0 - 2.0) + var6) + 2.0) / 2.0);
+            case l -> var2 != 0.0 && var2 != 1.0 ? (float)(-Math.pow(2.0, 10.0 * var2 - 10.0) * Math.sin((var2 * 10.0 - 10.75) * var10)) : (float)var2;
+            case K -> var2 != 0.0 && var2 != 1.0 ? (float)(Math.pow(2.0, -10.0 * var2) * Math.sin((var2 * 10.0 - 0.75) * var10) + 1.0) : (float)var2;
+            case c -> var2 == 0.0 || var2 == 1.0
+               ? (float)var2
+               : (
+                  var2 < 0.5
+                     ? (float)(-(Math.pow(2.0, 20.0 * var2 - 10.0) * Math.sin((20.0 * var2 - 11.125) * var12)) / 2.0)
+                     : (float)(Math.pow(2.0, -20.0 * var2 + 10.0) * Math.sin((20.0 * var2 - 11.125) * var12) / 2.0 + 1.0)
+               );
+            case q -> (float)(1.0 - W(1.0 - var2));
+            case L -> (float)W(var2);
+            case F -> var2 < 0.5 ? (float)((1.0 - W(1.0 - 2.0 * var2)) / 2.0) : (float)((1.0 + W(2.0 * var2 - 1.0)) / 2.0);
          };
       }
 
-      private static IOException Q() {
-         return new IOException("Invalid D-Bus message");
+      private static double W(double var0) {
+         double var2 = 7.5625;
+         double var4 = 2.75;
+         if (var0 < 1.0 / var4) {
+            return var2 * var0 * var0;
+         } else if (var0 < 2.0 / var4) {
+            double var8;
+            return var2 * (var8 = var0 - 1.5 / var4) * var8 + 0.75;
+         } else {
+            double var6;
+            double var7;
+            return var0 < 2.5 / var4 ? var2 * (var6 = var0 - 2.25 / var4) * var6 + 0.9375 : var2 * (var7 = var0 - 2.625 / var4) * var7 + 0.984375;
+         }
       }
+   }
+
+   private static final class f {
+      final float c;
+      final List<uy.y> f = new ArrayList<>();
+
+      f(float var1) {
+         this.c = var1;
+      }
+
+      void o(int var1, float var2, float var3, uy.d var4) {
+         int var5 = 0;
+
+         while (var5 < this.f.size() && this.f.get(var5).tick < var1) {
+            var5++;
+         }
+
+         if (var5 < this.f.size() && this.f.get(var5).tick == var1) {
+            this.f.set(var5, new uy.y(var1, this.f.get(var5).arrive, var3, var4));
+         } else {
+            this.f.add(var5, new uy.y(var1, var2, var3, var4));
+         }
+      }
+   }
+
+   public record h(int returnTick, int endTick) {
+   }
+
+   public enum q {
+      S,
+      W,
+      x,
+      J,
+      G,
+      C,
+      f,
+      u;
+   }
+
+   private record y(int tick, float arrive, float depart, uy.d ease) {
    }
 }

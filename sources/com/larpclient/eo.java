@@ -1,117 +1,109 @@
 package com.larpclient;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import java.util.HashMap;
-import java.util.Map;
-import org.lwjgl.sdl.SDLInit;
-import org.lwjgl.sdl.SDLMouse;
-import org.lwjgl.sdl.SDLVideo;
-
 public final class eo {
-   public static final int J = 0;
-   public static final int S = 1;
-   public static final int i = 0;
-   public static final int M = 1;
-   public static final int e = 2;
-   public static final int K = -1;
-   public static final int Y = 32;
-   public static final int E = 66;
-   public static final int o = 67;
-   public static final int W = 71;
-   public static final int z = 256;
-   public static final int t = 257;
-   public static final int g = 266;
-   public static final int b = 267;
-   public static final int l = 335;
-   public static final int I = 341;
-   public static final int D = 344;
-   public static final int x = 345;
-   public static final int R = 348;
-   public static final int c = 0;
-   public static final int O = 1;
-   public static final int w = 135173;
-   public static final int B = 131076;
-   public static final int G = 139266;
-   public static final int X = 139267;
-   public static final int k = 139272;
-   public static final int r = 204801;
-   private static final Map<Integer, Integer> n = new HashMap<>();
-   private static final Map<Long, Long> s = new HashMap<>();
+   private eo.r c;
+   private eo.o U;
+   private int r;
+   private int z;
+   private int Z;
+   private boolean q;
 
-   public static int F(long var0, int var2) {
-      int var3 = r7.e(var2);
-      return var3 > 0 && InputConstants.isKeyDown(var3) ? 1 : 0;
+   public boolean v(eo.r var1) {
+      return this.c == var1;
    }
 
-   public static int Y(long var0, int var2) {
-      int var3 = r7.y(var2);
-      if (var3 >= 1 && var3 <= 32) {
-         int var4 = SDLMouse.SDL_GetMouseState(null, null);
-         return (var4 & 1 << var3 - 1) != 0 ? 1 : 0;
-      } else {
-         return 0;
-      }
-   }
-
-   public static boolean f() {
-      return SDLInit.SDL_Init(32);
-   }
-
-   public static void E(int var0, int var1) {
-      n.put(var0, var1);
-   }
-
-   public static long o(int var0, int var1, CharSequence var2, long var3, long var5) {
-      SDLVideo.SDL_GL_SetAttribute(17, n.getOrDefault(139266, 3));
-      SDLVideo.SDL_GL_SetAttribute(18, n.getOrDefault(139267, 3));
-      if (n.getOrDefault(139272, 0) == 204801) {
-         SDLVideo.SDL_GL_SetAttribute(20, 1);
+   public void v(eo.r var1, eo.o var2, int var3) {
+      if (this.c != null && (!this.U.current() || this.U.player() != var2.player())) {
+         this.x();
       }
 
-      if (n.containsKey(135173)) {
-         SDLVideo.SDL_GL_SetAttribute(6, n.get(135173));
-      }
+      if (var2.allowed() && var3 >= 0) {
+         if (this.c != null && this.c != var1) {
+            if (var1 != eo.r.V) {
+               return;
+            }
 
-      long var7 = 2L | (n.getOrDefault(131076, 1) == 0 ? 8L : 0L);
-      long var9 = SDLVideo.SDL_CreateWindow(var2, var0, var1, var7);
-      if (var9 == 0L) {
-         return 0L;
-      } else {
-         long var11 = SDLVideo.SDL_GL_CreateContext(var9);
-         if (var11 == 0L) {
-            SDLVideo.SDL_DestroyWindow(var9);
-            return 0L;
+            this.x();
+         }
+
+         if (this.c != var1) {
+            if (!var2.usingItem() && !var2.manualUse() && var2.usable(var3)) {
+               this.c = var1;
+               this.U = var2;
+               this.r = var2.selected();
+               this.z = var3;
+               this.Z = var2.tick();
+               this.q = (boolean)0;
+               var2.select(this.z);
+               var2.holdUse(true);
+            }
+         } else if (!this.U.manualUse() && this.U.selected() == this.z && this.U.usable(this.z)) {
+            if (this.U.usingItem()) {
+               this.q = (boolean)1;
+            } else if (this.q || this.U.tick() - this.Z >= 8) {
+               this.x();
+               return;
+            }
+
+            this.U.holdUse(true);
          } else {
-            s.put(var9, var11);
-            return var9;
+            this.x();
+         }
+      } else {
+         this.W(var1);
+      }
+   }
+
+   public void W(eo.r var1) {
+      if (this.c == var1) {
+         this.x();
+      }
+   }
+
+   public void x() {
+      eo.o var1 = this.U;
+      int var2 = this.r;
+      int var3 = this.z;
+      this.c = null;
+      this.U = null;
+      this.q = (boolean)0;
+      if (var1 != null) {
+         try {
+            var1.releaseUse();
+         } finally {
+            if (var1.current() && !var1.manualUse() && var1.selected() == var3) {
+               var1.select(var2);
+            }
          }
       }
    }
 
-   public static void G(long var0) {
-      SDLVideo.SDL_GL_MakeCurrent(var0, var0 == 0L ? 0L : s.getOrDefault(var0, 0L));
+   public interface o {
+      Object player();
+
+      int tick();
+
+      boolean current();
+
+      boolean allowed();
+
+      int selected();
+
+      void select(int var1);
+
+      boolean usable(int var1);
+
+      boolean usingItem();
+
+      boolean manualUse();
+
+      void holdUse(boolean var1);
+
+      void releaseUse();
    }
 
-   public static void i(long var0) {
-      Long var2 = s.remove(var0);
-      if (var2 != null) {
-         SDLVideo.SDL_GL_DestroyContext(var2);
-      }
-
-      if (var0 != 0L) {
-         SDLVideo.SDL_DestroyWindow(var0);
-      }
-   }
-
-   public static void z() {
-      n.clear();
-      SDLInit.SDL_QuitSubSystem(32);
-   }
-
-   public static void L(long var0) {
-      SDLVideo.SDL_RaiseWindow(var0);
-   }
-
-   private eo() {
+   public enum r {
+      s,
+      V;
    }
 }

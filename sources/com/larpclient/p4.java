@@ -1,59 +1,47 @@
 package com.larpclient;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+public final class p4 {
+   public static final double Y = 0.14;
+   private static final p4.q R = new p4.q(0.0F, 0.0F);
+   private float h;
+   private float G;
+   private float d;
+   private double u = Double.NaN;
 
-public final class p4 extends oq {
-   private final com.larpclient.module.lp X;
-
-   public p4(com.larpclient.module.lp var1) {
-      this.X = var1;
-      this.O = 20;
+   public void o() {
+      this.h = this.G = this.d = 0.0F;
+      this.u = Double.NaN;
    }
 
-   @Override
-   public void render(GuiGraphicsExtractor var1, int var2, int var3) {
-      int var4 = Math.max(1, this.v / this.X.X().size());
+   public p4.q P(tt.x var1, double var2) {
+      if (var1.U == 2) {
+         this.u = Double.NaN;
+         this.h = var1.K;
+         this.G = a.C(this.h);
+         return new p4.q(this.h, this.G);
+      }
 
-      for (int var5 = 0; var5 < this.X.X().size(); var5++) {
-         String var6 = this.X.X().get(var5);
-         boolean var7 = this.X.i(var6);
-         int var8 = this.B + var5 * var4;
-         int var9 = Math.max(1, var4 - 3);
-         int var10 = var7 ? jd.readableAccent(rv.m(var8), rv.H | 0xFF000000) : rv.z | 0xFF000000;
-         int var11 = rv.u() ? 7 : 5;
-         if (var7) {
-            ll.S(var1, var8, this.L, var9, this.O, var11, 5.0F, oh.i(var10, 0.22));
+      if (var1.r && this.G > 0.0F) {
+         this.u = var2;
+         this.d = this.G;
+         mt.U("SwordModels", "Watch inspect interrupted at phase {}, releasing over {}s", String.format("%.2f", this.h), 0.14);
+      }
+
+      this.G = 0.0F;
+      if (Double.isFinite(this.u) && Double.isFinite(var2)) {
+         float var4 = (float)Math.clamp((var2 - this.u) / 0.14, 0.0, 1.0);
+         if (!(var4 >= 1.0F) && !(var2 < this.u)) {
+            float var5 = 1.0F - var4 * var4 * (3.0F - 2.0F * var4);
+            return new p4.q(this.h, this.d * var5);
+         } else {
+            this.u = Double.NaN;
+            return R;
          }
-
-         ll.N(var1, var8, this.L, var9, this.O, var11, var10);
-         ll.u(var1, var8, this.L, var9, this.O, var11, var7 ? var10 : rv.f);
-         j_.L(var1, j_.d(var6, var4 - 9, j_.m.U), var8 + 4, this.L + 6, jd.controlInk(var10), j_.m.U);
-      }
-
-      if (this.A && this.h) {
-         ll.w(var1, this.B, this.L, this.v, this.O, rv.u() ? 7 : 5);
-      }
-   }
-
-   @Override
-   public boolean click(double var1, double var3, int var5) {
-      if (var5 == 0 && this.contains(var1, var3)) {
-         int var6 = Math.max(1, this.v / this.X.X().size());
-         this.X.setValue(this.X.X().get(Math.clamp((int)(var1 - this.B) / var6, 0, this.X.X().size() - 1)));
-         return true;
       } else {
-         return false;
+         return R;
       }
    }
 
-   @Override
-   public boolean key(int var1) {
-      if (var1 != 263 && var1 != 262 && var1 != 32 && var1 != 257) {
-         return false;
-      }
-
-      int var2 = this.X.X().indexOf(this.X.getValue());
-      this.X.setValue(this.X.X().get(Math.floorMod(var2 + (var1 == 263 ? -1 : 1), this.X.X().size())));
-      return true;
+   public record q(float phase, float weight) {
    }
 }

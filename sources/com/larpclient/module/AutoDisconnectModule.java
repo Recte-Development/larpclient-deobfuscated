@@ -3,7 +3,7 @@ package com.larpclient.module;
 import net.minecraft.network.chat.Component;
 
 public class AutoDisconnectModule extends Module {
-   private final lc M = this.addSetting(new lc("Health", "Disconnect below health", 4.0, 1.0, 20.0, 0.5));
+   private final d9 y = this.addSetting(new d9("Health", "Disconnect below health", 4.0, 1.0, 20.0, 0.5));
 
    public AutoDisconnectModule() {
       super("AutoDisconnect", "Disconnect at low health", Category.PLAYER, -1);
@@ -13,7 +13,7 @@ public class AutoDisconnectModule extends Module {
    public void onTick() {
       if (this.isInGame()) {
          double var6;
-         int var10000 = (var6 = mc.player.getHealth() - this.M.getValue()) == 0.0 ? 0 : (var6 < 0.0 ? -1 : 1);
+         int var10000 = (var6 = mc.player.getHealth() - this.y.P()) == 0.0 ? 0 : (var6 < 0.0 ? -1 : 1);
          boolean var2 = false;
          int var1 = var10000;
          if (-Integer.signum(var1) >>> 31 == 0) {

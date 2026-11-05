@@ -1,35 +1,35 @@
 package com.larpclient.module;
 
-import com.larpclient.em;
+import com.larpclient.du;
 
 public final class LARPModule extends Module {
-   private static LARPModule J;
-   public final ln U = this.addSetting(new ln("Share Appearance", "Retired sharing preference", false));
-   public final ln t = this.addSetting(new ln("Receive Cosmetics", "Retired receive preference", true));
+   private static LARPModule y;
+   public final dh c = this.addSetting(new dh("Share Appearance", "Retired sharing preference", false));
+   public final dh M = this.addSetting(new dh("Receive Cosmetics", "Retired receive preference", true));
 
    public LARPModule() {
       super("LARP", "Copy a skin, cape and name locally", Category.PLAYER, -1);
-      this.U.x(() -> false);
-      this.t.x(() -> false);
-      J = this;
+      this.c.H(() -> false);
+      this.M.H(() -> false);
+      y = this;
    }
 
-   public static LARPModule C() {
-      return J;
+   public static LARPModule d() {
+      return y;
    }
 
    @Override
    public void onEnable() {
-      em.i();
+      du.s();
    }
 
    @Override
    public void onDisable() {
-      em.z();
+      du.u();
    }
 
    @Override
    public String getStatus() {
-      return (em.R.isEmpty() ? "" : em.R + " · ") + em.h;
+      return (du.F.isEmpty() ? "" : du.F + " · ") + du.w;
    }
 }

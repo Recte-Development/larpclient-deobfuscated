@@ -1,113 +1,92 @@
 package com.larpclient;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.saveddata.maps.MapId;
+import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-@Environment(EnvType.CLIENT)
-public class uu extends ug {
-   private static final uu YX = new uu();
+final class uu {
+   private final hx p;
+   String V = "";
+   int M;
+   int n;
+   long D;
+   boolean B;
+   List<JsonObject> z = List.of();
+   JsonObject v;
 
-   private uu() {
+   uu(hx var1) {
+      this.p = var1;
    }
 
-   public static uu M() {
-      return YX;
+   void H() {
+      this.v = null;
    }
 
-   @Override
-   public void queueForce(int var1) {
-      if (var1 >= 1 && var1 <= 9) {
-         super.queueForce(var1);
+   void W() {
+      String var1 = this.V.toLowerCase(Locale.ROOT);
+
+      for (JsonObject var3 : this.z) {
+         String var4 = p_.Q(var3, "name", 32);
+         String var5 = p_.Q(var3, "description", 4000);
+         if ((var4 + " " + var5 + " " + p_.Q(var3, "author", 160)).toLowerCase(Locale.ROOT).contains(var1)) {
+            this.p.N(var4, p_.Q(var3, "author", 160), this.v == var3, () -> {
+               this.v = var3;
+               this.p.Z = 0;
+               this.p.build();
+            });
+         }
       }
    }
 
-   @Override
-   public void queueForceSequence(int... var1) {
-      if (var1 != null && var1.length != 0) {
-         int[] var2 = new int[var1.length];
-         int var3 = 0;
-
-         for (int var7 : var1) {
-            if (var7 >= 1 && var7 <= 9) {
-               var2[var3++] = var7;
-            }
+   void O() {
+      if (this.v != null) {
+         String var1 = p_.Q(this.v, "author", 160);
+         this.p.H(p_.Q(this.v, "name", 32), var1.isBlank() ? "" : "By " + var1);
+         String var2 = p_.Q(this.v, "description", 4000);
+         if (!var2.isBlank()) {
+            this.p.text(var2);
          }
 
-         if (var3 == 0) {
-            this.clearQueue();
-         } else if (var3 == var2.length) {
-            super.queueForceSequence(var2);
-         } else {
-            int[] var8 = new int[var3];
-            System.arraycopy(var2, 0, var8, 0, var3);
-            super.queueForceSequence(var8);
+         ArrayList var3 = new ArrayList();
+         String var4 = p_.Q(this.v, "minecraftVersion", 160);
+         String var5 = p_.Q(this.v, "larpVersion", 160);
+         if (!var4.isBlank()) {
+            var3.add("Minecraft " + var4);
          }
-      } else {
-         this.clearQueue();
+
+         if (!var5.isBlank()) {
+            var3.add("Larp " + var5);
+         }
+
+         if (!var3.isEmpty()) {
+            this.p.text(String.join(" · ", var3));
+         }
+
+         this.p.k("Preview import", () -> this.p.v6.S(md.a(this.v))).w = (boolean)1;
       }
    }
 
-   @Override
-   public int getPendingValue() {
-      int var1 = super.getPendingValue();
-      return var1 >= 1 && var1 <= 9 ? var1 : -1;
+   void Q() {
+      this.p.Z = 0;
+      this.v = null;
+      this.B = (boolean)0;
+      this.z = List.of();
+      this.p.n("Loading marketplace...", this.p.h.n.F("/api/configs?limit=30&offset=" + this.M, false).thenApply(var0 -> {
+         o0.validate(var0);
+         return (JsonObject)var0;
+      }), var1 -> {
+         this.z = o0.validate(var1).items();
+         this.n = var1.get("total").getAsInt();
+         this.B = (boolean)1;
+         this.p.A = "Search filters this loaded page (" + this.z.size() + " of " + this.n + ").";
+      });
    }
 
-   @Override
-   public String pendingLabel() {
-      int var1 = this.getPendingValue();
-      return var1 == -1 ? "none" : String.valueOf(var1);
-   }
-
-   @Override
-   public void setTemplateForValue(int var1, MapId var2) {
-      if (var1 >= 1 && var1 <= 9) {
-         super.setTemplateForValue(var1, var2);
+   void A() {
+      if (this.D != 0L && System.currentTimeMillis() >= this.D && this.p.F()) {
+         this.D = 0L;
+         this.p.J();
       }
-   }
-
-   @Override
-   public MapId getTemplateForValue(int var1) {
-      return var1 >= 1 && var1 <= 9 ? super.getTemplateForValue(var1) : null;
-   }
-
-   @Override
-   public int getTemplateIdForValue(int var1) {
-      return var1 >= 1 && var1 <= 9 ? super.getTemplateIdForValue(var1) : -1;
-   }
-
-   @Override
-   public void setTemplateIdForValue(int var1, int var2) {
-      if (var1 >= 1 && var1 <= 9) {
-         super.setTemplateIdForValue(var1, var2);
-      }
-   }
-
-   @Override
-   protected boolean supportsPhysicalSwap() {
-      return true;
-   }
-
-   @Override
-   protected boolean swapWorthwhile(int var1, int var2) {
-      return true;
-   }
-
-   @Override
-   protected BlockPos getAssignedDispenserPosition(Minecraft var1) {
-      return f9.W().R(f9.b.c);
-   }
-
-   @Override
-   protected int maxQueuedForces() {
-      return 1;
-   }
-
-   @Override
-   public int containerIndexForValue(int var1) {
-      return var1 >= 1 && var1 <= 9 ? var1 - 1 : -1;
    }
 }

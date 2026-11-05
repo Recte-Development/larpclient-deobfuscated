@@ -1,6 +1,6 @@
 package com.larpclient.account;
 
-import com.larpclient.r4;
+import com.larpclient.mt;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.minecraft.UserApiService.UserFlag;
 import com.mojang.authlib.minecraft.UserApiService.UserProperties;
@@ -126,25 +126,25 @@ final class ClientAccountState implements AutoCloseable {
             var2.close();
             var3.close();
          } catch (RuntimeException var7) {
-            r4.m("Accounts", "Previous account service cleanup failed ({}); new account remains active", var7.getClass().getSimpleName());
+            mt.T("Accounts", "Previous account service cleanup failed ({}); new account remains active", var7.getClass().getSimpleName());
          }
 
          try {
             this.social.setAllowFriendRequests(this.properties.flag(UserFlag.ACCEPT_FRIEND_INVITES));
             this.social.setFriendListEnabled(this.properties.flag(UserFlag.FRIENDS_ENABLED));
          } catch (RuntimeException var6) {
-            r4.m("Accounts", "Friend-list startup failed ({}); reopen the social screen to retry", var6.getClass().getSimpleName());
+            mt.T("Accounts", "Friend-list startup failed ({}); reopen the social screen to retry", var6.getClass().getSimpleName());
          }
 
-         r4.V("Accounts", "Game account changed; client ready={}", true);
+         mt.K("Accounts", "Game account changed; client ready={}", true);
 
          try {
             var1.updateTitle();
          } catch (RuntimeException var5) {
-            r4.m("Accounts", "Window title refresh failed ({}); account switch completed", var5.getClass().getSimpleName());
+            mt.T("Accounts", "Window title refresh failed ({}); account switch completed", var5.getClass().getSimpleName());
          }
 
-         r4.V("Accounts", "Account applied; profile, signing, privacy, friends and Realms refreshed");
+         mt.K("Accounts", "Account applied; profile, signing, privacy, friends and Realms refreshed");
       } else {
          throw new IllegalStateException("Account switching requires the main menu.");
       }

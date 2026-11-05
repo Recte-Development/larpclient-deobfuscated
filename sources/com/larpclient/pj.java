@@ -1,157 +1,248 @@
 package com.larpclient;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 
-public abstract class pj extends pw implements hd {
-   protected final Screen U;
-   protected int V;
-   protected int o;
-   protected int s;
-   protected int a;
-   private final u7 M = new u7(0.0);
-   private boolean p;
-   private boolean B;
-   private long u;
-   private double H = 1.0;
-   private double O;
-   private double K = 1.0;
+@Environment(EnvType.CLIENT)
+public final class pj {
+   private static final int I = 3;
+   private static final pj h = new pj();
+   public boolean Z;
+   public boolean F;
+   private boolean D;
+   private boolean r;
+   private long W;
+   private int Y = -1;
+   private ItemStack O = ItemStack.EMPTY;
 
-   protected pj(String var1, Screen var2) {
-      super(var1);
-      this.U = var2;
+   private pj() {
    }
 
-   @Override
-   public boolean dimAtmosphere() {
-      return true;
+   public static pj U() {
+      return h;
    }
 
-   protected pd r(String var1, Runnable var2, int var3, int var4, int var5) {
-      pd var6 = new pd(var1, "", var2);
-      var6.bounds(var3, var4, var5);
-      var6.O = 24;
-      this.k.add(var6);
-      return var6;
+   public void g() {
+      this.Z = (boolean)(!this.Z ? 1 : 0);
    }
 
-   protected void p(int var1, int var2) {
-      this.s = Math.min(var1, this.width - 24);
-      this.a = Math.min(var2, this.height - 24);
-      this.V = (this.width - this.s) / 2;
-      this.o = (this.height - this.a) / 2;
+   public void K(boolean var1) {
+      this.F = (boolean)(var1 && !ep.H().O() ? 1 : 0);
    }
 
-   protected void e(GuiGraphicsExtractor var1) {
-      if (!this.p) {
-         this.p = (boolean)1;
-         this.M.c(0.0);
+   public void B() {
+      this.K(!this.F);
+   }
+
+   public boolean V() {
+      return this.D;
+   }
+
+   public void a() {
+      this.D = (boolean)1;
+   }
+
+   public void N() {
+      this.D = (boolean)0;
+   }
+
+   public boolean W() {
+      Minecraft var1 = Minecraft.getInstance();
+      if (this.F && var1 != null && var1.player != null && var1.level != null && var1.gameMode != null && var1.getConnection() != null) {
+         int var2 = this.B();
+         return var2 >= 0 && var2 < 9;
+      } else {
+         return false;
+      }
+   }
+
+   public boolean c() {
+      if (!this.Z && !this.F && !this.r) {
+         return false;
       }
 
-      double var2 = LarpClient.y().v().E().o ? this.M.y(1.0, 260) : 1.0;
-      if (this.B) {
-         var2 = this.K * (1.0 - u7.p.N.m((System.nanoTime() - this.u) / 1.6E8));
-      }
-
-      this.H = var2;
-      this.O = LarpClient.y().v().E().o ? (1.0 - var2) * 12.0 : 0.0;
-      var1.pose().pushMatrix();
-      var1.pose().translate(0.0F, (float)this.O);
-      ll.D(var1, this.V, this.o, this.s, this.a);
-      ll.N(var1, this.V, this.o, this.s, this.a, 7, oh.S(-451076058, var2));
+      int var1 = this.B();
+      return var1 >= 0 && var1 < 9;
    }
 
-   protected void drawControls(GuiGraphicsExtractor var1, int var2, int var3) {
-      for (oq var5 : this.k) {
-         if (var5.F) {
-            if (var5 instanceof pd var6) {
-               var6.f = this.H;
-            }
+   public void A(int var1) {
+      this.Y = var1;
+   }
 
-            if (this.B) {
-               var5.x = (boolean)0;
-            }
+   public int N() {
+      Minecraft var1 = Minecraft.getInstance();
+      if (var1 == null || var1.player == null) {
+         return 0;
+      } else {
+         return this.c() && this.Y >= 0 && this.Y < 9 ? this.Y : var1.player.getInventory().getSelectedSlot();
+      }
+   }
 
-            var5.render(var1, var2, var3);
+   public int B() {
+      Minecraft var1 = Minecraft.getInstance();
+      if (var1 != null && var1.player != null) {
+         Inventory var2 = var1.player.getInventory();
+
+         for (int var3 = 0; var3 < var2.getContainerSize(); var3++) {
+            if (F(var2.getItem(var3))) {
+               return var3;
+            }
          }
+
+         return -1;
+      } else {
+         return -1;
       }
    }
 
-   public void onClose() {
-      if (!this.B) {
-         if (!LarpClient.y().v().E().o) {
-            this.minecraft.gui.setScreen(this.U);
+   private static boolean F(ItemStack var0) {
+      if (var0 != null && !var0.isEmpty() && var0.is(Items.FISHING_ROD)) {
+         Minecraft var1 = Minecraft.getInstance();
+         if (var1 != null && var1.level != null) {
+            Registry var2 = var1.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+            Optional var3 = var2.getOptional(Enchantments.LURE);
+            return var3.isEmpty() ? false : EnchantmentHelper.getItemEnchantmentLevel(var2.wrapAsHolder((Enchantment)var3.get()), var0) >= 3;
          } else {
-            this.B = (boolean)1;
-            this.K = this.H;
-            this.u = System.nanoTime();
+            return false;
+         }
+      } else {
+         return false;
+      }
+   }
 
-            for (oq var2 : this.k) {
-               var2.x = (boolean)0;
+   private static boolean R(ItemStack var0) {
+      return var0 != null && !var0.isEmpty() && var0.is(Items.FISHING_ROD);
+   }
+
+   private static ItemStack F(ItemStack var0) {
+      if (!R(var0)) {
+         return var0;
+      }
+
+      ItemStack var1 = var0.copy();
+      var1.remove(DataComponents.ENCHANTMENTS);
+      var1.remove(DataComponents.STORED_ENCHANTMENTS);
+      var1.remove(DataComponents.ITEM_NAME);
+      var1.remove(DataComponents.CUSTOM_NAME);
+      var1.remove(DataComponents.LORE);
+      return var1;
+   }
+
+   public ItemStack a(int var1, ItemStack var2) {
+      if (var1 < 0) {
+         return var2;
+      } else if ((this.Z || this.F || this.r) && var1 == this.B()) {
+         return !this.O.isEmpty() ? this.O : ItemStack.EMPTY;
+      } else {
+         return var2;
+      }
+   }
+
+   public ItemStack I() {
+      return this.O;
+   }
+
+   public void C() {
+      this.O = ItemStack.EMPTY;
+   }
+
+   public void H(ItemStack var1) {
+      if (var1 != null && !var1.isEmpty()) {
+         if (this.O.isEmpty()) {
+            this.O = var1.copy();
+         } else if (ItemStack.matches(this.O, var1)) {
+            this.O.grow(var1.getCount());
+            if (this.O.getCount() > this.O.getMaxStackSize()) {
+               this.O.setCount(this.O.getMaxStackSize());
+            }
+         } else {
+            this.O = var1.copy();
+         }
+      }
+   }
+
+   public ItemStack F(int var1, ItemStack var2) {
+      return !this.Z && !this.F ? var2 : F(var2);
+   }
+
+   public boolean U() {
+      Minecraft var1 = Minecraft.getInstance();
+      if (var1 != null && var1.player != null) {
+         return var1.player.getInventory().getSelectedSlot() == this.B() ? false : R(var1.player.getMainHandItem());
+      } else {
+         return false;
+      }
+   }
+
+   public void k(Minecraft var1) {
+      if (this.F && var1 != null && var1.player != null && var1.gameMode != null) {
+         if (var1.gui.screen() == null) {
+            int var2 = this.B();
+            if (var2 >= 9 && var2 < 36) {
+               long var3 = System.currentTimeMillis();
+               if (var3 - this.W >= 250L) {
+                  this.W = var3;
+                  this.t(var1, var2);
+               }
             }
          }
       }
    }
 
-   public void tick() {
-      if (this.B && System.nanoTime() - this.u >= 160000000L) {
-         this.minecraft.gui.setScreen(this.U);
+   private void t(Minecraft var1, int var2) {
+      Inventory var3 = var1.player.getInventory();
+      int var4 = -1;
+
+      for (int var5 = 0; var5 < 9; var5++) {
+         if (var3.getItem(var5).isEmpty()) {
+            var4 = var5;
+            break;
+         }
+      }
+
+      if (var4 < 0) {
+         int var11 = var3.getSelectedSlot();
+         if (var3.getItem(var11).isEmpty()) {
+            var4 = var11;
+         }
+      }
+
+      if (var4 >= 0) {
+         int var12 = -1;
+
+         for (Slot var7 : var1.player.containerMenu.slots) {
+            if (var7.container == var3 && var7.getContainerSlot() == var2) {
+               var12 = var7.index;
+               break;
+            }
+         }
+
+         if (var12 >= 0) {
+            this.r = (boolean)1;
+
+            try {
+               var1.gameMode.handleContainerInput(var1.player.containerMenu.containerId, var12, var4, ContainerInput.SWAP, var1.player);
+            } finally {
+               this.r = (boolean)0;
+            }
+         }
       }
    }
 
-   @Override
-   public boolean keyPressed(KeyEvent var1) {
-      return !this.p || this.H <= 0.15 || this.B || super.keyPressed(var1);
-   }
-
-   @Override
-   public boolean charTyped(CharacterEvent var1) {
-      return !this.p || this.H <= 0.15 || this.B || super.charTyped(var1);
-   }
-
-   private MouseButtonEvent B(MouseButtonEvent var1) {
-      return new MouseButtonEvent(var1.x(), var1.y() - this.O, var1.buttonInfo());
-   }
-
-   @Override
-   public boolean mouseClicked(MouseButtonEvent var1, boolean var2) {
-      return !this.p || this.H <= 0.15 || this.B || super.mouseClicked(this.B(var1), var2);
-   }
-
-   @Override
-   public boolean mouseDragged(MouseButtonEvent var1, double var2, double var4) {
-      return this.B || super.mouseDragged(this.B(var1), var2, var4);
-   }
-
-   @Override
-   public boolean mouseReleased(MouseButtonEvent var1) {
-      return super.mouseReleased(this.B(var1));
-   }
-
-   protected int B(int var1) {
-      return (int)Math.round(var1 - this.O);
-   }
-
-   protected double b(double var1) {
-      return var1 - this.O;
-   }
-
-   protected void V(GuiGraphicsExtractor var1) {
-      var1.pose().popMatrix();
-   }
-
-   public boolean mouseScrolled(double var1, double var3, double var5, double var7) {
-      return this.B;
-   }
-
-   protected boolean G() {
-      return this.B;
-   }
-
-   protected double B() {
-      return this.H;
+   public String A() {
+      return this.F ? "On" : "Off";
    }
 }

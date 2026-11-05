@@ -1,60 +1,98 @@
 package com.larpclient;
 
-import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.List;
+import org.joml.Matrix4f;
 
 public final class ub {
-   public static JsonObject a(JsonObject var0) {
-      if (var0 != null && var0.toString().length() <= 4096) {
-         JsonObject var1 = new JsonObject();
-         if (var0.has("china_hat")) {
-            JsonObject var2 = var0.getAsJsonObject("china_hat");
-            if (var2.get("version").getAsInt() != 1) {
-               throw new IllegalArgumentException("Hat version");
-            }
+   private static final int r = 64;
+   private static final int J = 3;
+   public static final List<ub.b> Z = Y();
+   private static final double[] T = new double[65];
+   private static final double[] S = new double[65];
 
-            JsonObject var3 = new JsonObject();
-            var3.addProperty("version", 1);
+   private static ub.o U(double var0, int var2, double var3) {
+      double var5 = var2 * Math.PI * 2.0 / 64.0;
+      double var7 = Math.cos(var5);
+      double var9 = Math.sin(var5);
+      double var11 = 0.76 + 0.18 * Math.max(0.0, -0.6 * var7 + 0.8 * var9);
+      return new ub.o(var7 * var0, var3, var9 * var0, var0, var11);
+   }
 
-            for (String var7 : new String[]{"enabled", "outline"}) {
-               if (!var2.get(var7).isJsonPrimitive() || !var2.getAsJsonPrimitive(var7).isBoolean()) {
-                  throw new IllegalArgumentException("Hat flag");
-               }
+   private static List<ub.b> Y() {
+      ArrayList var0 = new ArrayList();
 
-               var3.add(var7, var2.get(var7));
-            }
+      for (int var1 = 0; var1 < 3; var1++) {
+         double var2 = var1 / 3.0;
+         double var4 = (var1 + 1) / 3.0;
 
-            for (String var13 : new String[]{"top", "rim"}) {
-               double var8 = b(var2, var13, -2.1474836E9F, 2.147483647E9);
-               if (var8 != Math.rint(var8)) {
-                  throw new IllegalArgumentException("Hat color");
-               }
-
-               var3.addProperty(var13, (int)var8);
-            }
-
-            var3.addProperty("radius", b(var2, "radius", 0.25, 1.0));
-            var3.addProperty("height", b(var2, "height", 0.1, 0.7));
-            var3.addProperty("offset", b(var2, "offset", 0.0, 0.5));
-            var3.addProperty("opacity", b(var2, "opacity", 0.1, 1.0));
-            var1.add("china_hat", var3);
+         for (int var6 = 0; var6 < 64; var6++) {
+            var0.add(new ub.b(U(var2, var6, 1.0 - var2), U(var4, var6, 1.0 - var4), U(var4, var6 + 1, 1.0 - var4), U(var2, var6 + 1, 1.0 - var2), false));
          }
+      }
 
-         return var1;
-      } else {
-         throw new IllegalArgumentException("Cosmetics too large");
+      for (int var7 = 0; var7 < 64; var7++) {
+         var0.add(new ub.b(U(0.96, var7, -0.022), U(1.0, var7, 0.0), U(1.0, var7 + 1, 0.0), U(0.96, var7 + 1, -0.022), true));
+      }
+
+      return List.copyOf(var0);
+   }
+
+   public static int v(int var0, double var1) {
+      return var0 & 0xFF000000 | (int)((var0 >>> 16 & 0xFF) * var1) << 16 | (int)((var0 >>> 8 & 0xFF) * var1) << 8 | (int)((var0 & 0xFF) * var1);
+   }
+
+   public static void F(s var0, Matrix4f var1, double var2, double var4, double var6, int var8, int var9, boolean var10) {
+      var0.blend(pf.x.S);
+
+      for (ub.b var12 : Z) {
+         O(var0, var1, var12.a, var12.brim, var2, var4, var6, var8, var9);
+         O(var0, var1, var12.b, var12.brim, var2, var4, var6, var8, var9);
+         O(var0, var1, var12.c, var12.brim, var2, var4, var6, var8, var9);
+         O(var0, var1, var12.d, var12.brim, var2, var4, var6, var8, var9);
+      }
+
+      if (var10) {
+         var0.blend(pf.x.E);
+         D(var0, var1, var2, var6, 0.014, _3.U(var9, 0.22));
+         D(var0, var1, var2, var6, 0.004, _3.D(var9, var9 & 0xFF000000 | 16777215, 0.52));
+         var0.blend(pf.x.S);
       }
    }
 
-   private static double b(JsonObject var0, String var1, double var2, double var4) {
-      if (var0.get(var1).isJsonPrimitive() && var0.getAsJsonPrimitive(var1).isNumber()) {
-         double var6 = var0.get(var1).getAsDouble();
-         if (Double.isFinite(var6) && !(var6 < var2) && !(var6 > var4)) {
-            return var6;
-         } else {
-            throw new IllegalArgumentException("Hat range");
-         }
-      } else {
-         throw new IllegalArgumentException("Hat number");
+   private static void D(s var0, Matrix4f var1, double var2, double var4, double var6, int var8) {
+      float var9 = (float)(-0.503 - var4);
+
+      for (int var10 = 0; var10 < 64; var10++) {
+         var0.modelVertex(var1, (float)(T[var10] * (var2 - var6)), var9, (float)(S[var10] * (var2 - var6)), var8);
+         var0.modelVertex(var1, (float)(T[var10] * (var2 + var6)), var9, (float)(S[var10] * (var2 + var6)), var8);
+         var0.modelVertex(var1, (float)(T[var10 + 1] * (var2 + var6)), var9, (float)(S[var10 + 1] * (var2 + var6)), var8);
+         var0.modelVertex(var1, (float)(T[var10 + 1] * (var2 - var6)), var9, (float)(S[var10 + 1] * (var2 - var6)), var8);
       }
+   }
+
+   private static void O(s var0, Matrix4f var1, ub.o var2, boolean var3, double var4, double var6, double var8, int var10, int var11) {
+      int var12 = var3 ? v(var11, 0.58) : v(_3.D(var10, var11, var2.radius), var2.light);
+      a(var0, var1, var2, var4, var6, var8, var12);
+   }
+
+   private static void a(s var0, Matrix4f var1, ub.o var2, double var3, double var5, double var7, int var9) {
+      var0.modelVertex(var1, (float)(var2.x * var3), (float)(-0.5 - var7 - var2.rise * var5), (float)(var2.z * var3), var9);
+   }
+
+   private ub() {
+   }
+
+   static {
+      for (int var0 = 0; var0 <= 64; var0++) {
+         T[var0] = Math.cos(var0 * Math.PI * 2.0 / 64.0);
+         S[var0] = Math.sin(var0 * Math.PI * 2.0 / 64.0);
+      }
+   }
+
+   public record b(ub.o a, ub.o b, ub.o c, ub.o d, boolean brim) {
+   }
+
+   public record o(double x, double rise, double z, double radius, double light) {
    }
 }

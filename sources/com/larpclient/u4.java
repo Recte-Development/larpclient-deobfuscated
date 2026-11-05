@@ -1,112 +1,116 @@
 package com.larpclient;
 
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.api.textures.AddressMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import java.io.IOException;
+import net.minecraft.client.renderer.texture.ReloadableTexture;
+import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
 
-public final class u4 {
-   public static final double T = 1.7;
-   public static final double S = 0.85;
-   public static final double W = 1.85;
-   public static final double C = 1.02;
-   public static final u4.v x = new u4.v(new Vec3(1.0, 0.0, 0.0), new Vec3(0.0, 1.0, 0.0), new Vec3(0.0, 0.0, 1.0));
+public class u4 extends ReloadableTexture {
+   private final boolean K;
 
-   public static double f(double var0) {
-      return ez.N((var0 - 0.85) / 1.0);
+   public u4(Identifier var1) {
+      this(var1, true);
    }
 
-   public static Vec3 u(ez var0, double var1) {
-      double var3 = Math.sin(Math.max(0.0, var1 - 1.85) * 2.4) * 0.045;
-      return var0.D.add(0.0, 2.75 + var3, 0.0);
+   protected u4(Identifier var1, boolean var2) {
+      super(var1);
+      this.K = var2;
    }
 
-   public static u4.v g(Vec3 var0, Vec3 var1, Vec3 var2, Vec3 var3) {
-      Vec3 var4 = var1.subtract(var0);
-      if (var4.lengthSqr() < 1.0E-10) {
-         var4 = var2.cross(var3);
-      }
-
-      if (var4.lengthSqr() < 1.0E-10) {
-         var4 = x.normal;
-      }
-
-      var4 = var4.normalize();
-      Vec3 var5 = var2.subtract(var4.scale(var2.dot(var4)));
-      if (var5.lengthSqr() < 1.0E-10) {
-         var5 = var3.cross(var4);
-      }
-
-      if (var5.lengthSqr() < 1.0E-10) {
-         Vec3 var6 = Math.abs(var4.y) < 0.9 ? new Vec3(0.0, 1.0, 0.0) : new Vec3(0.0, 0.0, 1.0);
-         var5 = var6.cross(var4);
-      }
-
-      var5 = var5.normalize();
-      return new u4.v(var5, var4.cross(var5).normalize(), var4);
+   public TextureContents loadContents(ResourceManager var1) throws IOException {
+      return TextureContents.load(var1, this.resourceId());
    }
 
-   public static u4.c U(ez var0, double var1, u4.v var3, int var4) {
-      jr.l var5 = x_.a.get(var4);
-      Vec3 var6 = u(var0, var1).add(var3.normal.scale(var4 < 3 ? 0.035 : -0.035));
-      return new u4.c(G(var6, var3, var5.from()), G(var6, var3, var5.to()));
-   }
-
-   private static Vec3 G(Vec3 var0, u4.v var1, Vec3 var2) {
-      return var0.add(var1.right.scale(var2.x * 1.02)).add(var1.up.scale(-var2.z * 1.02));
-   }
-
-   private static Quaternionf s(u4.v var0) {
-      Vec3 var1 = var0.right.scale(-1.0);
-      Vec3 var2 = var0.up;
-      Vec3 var3 = var0.normal.scale(-1.0);
-      return new Quaternionf()
-         .setFromNormalized(
-            new Matrix3f()
-               .setColumn(0, new Vector3f((float)var1.x, (float)var1.y, (float)var1.z))
-               .setColumn(1, new Vector3f((float)var2.x, (float)var2.y, (float)var2.z))
-               .setColumn(2, new Vector3f((float)var3.x, (float)var3.y, (float)var3.z))
-         );
-   }
-
-   public static ez.q k(ez var0, int var1, double var2, u4.v var4) {
-      double var5 = f(var2);
-      double var7 = 1.7 * ez.N(var2 / 0.85);
-      double var9 = ez.k(var1, var0.d) / 16.0 * 0.9375;
-      double var11 = (24.0 - ez.X[var1][1]) / 16.0 * 0.9375;
-      Vec3 var13 = var0.D.add(0.0, 1.05 + var7, 0.0).add(var4.right.scale(var9)).add(var4.up.scale(var11 - 1.05));
-      u4.c var14 = U(var0, var2, var4, var1);
-      double var15 = var1 < 2 ? 0.5 : (!var0.d || var1 != 2 && var1 != 3 ? 0.25 : 0.1875);
-      double var17 = var1 == 0 ? 0.5 : 0.75;
-      double var19 = var1 == 0 ? 0.5 : 0.25;
-      double var21 = var1 == 1 ? 0.22 : 0.18;
-      Vec3 var23 = new Vec3(var21 / (var15 * 0.9375), var14.length() / (var17 * 0.9375), 0.14 / (var19 * 0.9375));
-      jr.l var24 = x_.a.get(var1);
-      Vec3 var25 = var24.to().subtract(var24.from()).normalize();
-      double var26 = Math.atan2(-var25.x, var25.z);
-      Quaternionf var28 = s(var4).rotateZ((float)(var26 * var5));
-      Vec3 var29 = var13.lerp(var14.center(), var5).add(var4.normal.scale(Math.sin(var5 * Math.PI) * 0.18 * (var1 < 3 ? 1 : -1)));
-      double var30 = ez.N((4.6 - var2) / 0.75);
-      return new ez.q(var29, 0.0, 0.0, 0.0, 1.0, var30, 0.0, false, var28, new Vec3(1.0, 1.0, 1.0).lerp(var23, var5));
-   }
-
-   private u4() {
-   }
-
-   public record c(Vec3 from, Vec3 to) {
-      public Vec3 center() {
-         return this.from.lerp(this.to, 0.5);
-      }
-
-      public Vec3 tangent() {
-         return this.to.subtract(this.from).normalize();
-      }
-
-      public double length() {
-         return this.from.distanceTo(this.to);
+   public void apply(TextureContents var1) {
+      super.apply(var1);
+      if (this.K) {
+         AddressMode var2 = var1.clamp() ? AddressMode.CLAMP_TO_EDGE : AddressMode.REPEAT;
+         FilterMode var3 = var1.blur() ? FilterMode.LINEAR : FilterMode.NEAREST;
+         this.sampler = RenderSystem.getSamplerCache().getSampler(var2, var2, var3, var3, true);
       }
    }
 
-   public record v(Vec3 right, Vec3 up, Vec3 normal) {
+   protected void doLoad(NativeImage var1) {
+      if (!this.K) {
+         super.doLoad(var1);
+      } else {
+         GpuDevice var2 = RenderSystem.getDevice();
+         this.close();
+         int var3 = c(var1.getWidth(), var1.getHeight());
+         Identifier var4 = this.resourceId();
+         this.texture = var2.createTexture(() -> var4 + " (mipmapped)", 5, GpuFormat.RGBA8_UNORM, var1.getWidth(), var1.getHeight(), 1, var3);
+         this.textureView = var2.createTextureView(this.texture);
+         CommandEncoder var5 = var2.createCommandEncoder();
+         var5.writeToTexture(this.texture, var1, 0, 0, 0, 0);
+         NativeImage var6 = var1;
+
+         try {
+            for (int var7 = 1; var7 < var3; var7++) {
+               NativeImage var8 = E(var6);
+               if (var6 != var1) {
+                  var6.close();
+               }
+
+               var6 = var8;
+               var5.writeToTexture(this.texture, var6, var7, 0, 0, 0);
+            }
+         } finally {
+            if (var6 != var1) {
+               var6.close();
+            }
+         }
+      }
+   }
+
+   public static int c(int var0, int var1) {
+      return 32 - Integer.numberOfLeadingZeros(Math.max(1, Math.max(var0, var1)));
+   }
+
+   static NativeImage E(NativeImage var0) {
+      int var1 = Math.max(1, var0.getWidth() / 2);
+      int var2 = Math.max(1, var0.getHeight() / 2);
+      NativeImage var3 = new NativeImage(var1, var2, false);
+      int var4 = var0.getWidth() - 1;
+      int var5 = var0.getHeight() - 1;
+
+      for (int var6 = 0; var6 < var2; var6++) {
+         for (int var7 = 0; var7 < var1; var7++) {
+            long var8 = 0L;
+            long[] var10 = new long[3];
+            long[] var11 = new long[3];
+
+            for (int var12 = 0; var12 < 2; var12++) {
+               for (int var13 = 0; var13 < 2; var13++) {
+                  int var14 = var0.getPixel(Math.min(var4, var7 * 2 + var13), Math.min(var5, var6 * 2 + var12));
+                  int var15 = var14 >>> 24;
+                  var8 += var15;
+
+                  for (int var16 = 0; var16 < 3; var16++) {
+                     int var17 = var14 >> 16 - 8 * var16 & 0xFF;
+                     var10[var16] += (long)var17 * var15;
+                     var11[var16] += var17;
+                  }
+               }
+            }
+
+            int var18 = (int)((var8 + 2L) / 4L) << 24;
+
+            for (int var19 = 0; var19 < 3; var19++) {
+               var18 |= (int)(var8 == 0L ? (var11[var19] + 2L) / 4L : (var10[var19] + var8 / 2L) / var8) << 16 - 8 * var19;
+            }
+
+            var3.setPixel(var7, var6, var18);
+         }
+      }
+
+      return var3;
    }
 }

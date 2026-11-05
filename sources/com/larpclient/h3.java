@@ -1,181 +1,138 @@
 package com.larpclient;
 
-import net.minecraft.util.Mth;
+import java.util.List;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 
 public final class h3 {
+   private static Vec3 P(Matrix4fc var0, Vec3 var1, int var2) {
+      Vector3f var3 = var0.transformPosition(new Vector3f((float)(var2 * var1.x), (float)var1.y, (float)var1.z));
+      return new Vec3(var3.x, var3.y, var3.z);
+   }
+
+   public static h3.r d(float[] var0) {
+      double var1 = Double.POSITIVE_INFINITY;
+      double var3 = Double.NEGATIVE_INFINITY;
+
+      for (byte var5 = 0; var5 < var0.length; var5 += 8) {
+         var1 = Math.min(var1, var0[var5 + 1]);
+         var3 = Math.max(var3, var0[var5 + 1]);
+      }
+
+      if (Double.isFinite(var1 + var3) && !(var3 - var1 < 0.02)) {
+         Vec3 var7 = k(var0, var1, var1 + (var3 - var1) * 0.055);
+         Vec3 var6 = k(var0, var3 - (var3 - var1) * 0.025, var3);
+         return new h3.r(var7, var6);
+      } else {
+         return null;
+      }
+   }
+
+   private static Vec3 k(float[] var0, double var1, double var3) {
+      double var5 = 0.0;
+      double var7 = 0.0;
+      double var9 = 0.0;
+      int var11 = 0;
+
+      for (byte var12 = 0; var12 < var0.length; var12 += 8) {
+         if (var0[var12 + 1] >= var1 && var0[var12 + 1] <= var3) {
+            var5 += var0[var12];
+            var7 += var0[var12 + 1];
+            var9 += var0[var12 + 2];
+            var11++;
+         }
+      }
+
+      return new Vec3(var5 / var11, var7 / var11, var9 / var11);
+   }
+
+   public static h3.r r(List<Vec3> var0) {
+      if (var0.size() < 4) {
+         return null;
+      }
+
+      Vec3 var1 = Vec3.ZERO;
+
+      for (Vec3 var3 : var0) {
+         var1 = var1.add(var3);
+      }
+
+      var1 = var1.scale(1.0 / var0.size());
+      double var24 = 0.0;
+      double var4 = 0.0;
+      double var6 = 0.0;
+      double var8 = 0.0;
+      double var10 = 0.0;
+      double var12 = 0.0;
+
+      for (Vec3 var15 : var0) {
+         Vec3 var16 = var15.subtract(var1);
+         var24 += var16.x * var16.x;
+         var4 += var16.x * var16.y;
+         var6 += var16.x * var16.z;
+         var8 += var16.y * var16.y;
+         var10 += var16.y * var16.z;
+         var12 += var16.z * var16.z;
+      }
+
+      Vec3 var25 = new Vec3(0.6, 1.0, 0.05).normalize();
+
+      for (int var26 = 0; var26 < 12; var26++) {
+         Vec3 var28 = new Vec3(
+            var24 * var25.x + var4 * var25.y + var6 * var25.z,
+            var4 * var25.x + var8 * var25.y + var10 * var25.z,
+            var6 * var25.x + var10 * var25.y + var12 * var25.z
+         );
+         if (var28.lengthSqr() < 1.0E-12) {
+            return null;
+         }
+
+         var25 = var28.normalize();
+      }
+
+      if (var25.y < 0.0) {
+         var25 = var25.scale(-1.0);
+      }
+
+      double var27 = Double.POSITIVE_INFINITY;
+      double var17 = Double.NEGATIVE_INFINITY;
+
+      for (Vec3 var20 : var0) {
+         double var21 = var20.subtract(var1).dot(var25);
+         var27 = Math.min(var27, var21);
+         var17 = Math.max(var17, var21);
+      }
+
+      if (var17 - var27 < 0.1) {
+         return null;
+      }
+
+      Vec3 var29 = Vec3.ZERO;
+      int var31 = 0;
+
+      for (Vec3 var22 : var0) {
+         if (var22.subtract(var1).dot(var25) >= var17 - (var17 - var27) * 0.025) {
+            var29 = var29.add(var22);
+            var31++;
+         }
+      }
+
+      var29 = var29.scale(1.0 / var31);
+      Vec3 var33 = var1.add(var25.scale(var27 + (var17 - var27) * 0.48));
+      return new h3.r(var33, var29);
+   }
+
    private h3() {
    }
 
-   public static Vec3 a(Vec3 var0, Vec3 var1, Vec3 var2, Vec3 var3, double var4) {
-      if (var4 <= 0.0) {
-         return var1;
-      } else {
-         return var4 >= 1.0
-            ? var2
-            : X(var0, var1, var2, var3, var4, Math.sqrt(var0.distanceTo(var1)), Math.sqrt(var1.distanceTo(var2)), Math.sqrt(var2.distanceTo(var3)));
-      }
-   }
-
-   private static Vec3 X(Vec3 var0, Vec3 var1, Vec3 var2, Vec3 var3, double var4, double var6, double var8, double var10) {
-      if (!(var6 < 1.0E-6) && !(var8 < 1.0E-6) && !(var10 < 1.0E-6)) {
-         double var12 = var6 + var4 * var8;
-         double var14 = var12 / var6;
-         double var16 = (var12 - var6) / var8;
-         double var18 = (var12 - var6 - var8) / var10;
-         double var20 = var12 / (var6 + var8);
-         double var22 = (var12 - var6) / (var8 + var10);
-         return new Vec3(
-            E(var0.x, var1.x, var2.x, var3.x, var14, var16, var18, var20, var22),
-            E(var0.y, var1.y, var2.y, var3.y, var14, var16, var18, var20, var22),
-            E(var0.z, var1.z, var2.z, var3.z, var14, var16, var18, var20, var22)
-         );
-      } else {
-         return var1.lerp(var2, var4);
-      }
-   }
-
-   private static double E(double var0, double var2, double var4, double var6, double var8, double var10, double var12, double var14, double var16) {
-      double var18 = Mth.lerp(var8, var0, var2);
-      double var20 = Mth.lerp(var10, var2, var4);
-      double var22 = Mth.lerp(var12, var4, var6);
-      double var24 = Mth.lerp(var14, var18, var20);
-      double var26 = Mth.lerp(var16, var20, var22);
-      return Mth.lerp(var10, var24, var26);
-   }
-
-   public static final class b {
-      final Vec3[] I;
-      final Vec3[] y;
-      final double[] c;
-      final int[] Z;
-      int L;
-      double k = Double.POSITIVE_INFINITY;
-
-      public b(int var1) {
-         this.I = new Vec3[var1];
-         this.y = new Vec3[var1];
-         this.c = new double[var1];
-         this.Z = new int[var1];
+   public record r(Vec3 root, Vec3 tip) {
+      public h3.r transform(Matrix4fc var1, int var2) {
+         return new h3.r(h3.P(var1, this.root, var2), h3.P(var1, this.tip, var2));
       }
 
-      public void H() {
-         this.L = 0;
-      }
-
-      public int d() {
-         return this.L;
-      }
-
-      public void P(Vec3 var1, double var2, int var4) {
-         if (this.L == this.I.length) {
-            throw new IllegalStateException("Ribbon capacity exceeded");
-         }
-
-         this.I[this.L] = var1;
-         this.c[this.L] = var2;
-         this.Z[this.L++] = var4;
-      }
-
-      public void W() {
-         if (this.L >= 2) {
-            double var1 = 0.0;
-
-            for (int var3 = 1; var3 < this.L; var3++) {
-               var1 += this.I[var3 - 1].distanceTo(this.I[var3]);
-            }
-
-            if (!(var1 < 1.0E-8)) {
-               double var10 = var1 * 0.18;
-               double var5 = 0.0;
-               this.c[0] = 0.0;
-               this.Z[0] = this.Z[0] & 16777215;
-
-               for (int var7 = 1; var7 < this.L; var7++) {
-                  var5 += this.I[var7 - 1].distanceTo(this.I[var7]);
-                  if (var5 >= var10) {
-                     break;
-                  }
-
-                  double var8 = yc.H(var5 / var10);
-                  this.c[var7] = this.c[var7] * var8;
-                  this.Z[var7] = oh.S(this.Z[var7], var8);
-               }
-            }
-         }
-      }
-
-      public void n(Vec3 var1) {
-         if (this.L >= 2) {
-            Vec3 var2 = d(this.I[0], this.I[1], var1, new Vec3(1.0, 0.0, 0.0));
-            this.y[0] = var2.scale(this.c[0] * 0.5);
-
-            for (int var3 = 1; var3 < this.L; var3++) {
-               Vec3 var4 = var3 + 1 < this.L ? d(this.I[var3], this.I[var3 + 1], var1, var2) : var2;
-               if (var4.dot(var2) < 0.0) {
-                  var4 = var4.scale(-1.0);
-               }
-
-               Vec3 var5 = var2.add(var4);
-               Vec3 var6 = var5.lengthSqr() < 1.0E-12 ? var2 : var5.normalize();
-               double var7 = Math.min(2.0, 1.0 / Math.max(0.5, Math.abs(var6.dot(var4))));
-               this.y[var3] = var6.scale(this.c[var3] * 0.5 * var7);
-               var2 = var4;
-            }
-         }
-      }
-
-      public Vec3 W(int var1) {
-         return this.y[var1];
-      }
-
-      private static Vec3 d(Vec3 var0, Vec3 var1, Vec3 var2, Vec3 var3) {
-         Vec3 var4 = var1.subtract(var0);
-         Vec3 var5 = var4.cross(var2.subtract(var0));
-         if (var5.lengthSqr() >= 1.0E-12) {
-            return var5.normalize();
-         }
-
-         if (var4.lengthSqr() < 1.0E-12) {
-            return var3;
-         }
-
-         Vec3 var6 = var4.normalize();
-         Vec3 var7 = var3.subtract(var6.scale(var3.dot(var6)));
-         if (var7.lengthSqr() >= 1.0E-12) {
-            return var7.normalize();
-         }
-
-         Vec3 var8 = Math.abs(var6.y) < 0.9 ? new Vec3(0.0, 1.0, 0.0) : new Vec3(0.0, 0.0, 1.0);
-         return var6.cross(var8).normalize();
-      }
-   }
-
-   static final class f {
-      private Vec3 J;
-      private Vec3 k;
-      private Vec3 d;
-      private Vec3 A;
-      private double K;
-      private double U;
-      private double f;
-
-      void n(Vec3 var1, Vec3 var2, Vec3 var3, Vec3 var4) {
-         this.J = var1;
-         this.k = var2;
-         this.d = var3;
-         this.A = var4;
-         this.K = Math.sqrt(var1.distanceTo(var2));
-         this.U = Math.sqrt(var2.distanceTo(var3));
-         this.f = Math.sqrt(var3.distanceTo(var4));
-      }
-
-      Vec3 o(double var1) {
-         if (var1 <= 0.0) {
-            return this.k;
-         } else {
-            return var1 >= 1.0 ? this.d : h3.X(this.J, this.k, this.d, this.A, var1, this.K, this.U, this.f);
-         }
+      public double length() {
+         return this.root.distanceTo(this.tip);
       }
    }
 }

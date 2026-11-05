@@ -1,330 +1,258 @@
 package com.larpclient;
 
-import java.util.Set;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos.MutableBlockPos;
-import net.minecraft.core.Direction.Axis;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodySubscriber;
+import java.net.http.HttpResponse.BodySubscribers;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Flow.Subscription;
 
-public final class er {
-   private static final int T = 1;
-   private static final int X = 2;
-   private static final int q = 3;
-   private static final int c = 4;
-   private static final Set<String> i = Set.of(
-      "short_grass",
-      "tall_grass",
-      "short_dry_grass",
-      "tall_dry_grass",
-      "fern",
-      "large_fern",
-      "dead_bush",
-      "sweet_berry_bush",
-      "azalea",
-      "flowering_azalea",
-      "pink_petals",
-      "leaf_litter",
-      "wildflowers",
-      "bush",
-      "firefly_bush",
-      "cactus_flower",
-      "torchflower_crop",
-      "pitcher_crop",
-      "pitcher_plant"
-   );
-   private static final ThreadLocal<er.l> k = new ThreadLocal<>();
-   private static final ThreadLocal<Integer> l = new ThreadLocal<>();
-   private static final ThreadLocal<er.r> Q = new ThreadLocal<>();
-   private static volatile boolean V;
-   public static final int u = 252;
-   public static final int Z = 251;
-   public static final int C = 249;
-   private static volatile boolean v;
-   private static volatile boolean W;
-   private static volatile boolean m;
-   private static volatile boolean j;
-   private static volatile boolean s;
+public final class er implements AutoCloseable {
+   private static final int H = 524288;
+   private final HttpClient x = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(4L)).build();
+   private final URI W;
 
-   public static void K() {
-      SnowGroundModule var0 = SnowGroundModule.x();
-      V = (boolean)(var0 != null && var0.isRuntimeActive() ? 1 : 0);
-      WavingFoliageModule var1 = WavingFoliageModule.P();
-      v = (boolean)(var1 != null && var1.isRuntimeActive() ? 1 : 0);
-      W = (boolean)(v && var1.t.getValue() ? 1 : 0);
-      m = (boolean)(W && var1.M.getValue() ? 1 : 0);
-      j = (boolean)(v && var1.X.getValue() ? 1 : 0);
-      RealisticWaterModule var2 = RealisticWaterModule.L();
-      s = (boolean)(var2 != null && var2.isRuntimeActive() ? 1 : 0);
+   public er() {
+      this(URI.create("https://lrclib.net/api/get"));
    }
 
-   public static boolean H(BlockState var0, float var1, BlockGetter var2, BlockPos var3) {
-      return j(var0, 0.0F, var1, 0.0F, var2, var3);
+   er(URI var1) {
+      this.W = var1;
    }
 
-   public static boolean j(BlockState var0, float var1, float var2, float var3, BlockGetter var4, BlockPos var5) {
-      if (!V && !v) {
-         return false;
+   public static URI z(ha var0) {
+      String var1 = "track_name=" + a(var0.title()) + "&artist_name=" + a(var0.artist());
+      if (!var0.album().isBlank()) {
+         var1 = var1 + "&album_name=" + a(var0.album());
       }
 
-      k.remove();
-      Q.remove();
-      if (V && !y3.S() && var0.getFluidState().isEmpty()) {
-         VoxelShape var6 = var0.getCollisionShape(var4, var5);
-         if (!var6.isEmpty()) {
-            float var7 = (float)var6.max(Axis.Y);
-            boolean var8 = var4.getBlockState(var5.above()).isFaceSturdy(var4, var5.above(), Direction.DOWN);
-            int var9 = 0;
-            if (!var8) {
-               for (int var10 = 0; var10 <= 1; var10++) {
-                  for (int var11 = -1; var11 <= 1; var11++) {
-                     for (int var12 = -1; var12 <= 1; var12++) {
-                        if (var11 != 0 || var10 != 0 || var12 != 0) {
-                           BlockPos var13 = var5.offset(var11, var10, var12);
-                           BlockState var14 = var4.getBlockState(var13);
-                           if (!var14.isAir()) {
-                              for (AABB var16 : var14.getCollisionShape(var4, var13).toAabbs()) {
-                                 if (!(var10 + var16.minY > var7 + 0.135) && !(var10 + var16.maxY <= var7 + 0.001)) {
-                                    for (int var17 = 0; var17 < 4; var17++) {
-                                       double var18 = (var17 & 1) - var11;
-                                       double var20 = (var17 >> 1) - var12;
-                                       if (var18 >= var16.minX - 0.001
-                                          && var18 <= var16.maxX + 0.001
-                                          && var20 >= var16.minZ - 0.001
-                                          && var20 <= var16.maxZ + 0.001) {
-                                          var9 |= 1 << var17;
-                                       }
-                                    }
-                                 }
-                              }
+      if (var0.duration() > 0.0) {
+         var1 = var1 + "&duration=" + Math.round(var0.duration());
+      }
+
+      return URI.create("https://lrclib.net/api/get?" + var1);
+   }
+
+   private static String a(String var0) {
+      return URLEncoder.encode(var0, StandardCharsets.UTF_8);
+   }
+
+   public CompletableFuture<r> m(ha var1) {
+      return this.m(URI.create(this.W.toString() + "?" + z(var1).getRawQuery()))
+         .thenCompose(
+            var2 -> {
+               r var3 = Q((HttpResponse<byte[]>)var2);
+               if (var2.statusCode() == 404 || var2.statusCode() == 200 && var3.timed() == null && !var3.status().equals("Instrumental track")) {
+                  URI var4 = this.W.resolve("search?track_name=" + a(var1.title()) + "&artist_name=" + a(var1.artist()));
+                  return CompletableFuture.<URI>supplyAsync(() -> var4, CompletableFuture.delayedExecutor(300L, TimeUnit.MILLISECONDS))
+                     .thenCompose(this::m)
+                     .thenApply(var1xx -> var1xx.statusCode() == 200 ? t(var1xx.body(), var1) : Q((HttpResponse<byte[]>)var1xx))
+                     .exceptionally(var0 -> r.unavailable("Lyrics lookup failed; retrying shortly", 30L))
+                     .thenApply(
+                        var1xx -> {
+                           if (var1xx.timed() == null && !var3.plain().isEmpty()) {
+                              int var2x = !var1xx.status().equals("Lyrics lookup rate limited")
+                                    && !var1xx.status().equals("Lyrics provider busy; retrying shortly")
+                                 ? 0
+                                 : 1;
+                              return new r(
+                                 null, var3.plain(), var2x != 0 ? var1xx.status() + "; showing untimed lyrics" : var3.status(), var1xx.retryAfterSeconds()
+                              );
+                           } else {
+                              return (r)var1xx;
+                           }
+                        }
+                     );
+               } else {
+                  return CompletableFuture.completedFuture(var3);
+               }
+            }
+         )
+         .exceptionally(var0 -> r.unavailable("Lyrics lookup failed; retrying shortly", 30L));
+   }
+
+   private CompletableFuture<HttpResponse<byte[]>> m(URI var1) {
+      HttpRequest var2 = HttpRequest.newBuilder(var1)
+         .timeout(Duration.ofSeconds(10L))
+         .header("User-Agent", "LarpClient/" + zq.x + " (https://larpclient.com; WorldLyrics)")
+         .GET()
+         .build();
+      return this.x.<byte[]>sendAsync(var2, var0 -> new er.i()).orTimeout(12L, TimeUnit.SECONDS);
+   }
+
+   private static r Q(HttpResponse<byte[]> var0) {
+      if (var0.statusCode() == 429) {
+         return r.unavailable("Lyrics lookup rate limited", F(var0.headers().firstValue("Retry-After").orElse("60")));
+      } else if (var0.statusCode() == 404) {
+         return r.unavailable("No lyrics found for this song", 600L);
+      } else if (var0.statusCode() == 503) {
+         return r.unavailable("Lyrics provider busy; retrying shortly", F(var0.headers().firstValue("Retry-After").orElse("2")));
+      } else {
+         return var0.statusCode() != 200
+            ? r.unavailable("Lyrics provider unavailable (HTTP " + var0.statusCode() + ")", 30L)
+            : z(new String((byte[])var0.body(), StandardCharsets.UTF_8));
+      }
+   }
+
+   public static r t(byte[] var0, ha var1) {
+      JsonArray var2 = JsonParser.parseString(new String(var0, StandardCharsets.UTF_8)).getAsJsonArray();
+      if (var2.size() > 100) {
+         return r.unavailable("Lyrics provider returned too many matches", 30L);
+      }
+
+      r var3 = null;
+      double var4 = Double.MAX_VALUE;
+
+      for (JsonElement var7 : var2) {
+         if (var7.isJsonObject()) {
+            JsonObject var8 = var7.getAsJsonObject();
+
+            try {
+               if (Q(var8, "trackName", var1.title()) && Q(var8, "artistName", var1.artist())) {
+                  double var9 = var8.has("duration") && !var8.get("duration").isJsonNull() ? var8.get("duration").getAsDouble() : 0.0;
+                  if (Double.isFinite(var9) && !(var9 <= 0.0)) {
+                     int var11 = !var1.album().isBlank() && Q(var8, "albumName", var1.album()) ? 1 : 0;
+                     double var12 = var1.duration() > 0.0 ? Math.abs(var9 - var1.duration()) : 0.0;
+                     if (var1.duration() > 0.0 ? !(var12 > 2.0) : var11 != 0) {
+                        r var14 = z(var8.toString());
+                        if (var14.timed() != null || !var14.plain().isEmpty()) {
+                           double var15 = var12 + (var11 != 0 ? 0 : 10) + (var14.timed() == null ? 100 : 0);
+                           if (var15 < var4) {
+                              var4 = var15;
+                              var3 = var14;
                            }
                         }
                      }
                   }
                }
+            } catch (RuntimeException var17) {
             }
-
-            Q.set(new er.r(var1, var3, var8 ? Float.POSITIVE_INFINITY : var2 + var7, var9));
          }
       }
 
-      if (v && !y3.S()) {
-         int var22 = u(var0);
-         if ((var22 != 1 && var22 != 2 || W) && (var22 != 3 || j) && (var22 != 4 || m) && var22 != 0) {
-            float var23 = !m || var22 != 4 && var22 != 1 ? -1.0F : P(var0, var22, var4, var5);
-            if (var22 == 4 && var23 < 0.0F) {
-               return true;
-            }
+      return var3 == null ? r.unavailable("No lyrics found for this song", 600L) : var3;
+   }
 
-            int var24 = var0.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)
-                  && var0.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER
-               ? 1
-               : 0;
-            k.set(new er.l(var22, var2, var23, (boolean)var24));
-            return true;
+   private static boolean Q(JsonObject var0, String var1, String var2) {
+      return var0.has(var1) && !var0.get(var1).isJsonNull() && X(var0.get(var1).getAsString()).equals(X(var2));
+   }
+
+   private static String X(String var0) {
+      return Normalizer.normalize(var0, Form.NFKC)
+         .toLowerCase(Locale.ROOT)
+         .replace('’', '\'')
+         .replace('‘', '\'')
+         .replace('–', '-')
+         .replace('—', '-')
+         .replaceAll("(?U)\\s+", " ")
+         .strip();
+   }
+
+   public static r z(String var0) {
+      JsonObject var1 = JsonParser.parseString(var0).getAsJsonObject();
+      if (var1.has("instrumental") && var1.get("instrumental").getAsBoolean()) {
+         return r.unavailable("Instrumental track", 600L);
+      }
+
+      if (var1.has("syncedLyrics") && !var1.get("syncedLyrics").isJsonNull()) {
+         e6 var2 = e6.L(var1.get("syncedLyrics").getAsString());
+         if (!var2.K().isEmpty()) {
+            return new r(var2, List.of(), "Synced lyrics", 0L);
+         }
+      }
+
+      if (var1.has("plainLyrics") && !var1.get("plainLyrics").isJsonNull()) {
+         List var3 = var1.get("plainLyrics")
+            .getAsString()
+            .lines()
+            .map(String::strip)
+            .filter(var0x -> !var0x.isBlank())
+            .limit(512L)
+            .map(var0x -> var0x.replaceAll("[\\p{Cntrl}§]", ""))
+            .map(var0x -> var0x.codePointCount(0, var0x.length()) > 96 ? var0x.substring(0, var0x.offsetByCodePoints(0, 96)) : var0x)
+            .toList();
+         if (!var3.isEmpty()) {
+            return new r(null, var3, "Lyrics available without timing", 0L);
+         }
+      }
+
+      return r.unavailable("No lyrics found for this song", 600L);
+   }
+
+   public static long F(String var0) {
+      try {
+         return Math.max(1L, Long.parseLong(var0));
+      } catch (NumberFormatException var4) {
+         try {
+            return Math.max(1L, Duration.between(Instant.now(), ZonedDateTime.parse(var0, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()).getSeconds());
+         } catch (RuntimeException var3) {
+            return 60L;
+         }
+      }
+   }
+
+   @Override
+   public void close() {
+      this.x.shutdownNow();
+   }
+
+   private static final class i implements BodySubscriber<byte[]> {
+      private final BodySubscriber<byte[]> K = BodySubscribers.ofByteArray();
+      private Subscription W;
+      private int c;
+
+      @Override
+      public CompletionStage<byte[]> getBody() {
+         return this.K.getBody();
+      }
+
+      @Override
+      public void onSubscribe(Subscription var1) {
+         this.W = var1;
+         this.K.onSubscribe(var1);
+      }
+
+      public void j(List<ByteBuffer> var1) {
+         for (ByteBuffer var3 : var1) {
+            this.c = this.c + var3.remaining();
+         }
+
+         if (this.c > 524288) {
+            this.W.cancel();
+            this.K.onError(new IOException("Lyrics response too large"));
          } else {
-            return true;
-         }
-      } else {
-         return true;
-      }
-   }
-
-   public static void g() {
-      k.remove();
-      Q.remove();
-   }
-
-   public static int t(int var0, float var1) {
-      return I(var0, Float.NaN, var1, Float.NaN);
-   }
-
-   public static int I(int var0, float var1, float var2, float var3) {
-      if (!V && !v) {
-         return var0;
-      }
-
-      er.l var4 = k.get();
-      if (var4 == null) {
-         er.r var10 = Q.get();
-         if (var10 == null) {
-            return var0;
-         }
-
-         short var11 = 251;
-         if (var2 >= var10.top - 0.001F) {
-            var11 = 252;
-            float var13 = var1 - var10.x;
-            float var8 = var3 - var10.z;
-
-            for (int var9 = 0; var9 < 4; var9++) {
-               if ((var10.pinned & 1 << var9) != 0 && Math.abs(var13 - (var9 & 1)) < 0.001F && Math.abs(var8 - (var9 >> 1)) < 0.001F) {
-                  var11 = 249;
-                  break;
-               }
-            }
-         }
-
-         return var0 & 16777215 | var11 << 24;
-      } else {
-         float var5 = Math.clamp(var2 - var4.blockY, 0.0F, 1.0F);
-         int var6;
-         if (var4.height >= 0.0F) {
-            float var7 = var4.height + var5;
-            var6 = var4.kind == 4 ? 100 + Math.clamp(Math.round(var7 * 2.0F), 0, 49) : 2 + Math.clamp(Math.round(var7 * 4.0F), 0, 97);
-         } else if (var4.kind == 1) {
-            var6 = 254;
-         } else if (var4.kind == 2) {
-            var6 = 253;
-         } else {
-            float var12 = var4.upper ? 1.0F + var5 * 0.8F : var5;
-            if (var12 < 0.001F) {
-               return var0;
-            }
-
-            var6 = 150 + Math.clamp(Math.round(var12 * 50.0F), 0, 90);
-         }
-
-         return var0 & 16777215 | var6 << 24;
-      }
-   }
-
-   public static boolean f(BlockGetter var0, BlockPos var1, FluidState var2) {
-      if (!s) {
-         return false;
-      }
-
-      l.remove();
-      if (!y3.S() && var2.is(FluidTags.WATER)) {
-         short var3;
-         if (df.A(var1)) {
-            var3 = 150;
-         } else if (!var2.isSource() && var2.hasProperty(FlowingFluid.FALLING) && (Boolean)var2.getValue(FlowingFluid.FALLING)) {
-            var3 = 160;
-         } else {
-            Vec3 var4 = var2.getFlow(var0, var1);
-            var3 = (short)(var4.x == 0.0 && var4.z == 0.0 ? 224 : 192 + ((int)Math.round(Math.atan2(var4.z, var4.x) * 32.0 / (Math.PI * 2)) & 31));
-         }
-
-         l.set(Integer.valueOf(var3));
-         return true;
-      } else {
-         return true;
-      }
-   }
-
-   public static int x(int var0) {
-      if (!s) {
-         return var0;
-      }
-
-      Integer var1 = l.get();
-      return var1 == null ? var0 : var0 & 16777215 | var1 << 24;
-   }
-
-   public static void j() {
-      l.remove();
-   }
-
-   private static int u(BlockState var0) {
-      String var1 = BuiltInRegistries.BLOCK.getKey(var0.getBlock()).getPath();
-      if (var1.endsWith("_leaves")) {
-         return 1;
-      } else if (var1.equals("vine")) {
-         return 2;
-      } else if ((var1.endsWith("_log") || var1.endsWith("_stem")) && !var1.startsWith("stripped_")) {
-         return 4;
-      } else {
-         return !i.contains(var1)
-               && !var1.endsWith("_sapling")
-               && !var0.is(BlockTags.FLOWERS)
-               && !var0.is(BlockTags.CROPS)
-               && !(var0.getBlock() instanceof CropBlock)
-            ? 0
-            : 3;
-      }
-   }
-
-   private static boolean J(BlockState var0) {
-      return u(var0) == 1 && (!var0.hasProperty(BlockStateProperties.PERSISTENT) || !(Boolean)var0.getValue(BlockStateProperties.PERSISTENT));
-   }
-
-   private static float P(BlockState var0, int var1, BlockGetter var2, BlockPos var3) {
-      if (var1 == 1 && !J(var0)) {
-         return -1.0F;
-      }
-
-      MutableBlockPos var4 = var3.mutable();
-      int var5 = 0;
-      if (var1 == 1) {
-         byte var6 = 0;
-
-         while (var5 < 24) {
-            var4.move(0, -1, 0);
-            BlockState var7 = var2.getBlockState(var4);
-            if (u(var7) == 4) {
-               var5++;
-               var6 = 1;
-               break;
-            }
-
-            if (!var7.isAir() && u(var7) != 1) {
-               return -1.0F;
-            }
-
-            var5++;
-         }
-
-         if (var6 == 0) {
-            return -1.0F;
-         }
-      } else {
-         MutableBlockPos var12 = var3.mutable();
-
-         for (int var14 = 0; var14 < 24 && u(var2.getBlockState(var12.above())) == 4; var14++) {
-            var12.move(0, 1, 0);
-         }
-
-         byte var15 = 0;
-
-         for (Direction var11 : Direction.values()) {
-            if (var11 != Direction.DOWN && J(var2.getBlockState(var12.relative(var11)))) {
-               var15 = 1;
-               break;
-            }
-         }
-
-         if (var15 == 0) {
-            return -1.0F;
+            this.K.onNext(var1);
          }
       }
 
-      int var13;
-      for (var13 = 0; var13 < 24 && u(var2.getBlockState(var4.below())) == 4; var13++) {
-         var4.move(0, -1, 0);
+      @Override
+      public void onError(Throwable var1) {
+         this.K.onError(var1);
       }
 
-      return var5 + var13;
-   }
-
-   private er() {
-   }
-
-   private record l(int kind, float blockY, float height, boolean upper) {
-   }
-
-   private record r(float x, float z, float top, int pinned) {
+      @Override
+      public void onComplete() {
+         this.K.onComplete();
+      }
    }
 }

@@ -1,6 +1,6 @@
 package com.larpclient.module;
 
-import com.larpclient.r4;
+import com.larpclient.mt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
@@ -13,22 +13,22 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 public final class CrystalOptimizerModule extends Module {
-   private static CrystalOptimizerModule d;
-   private String w = "Ready";
-   private boolean c;
+   private static CrystalOptimizerModule v;
+   private String y = "Ready";
+   private boolean W;
 
    public CrystalOptimizerModule() {
       super("Crystal Optimizer", "Crystals you break disappear at once client-side for faster placement", Category.COMBAT, -1);
-      d = this;
+      v = this;
    }
 
-   public static boolean E(double var0, int var2) {
+   public static boolean e(double var0, int var2) {
       return var0 > 0.0 || var2 > 0;
    }
 
-   public static void V(Player var0, Entity var1) {
-      if (d != null && d.isEnabled()) {
-         CrystalOptimizerModule var2 = d;
+   public static void A(Player var0, Entity var1) {
+      if (v != null && v.isEnabled()) {
+         CrystalOptimizerModule var2 = v;
          if (var2 != null && var2.isRuntimeActive() && var1 instanceof EndCrystal var3) {
             Minecraft var4 = getMc();
             if (var0 == var4.player
@@ -45,14 +45,14 @@ public final class CrystalOptimizerModule extends Module {
                   .get(Enchantments.SHARPNESS)
                   .map(var1x -> EnchantmentHelper.getItemEnchantmentLevel(var1x, var5))
                   .orElse(0);
-               if (!E(var0.getAttributeValue(Attributes.ATTACK_DAMAGE), var6)) {
-                  var2.w = "Your hit deals no damage";
+               if (!e(var0.getAttributeValue(Attributes.ATTACK_DAMAGE), var6)) {
+                  var2.y = "Your hit deals no damage";
                } else {
                   var4.level.removeEntity(var3.getId(), RemovalReason.KILLED);
-                  var2.w = "Ready";
-                  if (!var2.c) {
-                     r4.g("CrystalOptimizer", "First crystal {} removed locally after the attack packet", var3.getId());
-                     var2.c = (boolean)1;
+                  var2.y = "Ready";
+                  if (!var2.W) {
+                     mt.U("CrystalOptimizer", "First crystal {} removed locally after the attack packet", var3.getId());
+                     var2.W = (boolean)1;
                   }
                }
             }
@@ -62,13 +62,13 @@ public final class CrystalOptimizerModule extends Module {
 
    @Override
    public String getStatus() {
-      return this.isEnabled() ? this.w : "";
+      return this.isEnabled() ? this.y : "";
    }
 
    @Override
    public void onEnable() {
-      this.w = "Ready";
-      this.c = (boolean)0;
-      r4.V("CrystalOptimizer", "Enabled; crystals you break are removed client-side after the native attack");
+      this.y = "Ready";
+      this.W = (boolean)0;
+      mt.K("CrystalOptimizer", "Enabled; crystals you break are removed client-side after the native attack");
    }
 }
