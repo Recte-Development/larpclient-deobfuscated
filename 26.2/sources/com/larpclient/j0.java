@@ -1,0 +1,81 @@
+package com.larpclient;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.phys.Vec3;
+
+public final class j0 {
+   public static final List<String> v = List.of(
+      "Ripple", "Shockwave", "Rune", "Bloom", "Corona", "Vortex", "Spectrum", "Cloud", "End Rod", "Crit", "Flame", "Soul Flame", "Happy Villager"
+   );
+
+   public static int v(String var0) {
+      int var1 = v.indexOf(var0);
+      return var1 >= 0 && var1 < 7 ? var1 : -1;
+   }
+
+   public static boolean g(String var0) {
+      return v.indexOf(var0) >= 7;
+   }
+
+   public static boolean U(String var0) {
+      return v.contains(var0);
+   }
+
+   public static ParticleOptions d(String var0) {
+      return switch (var0) {
+         case "Cloud" -> ParticleTypes.CLOUD;
+         case "End Rod" -> ParticleTypes.END_ROD;
+         case "Crit" -> ParticleTypes.CRIT;
+         case "Flame" -> ParticleTypes.FLAME;
+         case "Soul Flame" -> ParticleTypes.SOUL_FIRE_FLAME;
+         case "Happy Villager" -> ParticleTypes.HAPPY_VILLAGER;
+         default -> null;
+      };
+   }
+
+   public static List<Vec3> A(Vec3 var0, double var1, int var3) {
+      int var4 = Math.clamp(var3, 4, 64);
+      ArrayList var5 = new ArrayList(var4);
+
+      for (int var6 = 0; var6 < var4; var6++) {
+         double var7 = (Math.PI * 2) * var6 / var4;
+         var5.add(var0.add(Math.cos(var7) * var1, 0.05, Math.sin(var7) * var1));
+      }
+
+      return List.copyOf(var5);
+   }
+
+   private j0() {
+   }
+
+   public record n(Vec3 source, double born, float seed) {
+   }
+
+   public static final class p {
+      private final ArrayList<j0.n> n = new ArrayList<>();
+
+      public void J(j0.n var1) {
+         if (this.n.size() == 6) {
+            this.n.removeFirst();
+         }
+
+         this.n.add(var1);
+      }
+
+      public void G(double var1, double var3) {
+         this.n.removeIf(var4 -> var1 - var4.born() >= var3);
+      }
+
+      public List<j0.n> I() {
+         return Collections.unmodifiableList(this.n);
+      }
+
+      public void B() {
+         this.n.clear();
+      }
+   }
+}

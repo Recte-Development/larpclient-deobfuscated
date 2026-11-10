@@ -1,0 +1,228 @@
+package com.larpclient;
+
+import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.BindGroupLayout;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.BindGroupLayout.Builder;
+import com.mojang.blaze3d.pipeline.RenderPipeline.Snippet;
+import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
+import java.nio.ByteBuffer;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import net.minecraft.client.renderer.BindGroupLayouts;
+import net.minecraft.resources.Identifier;
+
+public final class sq implements AutoCloseable {
+   public static final int B = 160;
+   private GpuBuffer m;
+   private GpuBuffer Y;
+   private GpuBuffer d;
+
+   public static RenderPipeline b(String var0, String... var1) {
+      Builder var2 = BindGroupLayout.builder().withUniform("SkyPalette", UniformType.UNIFORM_BUFFER);
+
+      for (String var6 : var1) {
+         var2.withSampler(var6);
+      }
+
+      com.mojang.blaze3d.pipeline.RenderPipeline.Builder var7 = RenderPipeline.builder(new Snippet[0])
+         .withLocation(Identifier.fromNamespaceAndPath("larp-client", "sky/" + var0))
+         .withVertexShader(Identifier.fromNamespaceAndPath("larp-client", var0.startsWith("larp/") ? "larp/fullscreen" : "sky/dome"))
+         .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", var0.startsWith("larp/") ? var0 : "sky/" + var0))
+         .withVertexBinding(0, DefaultVertexFormat.POSITION)
+         .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
+         .withDepthStencilState(Optional.empty())
+         .withCull(false)
+         .withColorTargetState(var0.startsWith("larp/") ? new ColorTargetState(BlendFunction.TRANSLUCENT) : ColorTargetState.DEFAULT);
+      if (!var0.startsWith("larp/")) {
+         var7.withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION);
+      }
+
+      return var7.withBindGroupLayout(var2.build()).build();
+   }
+
+   private void M(boolean var1) {
+      if (!var1 && this.m == null) {
+         h.A("Sky", "Sky renderer initialized: camera-centered cube, no depth writes");
+         ByteBufferBuilder var2 = ByteBufferBuilder.exactlySized(36 * DefaultVertexFormat.POSITION.getVertexSize());
+
+         try {
+            BufferBuilder var3 = new BufferBuilder(var2, PrimitiveTopology.TRIANGLES, DefaultVertexFormat.POSITION);
+            float[][] var4 = new float[][]{
+               {-1.0F, -1.0F, -1.0F},
+               {1.0F, -1.0F, -1.0F},
+               {1.0F, 1.0F, -1.0F},
+               {-1.0F, 1.0F, -1.0F},
+               {-1.0F, -1.0F, 1.0F},
+               {1.0F, -1.0F, 1.0F},
+               {1.0F, 1.0F, 1.0F},
+               {-1.0F, 1.0F, 1.0F}
+            };
+            int[][] var5 = new int[][]{{0, 1, 2, 3}, {5, 4, 7, 6}, {4, 0, 3, 7}, {1, 5, 6, 2}, {3, 2, 6, 7}, {4, 5, 1, 0}};
+            int[] var6 = new int[]{0, 1, 2, 0, 2, 3};
+
+            for (int[] var10 : var5) {
+               for (int var14 : var6) {
+                  float[] var15 = var4[var10[var14]];
+                  var3.addVertex(var15[0], var15[1], var15[2]);
+               }
+            }
+
+            MeshData var20 = var3.buildOrThrow();
+
+            try {
+               this.m = RenderSystem.getDevice().createBuffer(() -> "Larp sky cube", 32, var20.vertexBuffer());
+            } catch (Throwable var18) {
+               if (var20 != null) {
+                  try {
+                     var20.close();
+                  } catch (Throwable var17) {
+                     var18.addSuppressed(var17);
+                  }
+               }
+
+               throw var18;
+            }
+
+            if (var20 != null) {
+               var20.close();
+            }
+         } catch (Throwable var19) {
+            if (var2 != null) {
+               try {
+                  var2.close();
+               } catch (Throwable var16) {
+                  var19.addSuppressed(var16);
+               }
+            }
+
+            throw var19;
+         }
+
+         if (var2 != null) {
+            var2.close();
+         }
+      }
+
+      if (this.d == null) {
+         this.d = RenderSystem.getDevice().createBuffer(() -> "Larp sky uniforms", 136, 160L);
+      }
+   }
+
+   public void r(wj var1, z5 var2, ByteBuffer var3) {
+      boolean var4 = mx.K(var2.p()).getPath().startsWith("larp/");
+      this.M(var4);
+      if (var4 && this.Y == null) {
+         this.r();
+      }
+
+      CommandEncoder var5 = RenderSystem.getDevice().createCommandEncoder();
+      var5.writeToBuffer(this.d.slice(), var3);
+      GpuBufferSlice var6 = var4 ? null : RenderSystem.getDynamicUniforms().writeTransform(RenderSystem.getModelViewMatrixCopy());
+      RenderPass var7 = var5.createRenderPass(
+         () -> "Larp world sky", var1.S.getColorTextureView(), Optional.empty(), var1.S.getDepthTextureView(), OptionalDouble.empty()
+      );
+
+      try {
+         mx.i(var7, var2.p());
+         if (!var4) {
+            RenderSystem.bindDefaultUniforms(var7);
+            var7.setUniform("DynamicTransforms", var6);
+         }
+
+         var7.setUniform("SkyPalette", this.d.slice());
+         var2.bindTextures(var7);
+         var7.setVertexBuffer(0, (var4 ? this.Y : this.m).slice());
+         var7.draw(var4 ? 3 : 36, 1, 0, 0);
+      } catch (Throwable var11) {
+         if (var7 != null) {
+            try {
+               var7.close();
+            } catch (Throwable var10) {
+               var11.addSuppressed(var10);
+            }
+         }
+
+         throw var11;
+      }
+
+      if (var7 != null) {
+         var7.close();
+      }
+   }
+
+   private void r() {
+      ByteBufferBuilder var1 = ByteBufferBuilder.exactlySized(3 * DefaultVertexFormat.POSITION.getVertexSize());
+
+      try {
+         BufferBuilder var2 = new BufferBuilder(var1, PrimitiveTopology.TRIANGLES, DefaultVertexFormat.POSITION);
+         var2.addVertex(-1.0F, -1.0F, 0.0F);
+         var2.addVertex(3.0F, -1.0F, 0.0F);
+         var2.addVertex(-1.0F, 3.0F, 0.0F);
+         MeshData var3 = var2.buildOrThrow();
+
+         try {
+            this.Y = RenderSystem.getDevice().createBuffer(() -> "Larp full-screen sky", 32, var3.vertexBuffer());
+         } catch (Throwable var8) {
+            if (var3 != null) {
+               try {
+                  var3.close();
+               } catch (Throwable var7) {
+                  var8.addSuppressed(var7);
+               }
+            }
+
+            throw var8;
+         }
+
+         if (var3 != null) {
+            var3.close();
+         }
+      } catch (Throwable var9) {
+         if (var1 != null) {
+            try {
+               var1.close();
+            } catch (Throwable var6) {
+               var9.addSuppressed(var6);
+            }
+         }
+
+         throw var9;
+      }
+
+      if (var1 != null) {
+         var1.close();
+      }
+
+      h.A("SkyShader", "Full-screen sky triangle initialized; one fragment per pixel, camera rays independent of native sky transforms");
+   }
+
+   @Override
+   public void close() {
+      if (this.m != null) {
+         this.m.close();
+         this.m = null;
+      }
+
+      if (this.Y != null) {
+         this.Y.close();
+         this.Y = null;
+      }
+
+      if (this.d != null) {
+         this.d.close();
+         this.d = null;
+      }
+   }
+}

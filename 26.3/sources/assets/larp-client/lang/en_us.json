@@ -1,0 +1,19 @@
+{
+  "key.category.larp-client.main": "LARP Client",
+  "key.larp-client.open_gui": "Open ClickUI",
+  "key.category.larp-client.editing": "Larp HUD Editor",
+  "key.larp-client.open_editor": "Open HUD Editor",
+  "key.larp-client.fly": "Toggle Fly",
+  "key.larp-client.speed": "Toggle Speed",
+  "key.larp-client.esp": "Toggle ESP",
+  "key.larp-client.fullbright": "Toggle Fullbright",
+  "key.larp-client.nofall": "Toggle NoFall",
+  "key.larp-client.freecam": "Toggle Freecam",
+  "key.larp-client.xray": "Toggle XRay",
+  "key.larp-client.tracers": "Toggle Tracers",
+  "key.larp-client.freelook": "Toggle Freelook",
+  "subtitles.larp-client.hit.glass": "Glass hit",
+  "subtitles.larp-client.hit.round_hit": "Round hit",
+  "subtitles.larp-client.hit.crisp_tick": "Crisp tick hit",
+  "subtitles.larp-client.hit.impact": "Rust headshot hit"
+}

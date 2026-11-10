@@ -1,0 +1,34 @@
+Larp Client Microsoft account integration
+
+MinecraftAuth 5.0.2
+Copyright (C) 2022-2026 RK_01/RaphiMC and contributors
+License: GNU Lesser General Public License version 3 or later.
+Source and build instructions: https://github.com/RaphiMC/MinecraftAuth/tree/v5.0.2
+Source archive: https://repo.maven.apache.org/maven2/net/raphimc/MinecraftAuth/5.0.2/MinecraftAuth-5.0.2-sources.jar
+
+Lenni0451 Commons HTTP client and Gson utilities 1.9.2
+License: MIT. Original copyright and permission text accompany this notice.
+Source: https://github.com/Lenni0451/commons
+Source archives:
+https://repo.maven.apache.org/maven2/net/lenni0451/commons/httpclient/1.9.2/httpclient-1.9.2-sources.jar
+https://repo.maven.apache.org/maven2/net/lenni0451/commons/gson/1.9.2/gson-1.9.2-sources.jar
+
+The dependency archives remain separately identifiable Fabric nested libraries.
+Their executable code and upstream notices are not renamed, sealed or rewritten.
+The Fabric library IDs are recorded in each nested fabric.mod.json. Compatible
+modified replacements can be supplied as external Fabric mods with those same
+IDs and versions. Larp's integrity check verifies its bundled bytes, not a
+replacement library selected by Fabric from the user's mods directory.
+
+The Larp proprietary license does not restrict rights granted for these
+components by their own licenses, including modification, redistribution,
+replacement and reverse engineering necessary to debug such modifications.
+The LGPL and its referenced GPL text accompany this notice. No warranty is
+provided by the dependency authors.
+
+Microsoft account passwords are entered only on Microsoft's website. Larp stores
+its saved Microsoft account data in a separate, password-encrypted local vault.
+Minecraft credentials are not sent to the Larp license or cloud service.
+
+Larp is independent of Microsoft and Mojang. Use of this authentication library
+does not establish endorsement or guarantee future service availability.

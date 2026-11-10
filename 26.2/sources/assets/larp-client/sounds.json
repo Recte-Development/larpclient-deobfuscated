@@ -1,0 +1,238 @@
+{
+  "notification": {
+    "sounds": [
+      {
+        "name": "larp-client:notification",
+        "preload": true
+      }
+    ]
+  },
+  "hit.glass": {
+    "subtitle": "subtitles.larp-client.hit.glass",
+    "sounds": [
+      {
+        "name": "larp-client:hit/glass",
+        "preload": true
+      }
+    ]
+  },
+  "hit.round_hit": {
+    "subtitle": "subtitles.larp-client.hit.round_hit",
+    "sounds": [
+      {
+        "name": "larp-client:hit/round_hit",
+        "preload": true
+      }
+    ]
+  },
+  "hit.crisp_tick": {
+    "subtitle": "subtitles.larp-client.hit.crisp_tick",
+    "sounds": [
+      {
+        "name": "larp-client:hit/crisp_tick",
+        "preload": true
+      }
+    ]
+  },
+  "hit.impact": {
+    "subtitle": "subtitles.larp-client.hit.impact",
+    "sounds": [
+      {
+        "name": "larp-client:hit/impact",
+        "preload": true
+      }
+    ]
+  },
+  "gui.open": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/open-gui",
+        "preload": true
+      }
+    ]
+  },
+  "gui.close": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/close-gui",
+        "preload": true
+      }
+    ]
+  },
+  "gui.click": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/buttonclick",
+        "preload": true
+      }
+    ]
+  },
+  "gui.slider": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/slider",
+        "preload": true
+      }
+    ]
+  },
+  "gui.typing": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/searchtyping",
+        "preload": true
+      }
+    ]
+  },
+  "gui.category": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/switchcategory",
+        "preload": true
+      }
+    ]
+  },
+  "gui.off": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/switch-left",
+        "preload": true
+      }
+    ]
+  },
+  "gui.on": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/switch-right",
+        "preload": true
+      }
+    ]
+  },
+  "gui.settings_open": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/settings-open",
+        "preload": true
+      }
+    ]
+  },
+  "gui.settings_close": {
+    "sounds": [
+      {
+        "name": "larp-client:gui/larp/settings-close",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_anime": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_anime",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_bladeball": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_bladeball",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_chink": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_chink",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_click": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_click",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_copperbell": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_copperbell",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_crystal": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_crystal",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_glass1": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_glass1",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_glass2": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_glass2",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_metalbat": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_metalbat",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_neverlose": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_neverlose",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_punch": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_punch",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_slice": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_slice",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_tap": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_tap",
+        "preload": true
+      }
+    ]
+  },
+  "hit.clarity_water": {
+    "sounds": [
+      {
+        "name": "larp-client:hit/clarity_water",
+        "preload": true
+      }
+    ]
+  }
+}

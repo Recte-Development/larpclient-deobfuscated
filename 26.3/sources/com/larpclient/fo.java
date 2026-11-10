@@ -1,0 +1,136 @@
+package com.larpclient;
+
+public final class fo {
+   private fo() {
+   }
+
+   public static int v(String var0, int var1, float var2) {
+      double[] var3 = new double[]{(var1 >> 16 & 0xFF) / 255.0, (var1 >> 8 & 0xFF) / 255.0, (var1 & 0xFF) / 255.0};
+      double var4 = var2 * 100.0;
+
+      double[] var6 = switch (var0) {
+         case "Water" -> j(var3, 0.2);
+         case "Caustic" -> j(var3, 0.25);
+         case "Nebula" -> j(var3, 0.5 * var4 + 0.1);
+         case "Aurora" -> n(z(0.0186, 0.028, 0.059), var3, 0.044 * var4);
+         case "Starfall" -> q(n(z(0.0109, 0.0163, 0.0388), var3, 0.0157 * var4));
+         case "BlackHole" -> z(0.006, 0.006, 0.01);
+         case "Plasma" -> j(var3, 0.65 * var4);
+         case "Voronoi" -> j(var3, 0.3 * var4);
+         case "Core Caustic" -> B(w(var3));
+         case "Core Nebula" -> u(w(var3));
+         case "Sunset" -> J(w(var3));
+         case "Thunderstorm" -> h(w(var3));
+         case "Christmas" -> C(w(var3));
+         case "Volcano" -> U();
+         case "Sandstorm" -> R(w(var3));
+         default -> j(var3, 0.2);
+      };
+      return 0xFF000000 | m(var6[0]) << 16 | m(var6[1]) << 8 | m(var6[2]);
+   }
+
+   private static double[] B(double[] var0) {
+      double[] var1 = z(var0, z(1.0, 1.0, 1.0), 0.55);
+      return D(n(j(var0, 0.46275), var1, 0.018), 0.55);
+   }
+
+   private static double[] u(double[] var0) {
+      double[] var1 = n(j(var0, 0.16), z(0.004, 0.003, 0.014), 1.0);
+      double[] var2 = z(var1, j(var0, 0.55), 0.55);
+      double[] var3 = z(var0, z(1.0, 0.54, 0.2), 0.42);
+      double[] var4 = z(var0, z(0.16, 0.52, 1.0), 0.45);
+      var2 = n(var2, z(var4, var3, 0.5), 0.42);
+      var2 = n(var2, z(j(var1, 2.0), var3, 0.55), 0.35);
+      return D(var2, 0.45);
+   }
+
+   private static double[] h(double[] var0) {
+      double[] var1 = z(0.064, 0.071, 0.088);
+      var1 = z(var1, e(var1, n(z(0.55, 0.55, 0.55), var0, 0.9)), 0.34);
+      return z(1.0 - Math.exp(-var1[0] * 1.15), 1.0 - Math.exp(-var1[1] * 1.15), 1.0 - Math.exp(-var1[2] * 1.15));
+   }
+
+   private static double[] C(double[] var0) {
+      double[] var1 = z(0.2, 0.15, 0.3);
+      var1 = z(var1, e(var1, n(z(0.6, 0.6, 0.6), var0, 0.8)), 0.14);
+      return z(1.0 - Math.exp(-var1[0] * 1.25), 1.0 - Math.exp(-var1[1] * 1.25), 1.0 - Math.exp(-var1[2] * 1.25));
+   }
+
+   private static double[] U() {
+      double[] var0 = n(j(z(0.2, 0.062, 0.03), 0.44000000000000006), z(1.0, 0.33, 0.06), 0.008);
+      return z(1.0 - Math.exp(-var0[0] * 1.2), 1.0 - Math.exp(-var0[1] * 1.2), 1.0 - Math.exp(-var0[2] * 1.2));
+   }
+
+   private static double[] R(double[] var0) {
+      double[] var1 = Y(j(z(0.66, 0.4, 0.18), 0.85), var0);
+      return z(1.0 - Math.exp(-var1[0] * 1.25), 1.0 - Math.exp(-var1[1] * 1.25), 1.0 - Math.exp(-var1[2] * 1.25));
+   }
+
+   private static double[] Y(double[] var0, double[] var1) {
+      double var2 = Math.max(var1[0], Math.max(var1[1], var1[2]));
+      double var4 = (var2 - Math.min(var1[0], Math.min(var1[1], var1[2]))) / Math.max(var2, 1.0E-4);
+      double[] var6 = j(var1, 1.0 / Math.max(p(var1), 0.2));
+      double var7 = p(var0);
+      double var9 = Math.clamp((var7 - 0.9) / 0.9, 0.0, 1.0);
+      double var11 = 0.85 * var4 * (1.0 - var9 * var9 * (3.0 - 2.0 * var9));
+      return z(var0, j(var6, var7), var11);
+   }
+
+   private static double p(double[] var0) {
+      return var0[0] * 0.2126 + var0[1] * 0.7152 + var0[2] * 0.0722;
+   }
+
+   private static double[] J(double[] var0) {
+      double[] var1 = e(z(1.0, 0.62, 0.25), n(z(0.835, 0.835, 0.835), var0, 0.264));
+      var1 = n(var1, z(1.0, 0.65, 0.25), 0.075);
+      var1 = n(var1, z(1.0, 0.85, 0.4), 0.068);
+      var1 = n(var1, z(1.0, 0.9, 0.7), 0.0175);
+      var1 = n(var1, z(1.0, 0.65, 0.3), 0.014);
+      var1 = n(var1, z(1.0, 0.72, 0.38), 0.077);
+      double[] var2 = z(z(0.45, 0.05, 0.1), z(1.0, 0.62, 0.25), 0.6);
+      var1 = z(var1, n(j(var1, 0.85), var2, 0.25), 0.55);
+      return D(var1, 0.45);
+   }
+
+   private static double[] D(double[] var0, double var1) {
+      double[] var3 = new double[3];
+
+      for (int var4 = 0; var4 < 3; var4++) {
+         var3[var4] = Math.pow(Math.max(0.0, var0[var4] / (1.0 + var0[var4] * var1)), 0.92);
+      }
+
+      return var3;
+   }
+
+   private static double[] w(double[] var0) {
+      return z(Math.max(var0[0], 0.05), Math.max(var0[1], 0.05), Math.max(var0[2], 0.05));
+   }
+
+   private static double[] q(double[] var0) {
+      return z(Math.tanh(var0[0]), Math.tanh(var0[1]), Math.tanh(var0[2]));
+   }
+
+   private static double[] z(double var0, double var2, double var4) {
+      return new double[]{var0, var2, var4};
+   }
+
+   private static double[] j(double[] var0, double var1) {
+      return z(var0[0] * var1, var0[1] * var1, var0[2] * var1);
+   }
+
+   private static double[] e(double[] var0, double[] var1) {
+      return z(var0[0] * var1[0], var0[1] * var1[1], var0[2] * var1[2]);
+   }
+
+   private static double[] n(double[] var0, double[] var1, double var2) {
+      return z(var0[0] + var1[0] * var2, var0[1] + var1[1] * var2, var0[2] + var1[2] * var2);
+   }
+
+   private static double[] z(double[] var0, double[] var1, double var2) {
+      return z(var0[0] + (var1[0] - var0[0]) * var2, var0[1] + (var1[1] - var0[1]) * var2, var0[2] + (var1[2] - var0[2]) * var2);
+   }
+
+   private static int m(double var0) {
+      return (int)Math.round(Math.clamp(var0, 0.0, 1.0) * 255.0);
+   }
+}

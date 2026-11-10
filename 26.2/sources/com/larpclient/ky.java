@@ -1,0 +1,258 @@
+package com.larpclient;
+
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.RenderPipeline.Snippet;
+import com.mojang.blaze3d.platform.CompareOp;
+import java.util.SplittableRandom;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
+import org.joml.Matrix4f;
+
+public final class ky {
+   public static final int m = 288;
+   static final double b = 120.0;
+   static final double t = 90.0;
+   public static final float J = 0.24F;
+   static final double H = 0.6;
+   static final double I = 0.25;
+   static final double o = 0.36;
+   static final double i = 0.16;
+   static final double K = 0.85;
+   static final double h = 0.95;
+   static final double n = 0.3;
+   static final double s = 1.9;
+   static final double N = 2.5;
+   static final double r = 0.19;
+   static final double V = 0.11;
+   static final double q = 0.09;
+   static final double j = 0.05;
+   static final double p = 0.09;
+   public static final double f = 1.8;
+   public static final double Q = 1.4;
+   static final double Y = 0.5;
+   private final double[] k = new double[288];
+   private final double[] P = new double[288];
+   private final double[] S = new double[288];
+   private final double[] z = new double[288];
+   private final double[] X = new double[288];
+   private final double[] A = new double[288];
+   private final float[] v = new float[288];
+   private final float[] c = new float[288];
+   private final float[] Z = new float[288];
+   private final float[] d = new float[288];
+   private final float[] W = new float[288];
+   private final float[] a = new float[288];
+   private final boolean[] L = new boolean[288];
+   private final SplittableRandom E;
+   private int F;
+   private double u = Double.NaN;
+   private double R;
+   private double g;
+   private double U;
+   private double e;
+   private double y;
+   private double D;
+   private double C;
+   private double l;
+   public final Matrix4f T = new Matrix4f();
+   public long G = -1L;
+
+   public ky(long var1) {
+      this.E = new SplittableRandom(var1);
+   }
+
+   public int s() {
+      return this.F;
+   }
+
+   public void B() {
+      this.F = 0;
+      this.u = Double.NaN;
+      this.R = this.g = this.D = this.C = this.l = 0.0;
+   }
+
+   public static double s(double var0, double var2) {
+      double var4 = 0.7224999999999999;
+      double var6 = 1.15;
+      return (var6 * var4 + 0.95 * var4 * var4) * var2 * var0 + 0.1368 * var0;
+   }
+
+   public void H(double var1, double var3, double var5, double var7, double var9, double var11, double var13, double var15, double var17) {
+      double var19 = var1 - this.u;
+      double var21 = (var3 - this.U) * (var3 - this.U) + (var5 - this.e) * (var5 - this.e) + (var7 - this.y) * (var7 - this.y);
+      if (var19 >= 0.0 && !(var19 > 0.25) && !(var21 > 4.0)) {
+         if (var19 != 0.0) {
+            float var23 = (float)var19;
+            double var24 = 1.0 - Math.exp(-var19 * 12.0);
+            this.D = this.D + ((var3 - this.U) / var19 - this.D) * var24;
+            this.C = this.C + ((var5 - this.e) / var19 - this.C) * var24;
+            this.l = this.l + ((var7 - this.y) / var19 - this.l) * var24;
+            double var26 = Math.exp(-2.5 * var19);
+            int var28 = 0;
+
+            while (var28 < this.F) {
+               this.v[var28] = this.v[var28] + var23;
+               if (this.v[var28] >= this.c[var28]) {
+                  this.S(var28);
+               } else {
+                  double var29 = (this.L[var28] ? 2.5 : 1.9) * var17 * var15 * var19;
+                  double var31 = this.z[var28] * var9 + this.X[var28] * var11 + this.A[var28] * var13 + var29;
+                  this.z[var28] = (this.z[var28] - var9 * (var31 - var29)) * var26 + var9 * var31;
+                  this.X[var28] = (this.X[var28] - var11 * (var31 - var29)) * var26 + var11 * var31;
+                  this.A[var28] = (this.A[var28] - var13 * (var31 - var29)) * var26 + var13 * var31;
+                  this.k[var28] = this.k[var28] + this.z[var28] * var19;
+                  this.P[var28] = this.P[var28] + this.X[var28] * var19;
+                  this.S[var28] = this.S[var28] + this.A[var28] * var19;
+                  this.d[var28] = this.d[var28] + this.W[var28] * var23;
+                  var28++;
+               }
+            }
+
+            double var62 = Math.abs(var11) < 0.9 ? 0.0 : 1.0;
+            double var30 = Math.abs(var11) < 0.9 ? 1.0 : 0.0;
+            double var32 = var30 * var13 - 0.0 * var11;
+            double var34 = 0.0 * var9 - var62 * var13;
+            double var36 = var62 * var11 - var30 * var9;
+            double var38 = Math.sqrt(var32 * var32 + var34 * var34 + var36 * var36);
+            var32 /= var38;
+            var34 /= var38;
+            var36 /= var38;
+            double var40 = var11 * var36 - var13 * var34;
+            double var42 = var13 * var32 - var9 * var36;
+            double var44 = var9 * var34 - var11 * var32;
+            this.R += 120.0 * var19;
+            this.g += 90.0 * var19;
+
+            while (this.R >= 1.0 || this.g >= 1.0) {
+               int var46 = this.g >= this.R ? 1 : 0;
+               if (var46 != 0) {
+                  this.g--;
+               } else {
+                  this.R--;
+               }
+
+               if (this.F != 288) {
+                  double var47 = this.E.nextDouble();
+                  double var49 = (var46 != 0 ? 0.05 : 0.09) * var15 * Math.sqrt(this.E.nextDouble());
+                  double var51 = this.E.nextDouble() * Math.PI * 2.0;
+                  double var53 = Math.cos(var51);
+                  double var55 = Math.sin(var51);
+                  double var57 = ((var46 != 0 ? 0.95 : 0.85) + this.E.nextDouble() * 0.3) * var17 * var15;
+                  double var59 = 0.09 * var15 * this.E.nextDouble();
+                  int var61 = this.F++;
+                  this.L[var61] = (boolean)var46;
+                  this.k[var61] = this.U + (var3 - this.U) * var47 + (var32 * var53 + var40 * var55) * var49;
+                  this.P[var61] = this.e + (var5 - this.e) * var47 + (var34 * var53 + var42 * var55) * var49;
+                  this.S[var61] = this.y + (var7 - this.y) * var47 + (var36 * var53 + var44 * var55) * var49;
+                  this.z[var61] = var9 * var57 + (var32 * var53 + var40 * var55) * var59 + this.D * 0.5;
+                  this.X[var61] = var11 * var57 + (var34 * var53 + var42 * var55) * var59 + this.C * 0.5;
+                  this.A[var61] = var13 * var57 + (var36 * var53 + var44 * var55) * var59 + this.l * 0.5;
+                  this.c[var61] = (float)(var46 != 0 ? 0.36 + this.E.nextDouble() * 0.16 : 0.6 + this.E.nextDouble() * 0.25);
+                  this.v[var61] = (float)((1.0 - var47) * var19);
+                  this.Z[var61] = (float)((var46 != 0 ? 0.11 : 0.19) * var15 * (0.8 + this.E.nextDouble() * 0.4));
+                  this.d[var61] = (float)((this.E.nextDouble() - 0.5) * 0.5);
+                  this.W[var61] = (float)((this.E.nextDouble() - 0.5) * 1.2);
+                  this.a[var61] = (float)this.E.nextDouble();
+               }
+            }
+
+            this.u = var1;
+            this.U = var3;
+            this.e = var5;
+            this.y = var7;
+         }
+      } else {
+         this.B();
+         this.u = var1;
+         this.U = var3;
+         this.e = var5;
+         this.y = var7;
+      }
+   }
+
+   private void S(int var1) {
+      int var2 = --this.F;
+      this.k[var1] = this.k[var2];
+      this.P[var1] = this.P[var2];
+      this.S[var1] = this.S[var2];
+      this.z[var1] = this.z[var2];
+      this.X[var1] = this.X[var2];
+      this.A[var1] = this.A[var2];
+      this.v[var1] = this.v[var2];
+      this.c[var1] = this.c[var2];
+      this.Z[var1] = this.Z[var2];
+      this.d[var1] = this.d[var2];
+      this.W[var1] = this.W[var2];
+      this.a[var1] = this.a[var2];
+      this.L[var1] = this.L[var2];
+   }
+
+   public void i(ky.u var1, int var2, int var3, double var4) {
+      int var6 = uh.q(var2, -13631488, 0.3);
+      int var7 = uh.q(var3, -1, 0.35);
+
+      for (int var8 = 0; var8 < 2; var8++) {
+         for (int var9 = 0; var9 < this.F; var9++) {
+            if (this.L[var9] == (var8 == 1 ? 1 : 0)) {
+               double var10 = Math.clamp(this.v[var9] / this.c[var9], 0.0F, 1.0F);
+               double var12;
+               double var14;
+               int var16;
+               if (this.L[var9]) {
+                  var12 = 1.0 - 0.55 * var10;
+                  var14 = Y(var10, 0.18) * (1.0 - var10) * 0.9;
+                  var16 = uh.q(var7, var3, var10);
+               } else {
+                  var12 = var10 < 0.15 ? 0.55 + 0.45 * var10 / 0.15 : 1.0 - 0.6 * (var10 - 0.15) / 0.85;
+                  var14 = Y(var10, 0.22) * (1.0 - var10) * 0.62;
+                  var16 = var10 < 0.4 ? uh.q(var3, var2, var10 / 0.4) : uh.q(var2, var6, (var10 - 0.4) / 0.6);
+               }
+
+               int var17 = (int)Math.round(Math.clamp(var14 * var4, 0.0, 1.0) * 255.0);
+               if (var17 != 0) {
+                  var1.q(this.k[var9], this.P[var9], this.S[var9], this.Z[var9] * var12, this.L[var9] ? 1.4 : 1.8, this.d[var9], var17 << 24 | var16 & 16777215);
+               }
+            }
+         }
+      }
+   }
+
+   static double Y(double var0, double var2) {
+      double var4 = Math.clamp(var0 / var2, 0.0, 1.0);
+      return var4 * var4 * (3.0 - 2.0 * var4);
+   }
+
+   public static RenderType H() {
+      if (ky.m.g != wa.s) {
+         ai.U(ky.m.a);
+         ky.m.g = wa.s;
+      }
+
+      return ky.m.J;
+   }
+
+   private static final class m {
+      static final RenderPipeline a = RenderPipeline.builder(new Snippet[]{RenderPipelines.GUI_TEXTURED_SNIPPET})
+         .withLocation(Identifier.fromNamespaceAndPath("larp-client", "china_hat_fire"))
+         .withFragmentShader(Identifier.fromNamespaceAndPath("larp-client", "particle/sprite"))
+         .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+         .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+         .withCull(false)
+         .build();
+      static final RenderType J = RenderType.create(
+         "larp_china_hat_fire",
+         RenderSetup.builder(a).withTexture("Sampler0", Identifier.fromNamespaceAndPath("larp-client", "textures/particles/flame.png")).createRenderSetup()
+      );
+      private static long g = -1L;
+   }
+
+   @FunctionalInterface
+   public interface u {
+      void q(double var1, double var3, double var5, double var7, double var9, double var11, int var13);
+   }
+}

@@ -1,0 +1,52 @@
+accessWidener	v2	intermediary
+accessible	field	net/minecraft/class_310	field_1726	Lnet/minecraft/class_320;
+mutable	field	net/minecraft/class_310	field_1726	Lnet/minecraft/class_320;
+accessible	field	net/minecraft/class_310	field_45899	Ljava/util/concurrent/CompletableFuture;
+mutable	field	net/minecraft/class_310	field_45899	Ljava/util/concurrent/CompletableFuture;
+accessible	field	net/minecraft/class_310	field_26902	Lcom/mojang/authlib/minecraft/UserApiService;
+mutable	field	net/minecraft/class_310	field_26902	Lcom/mojang/authlib/minecraft/UserApiService;
+accessible	field	net/minecraft/class_310	field_47680	Ljava/util/concurrent/CompletableFuture;
+mutable	field	net/minecraft/class_310	field_47680	Ljava/util/concurrent/CompletableFuture;
+accessible	field	net/minecraft/class_310	field_26842	Lnet/minecraft/class_5520;
+mutable	field	net/minecraft/class_310	field_26842	Lnet/minecraft/class_5520;
+accessible	field	net/minecraft/class_310	field_41331	Lnet/minecraft/class_6628;
+mutable	field	net/minecraft/class_310	field_41331	Lnet/minecraft/class_6628;
+accessible	field	net/minecraft/class_310	field_39068	Lnet/minecraft/class_7853;
+mutable	field	net/minecraft/class_310	field_39068	Lnet/minecraft/class_7853;
+accessible	field	net/minecraft/class_310	field_39492	Lnet/minecraft/class_7574;
+accessible	field	net/minecraft/class_310	field_62106	Lnet/minecraft/class_7497;
+mutable	field	net/minecraft/class_310	field_62106	Lnet/minecraft/class_7497;
+accessible	field	net/minecraft/class_310	field_39718	Lnet/minecraft/class_7578;
+mutable	field	net/minecraft/class_310	field_39718	Lnet/minecraft/class_7578;
+accessible	method	net/minecraft/class_4341	<init>	(Ljava/lang/String;Ljava/lang/String;Lnet/minecraft/class_310;)V
+accessible	field	net/minecraft/class_4341	field_57916	Lnet/minecraft/class_4341;
+accessible	field	net/minecraft/class_8647	field_45183	Ljava/util/concurrent/CompletableFuture;
+accessible	class	net/minecraft/class_481$class_484
+accessible	method	net/minecraft/class_481$class_484	<init>	(Lnet/minecraft/class_1735;III)V
+accessible	field	net/minecraft/class_481$class_484	field_2898	Lnet/minecraft/class_1735;
+accessible	field	net/minecraft/class_7172	field_37868	Ljava/lang/Object;
+mutable	field	net/minecraft/class_7172	field_37868	Ljava/lang/Object;
+accessible	field	net/minecraft/class_1656	field_7481	F
+mutable	field	net/minecraft/class_1656	field_7481	F
+accessible	field	net/minecraft/class_1661	field_7545	I
+mutable	field	net/minecraft/class_1661	field_7545	I
+accessible	method	net/minecraft/class_310	method_1536	()Z
+accessible	method	net/minecraft/class_310	method_1583	()V
+accessible	field	net/minecraft/class_1921	field_64013	Lnet/minecraft/class_12247;
+accessible	field	net/minecraft/class_12247	field_63987	Ljava/util/Map;
+accessible	class	net/minecraft/class_12247$class_12338
+accessible	method	net/minecraft/class_12247$class_12338	comp_5228	()Lnet/minecraft/class_2960;
+accessible	class	net/minecraft/class_4717$class_464
+accessible	field	net/minecraft/class_4717	field_21612	Lnet/minecraft/class_4717$class_464;
+accessible	field	net/minecraft/class_4717$class_464	field_2771	Lnet/minecraft/class_768;
+accessible	field	net/minecraft/class_12247	field_63989	Lnet/minecraft/class_12246;
+accessible	field	net/minecraft/class_12247	field_63988	Lnet/minecraft/class_12250;
+accessible	field	net/minecraft/class_12247	field_63996	Lnet/minecraft/class_12245;
+accessible	field	net/minecraft/class_744	field_55868	Lnet/minecraft/class_241;
+mutable	field	net/minecraft/class_744	field_55868	Lnet/minecraft/class_241;
+accessible	class	net/minecraft/class_631$class_3681
+accessible	field	net/minecraft/class_631	field_16246	Lnet/minecraft/class_631$class_3681;
+accessible	field	net/minecraft/class_631$class_3681	field_16251	Ljava/util/concurrent/atomic/AtomicReferenceArray;
+accessible	method	net/minecraft/class_769	method_3323	(Lnet/minecraft/class_2338;)Lnet/minecraft/class_846$class_851;
+accessible	class	net/minecraft/class_778$class_10931
+accessible	field	net/minecraft/class_10859	field_57842	I
