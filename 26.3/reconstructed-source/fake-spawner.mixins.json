@@ -1,0 +1,33 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.larpclient.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AbstractContainerScreenMixin2",
+    "BasePreviewRendererMixin",
+    "ClientLevelMixin2",
+    "ClientPacketListenerMixin2",
+    "ClientPacketListenerMixin_22",
+    "CreativeModeInventoryScreenMixin",
+    "FirstPersonHandsAndItemsMixin2",
+    "HudMixin2",
+    "ItemClusterRenderStateMixin",
+    "ItemEntityRendererMixin2",
+    "ItemModelResolverMixin",
+    "ItemStackMixin",
+    "LevelChunkMixin",
+    "LevelEventHandlerMixin",
+    "LevelExtractorMixin2",
+    "LevelMixin2",
+    "LevelSliceMixin",
+    "MinecraftMixin2",
+    "MouseHandlerMixin2",
+    "MultiPlayerGameModeMixin2",
+    "RenderSectionRegionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "plugin": "com.larpclient.mixin.FakeSpawnerMixinPlugin"
+}

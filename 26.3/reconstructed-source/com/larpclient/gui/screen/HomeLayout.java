@@ -1,0 +1,47 @@
+package com.larpclient.gui.screen;
+
+public record HomeLayout(int width, int height, int dockX, int dockY, int cell, int columns, int cardY, int cardWidth, int clockY, float clockScale) {
+   public static HomeLayout calculate(int var0, int var1) {
+      int var2 = var0 < 280 ? 26 : 30;
+      int var3 = Math.min(7, Math.max(1, (var0 - 24) / var2));
+      int var4 = (7 + var3 - 1) / var3;
+      int var5 = var1 - 22 - var4 * var2;
+      int var6 = Math.min(170, Math.max(76, (var0 - 32) / 2));
+      int var7 = var0 >= var3 * var2 + 2 * var6 + 48 ? 1 : 0;
+      int var8 = var7 != 0 ? var5 : var5 - 42;
+      int var9 = Math.max(24, Math.min((int)(var1 * 0.35), var8 - 80));
+      float var10 = (float)Math.clamp(Math.min(var0 / 110.0, var1 / 68.0), 1.7, 4.0);
+      return new HomeLayout(var0, var1, (var0 - var3 * var2) / 2, var5, var2, var3, var8, var6, var9, var10);
+   }
+
+   public HomeLayout.Rect dock(int var1) {
+      return new HomeLayout.Rect(this.dockX + var1 % this.columns * this.cell, this.dockY + var1 / this.columns * this.cell, this.cell, this.cell);
+   }
+
+   public HomeLayout.Rect backgroundCard() {
+      return new HomeLayout.Rect(12, this.cardY, this.cardWidth, 34);
+   }
+
+   public HomeLayout.Rect identityCard() {
+      return new HomeLayout.Rect(this.width - 12 - this.cardWidth, this.cardY, this.cardWidth, 34);
+   }
+
+   public record Rect(int x, int y, int width, int height) {
+      private final int left;
+      private final int top;
+
+      public Rect(int x, int y, int width, int height) {
+         this.left = x;
+         this.top = y;
+         this.width = width;
+         this.height = height;
+      }
+
+      public boolean intersects(HomeLayout.Rect var1) {
+         return this.left < var1.left + var1.width
+            && this.left + this.width > var1.left
+            && this.top < var1.top + var1.height
+            && this.top + this.height > var1.top;
+      }
+   }
+}
